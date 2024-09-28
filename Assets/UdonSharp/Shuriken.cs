@@ -5,6 +5,8 @@ using VRC.SDKBase;
 using VRC.Udon;
 
 public class Shuriken : UdonSharpBehaviour {
+
+    private VRCPlayerApi owner = null;
     private bool isAirborne = false;
     private float rotationSpeed = 360f * 2;
 
@@ -14,6 +16,10 @@ public class Shuriken : UdonSharpBehaviour {
         Debug.Log("Shuriken has been spawned.");
         // Reduce gravity
         GetComponent<Rigidbody>().useGravity = false;
+    }
+
+    public void SetOwner(VRCPlayerApi player) {
+        owner = player;
     }
 
     void FixedUpdate() {
@@ -33,13 +39,17 @@ public class Shuriken : UdonSharpBehaviour {
         isAirborne = true;
     }
 
-    public override void OnPlayerCollisionEnter(VRCPlayerApi player) {
-        Debug.Log("Shuriken has collided with a player with name: " + player.displayName);
-        isAirborne = false;
-    }
-
     private void OnCollisionEnter(Collision collision) {
-        Debug.Log("Shuriken has collided with something.");
+        Debug.Log("Shuriken has collided with " + collision.gameObject.name);
         isAirborne = false;
+        // Determine if the object is a "Player Collider"
+        if (collision.gameObject.GetComponent<PlayerCollider>() != null) {
+            PlayerCollider playerCollider = collision.gameObject.GetComponent<PlayerCollider>();
+            if (owner == null || playerCollider.GetPlayer() != owner) {
+                string ownerName = owner == null ? "Unknown" : owner.displayName;
+                Debug.Log(ownerName + "'s shuriken has hit " + playerCollider.GetPlayerName());
+                Destroy(gameObject);
+            }
+        }
     }
 }
