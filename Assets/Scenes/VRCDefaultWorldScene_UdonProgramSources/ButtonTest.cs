@@ -26,7 +26,5 @@ public class ButtonTest : UdonSharpBehaviour {
         Vector3 spawnPosition = interactingPlayer.GetPosition() + interactingPlayer.GetRotation() * handOffset;
         spawnedObject.transform.position = spawnPosition;
         spawnedObject.transform.rotation = interactingPlayer.GetRotation();
-        // Rotate object -90 degrees on X axis to fix model
-        spawnedObject.transform.Rotate(Vector3.right, -90);
     }
 }

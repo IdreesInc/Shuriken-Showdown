@@ -20,7 +20,7 @@ public class GameLogic : UdonSharpBehaviour {
             Debug.LogError("Game Logic: Interacting player is not set");
             return;
         }
-            // Spawn the object
+        // Spawn the object
         GameObject spawnedObject = Object.Instantiate(playerCollider);
         spawnedObject.SetActive(true);
         PlayerCollider playerColliderComponent = spawnedObject.GetComponent<PlayerCollider>();

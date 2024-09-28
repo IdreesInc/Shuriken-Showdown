@@ -24,7 +24,7 @@ public class Shuriken : UdonSharpBehaviour {
 
     void FixedUpdate() {
         if (isAirborne) {
-            transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime);
+            transform.Rotate(Vector3.up, rotationSpeed * Time.deltaTime);
         }
         GetComponent<Rigidbody>().AddForce(gravity, ForceMode.Acceleration);
     }
