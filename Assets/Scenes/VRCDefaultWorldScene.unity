@@ -559,7 +559,6 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 1243515498}
-  minVelocity: 5
 --- !u!1 &1787983409
 GameObject:
   m_ObjectHideFlags: 0
