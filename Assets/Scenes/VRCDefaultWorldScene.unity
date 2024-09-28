@@ -331,7 +331,7 @@ MonoBehaviour:
   PickupEventName: 
   DropEventName: 
   ThrowVelocityBoostMinSpeed: 1
-  ThrowVelocityBoostScale: 10
+  ThrowVelocityBoostScale: 3
   currentlyHeldBy: {fileID: 0}
   pickupable: 1
   proximity: 100
@@ -678,6 +678,8 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 2024032843}
+  objectToSpawn: {fileID: 886174085}
+  handOffset: {x: 0.1, y: 0.1, z: 0.1}
 --- !u!135 &2024032845
 SphereCollider:
   m_ObjectHideFlags: 0
