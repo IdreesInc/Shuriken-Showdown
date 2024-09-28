@@ -6,8 +6,8 @@ using VRC.Udon;
 
 public class Shuriken : UdonSharpBehaviour
 {
-    private void OnCollisionEnter(Collision collision)
+    void Start()
     {
-        // Debug.Log("Collided with: " + collision.gameObject.name);
+    
     }
 }

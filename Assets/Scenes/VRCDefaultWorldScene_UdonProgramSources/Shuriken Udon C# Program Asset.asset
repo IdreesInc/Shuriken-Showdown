@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
-  m_Name: Cube Udon C# Program Asset 1
+  m_Name: Shuriken Udon C# Program Asset
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: abc681e3dddd11a4781752bafd58f3d2,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 2fc2ec7185c2d8c489e34119fa55f4fd,
     type: 2}
   udonAssembly: 
   assemblyError: 
-  sourceCsScript: {fileID: 11500000, guid: 87ec6109d34e66d45a1a2839aca75288, type: 3}
+  sourceCsScript: {fileID: 11500000, guid: 3adb616cc02a66a428dbed40144a1b9b, type: 3}
   scriptVersion: 2
   compiledVersion: 2
   behaviourSyncMode: 0
