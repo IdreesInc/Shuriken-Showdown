@@ -12,6 +12,11 @@ public class GameLogic : UdonSharpBehaviour {
     }
 
     public override void OnPlayerJoined(VRCPlayerApi player) {
+        // Increase player speed
+        player.SetWalkSpeed(5);
+        player.SetRunSpeed(10);
+        // Increase player jump height
+        player.SetJumpImpulse(5);
         Debug.Log("Player joined: " + player.displayName);
         if (playerCollider == null) {
             Debug.LogError("Game Logic: Player Collider is not set");
