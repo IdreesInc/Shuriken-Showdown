@@ -1,11 +1,12 @@
-﻿
-using UdonSharp;
+﻿using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
 using VRC.Udon;
 
 public class Shuriken : UdonSharpBehaviour {
 
+    public AudioSource audioSource;
+    
     private VRCPlayerApi owner = null;
     private bool isHeld = false;
     private bool hasBeenThrown = false;
@@ -13,6 +14,8 @@ public class Shuriken : UdonSharpBehaviour {
     private float maxDistanceFromOwner = 75;
 
     private Vector3 gravity = new Vector3(0, -9.81f / 2, 0);
+    private Color[] colors = { Color.gray, Color.red, Color.blue, Color.green, Color.yellow, Color.cyan, Color.magenta };
+
 
     void Start() {
         Debug.Log("Shuriken has been spawned.");
@@ -22,6 +25,9 @@ public class Shuriken : UdonSharpBehaviour {
 
     public void SetOwner(VRCPlayerApi player) {
         owner = player;
+        // Get the player index and set the color
+        int playerIndex = player.playerId % colors.Length;
+        GetComponent<Renderer>().material.color = colors[playerIndex];
     }
 
     public void ReturnToOwner() {
@@ -65,6 +71,10 @@ public class Shuriken : UdonSharpBehaviour {
         isHeld = true;
         // Disable collision with anything
         GetComponent<Rigidbody>().detectCollisions = false;
+        if (Networking.LocalPlayer != owner) {
+            Debug.Log("Shuriken owned by " + owner.displayName + " has been picked up by " + Networking.LocalPlayer.displayName);
+            ReturnToOwner();
+        }
     }
 
     public override void OnDrop() {
@@ -82,7 +92,12 @@ public class Shuriken : UdonSharpBehaviour {
             if (owner == null || playerCollider.GetPlayer() != owner) {
                 string ownerName = owner == null ? "Unknown" : owner.displayName;
                 Debug.Log(ownerName + "'s shuriken has hit " + playerCollider.GetPlayerName());
-                Destroy(gameObject);
+                // Play hit sound
+                if (audioSource != null) {
+                    audioSource.Play();
+                }
+                // Return the shuriken to the owner
+                ReturnToOwner();
             }
         } else {
             Debug.Log("Shuriken has collided with " + collision.gameObject.name);
