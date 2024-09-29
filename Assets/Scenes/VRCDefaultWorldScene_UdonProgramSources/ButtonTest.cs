@@ -5,7 +5,7 @@ using VRC.Udon;
 
 public class ButtonTest : UdonSharpBehaviour {
     public GameObject objectToSpawn;  // The prefab to spawn (with VRC_Pickup and VRC_ObjectSync attached)
-    public Vector3 handOffset = new Vector3(0.1f, 0.3f, 0.1f); // Adjust to spawn near the player's hand
+    public Vector3 spawnOffset = new Vector3(0f, 5f, 0f);
 
     public override void Interact() {
         VRCPlayerApi interactingPlayer = Networking.LocalPlayer;
@@ -22,9 +22,7 @@ public class ButtonTest : UdonSharpBehaviour {
         spawnedObject.SetActive(true);
         Shuriken shurikenComponent = spawnedObject.GetComponent<Shuriken>();
         shurikenComponent.SetOwner(interactingPlayer);
-        // Spawn the object at an offset relative to the player's hand (you can adjust this)
-        Vector3 spawnPosition = interactingPlayer.GetPosition() + interactingPlayer.GetRotation() * handOffset;
-        spawnedObject.transform.position = spawnPosition;
-        spawnedObject.transform.rotation = interactingPlayer.GetRotation();
+        Vector3 spawnPosition = interactingPlayer.GetPosition() + spawnOffset;
+        spawnedObject.transform.SetPositionAndRotation(spawnPosition, interactingPlayer.GetRotation());
     }
 }
