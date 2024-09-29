@@ -5,7 +5,7 @@ using VRC.Udon;
 
 public class ButtonTest : UdonSharpBehaviour {
     public GameObject objectToSpawn;  // The prefab to spawn (with VRC_Pickup and VRC_ObjectSync attached)
-    public Vector3 handOffset = new Vector3(0.1f, 0.1f, 0.1f); // Adjust to spawn near the player's hand
+    public Vector3 handOffset = new Vector3(0.1f, 0.3f, 0.1f); // Adjust to spawn near the player's hand
 
     public override void Interact() {
         VRCPlayerApi interactingPlayer = Networking.LocalPlayer;

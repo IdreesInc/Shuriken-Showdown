@@ -7,6 +7,7 @@ using VRC.Udon;
 public class Shuriken : UdonSharpBehaviour {
 
     private VRCPlayerApi owner = null;
+    private bool isHeld = false;
     private bool isAirborne = false;
     private float rotationSpeed = 360f * 2;
 
@@ -23,7 +24,8 @@ public class Shuriken : UdonSharpBehaviour {
     }
 
     void Update() {
-        if (isAirborne) {
+        float velocity = GetComponent<Rigidbody>().velocity.magnitude;
+        if (!isHeld && velocity > 0.3f) {
             transform.Rotate(Vector3.up, rotationSpeed * Time.deltaTime);
             transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
         }
@@ -35,6 +37,7 @@ public class Shuriken : UdonSharpBehaviour {
 
     public override void OnPickup() {
         Debug.Log("Object has been gripped");
+        isHeld = true;
         isAirborne = false;
         // Disable collision with anything
         GetComponent<Rigidbody>().detectCollisions = false;
@@ -42,6 +45,7 @@ public class Shuriken : UdonSharpBehaviour {
 
     public override void OnDrop() {
         Debug.Log("Object has been released");
+        isHeld = false;
         isAirborne = true;
         // Enable collision with anything
         GetComponent<Rigidbody>().detectCollisions = true;
