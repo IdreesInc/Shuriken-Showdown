@@ -5,32 +5,43 @@ using VRC.SDKBase;
 using VRC.Udon;
 
 public class PlayerCollider : UdonSharpBehaviour {
-    private VRCPlayerApi playerToFollow;
-    private Vector3 offset = new Vector3(0, 1, 0);
-    public void FollowPlayer(VRCPlayerApi player) {
-        if (player == null) {
-            Debug.LogError("Player Collider: Player is null");
+    [UdonSynced] private int playerId = -1;
+    private readonly Vector3 offset = new Vector3(0, 1, 0);
+
+    public VRCPlayerApi Player {
+        get {
+            if (playerId == -1) {
+                return null;
+            }
+            return VRCPlayerApi.GetPlayerById(playerId);
+        }
+    }
+
+    public void FollowPlayer(int playerId) {
+        this.playerId = playerId;
+        if (Player == null) {
+            Debug.LogError("Player Collider: Attempted to follow a null player with id: " + playerId);
+            this.playerId = -1;
             return;
         }
-        playerToFollow = player;
-        Debug.Log("Following player: " + player.displayName);
-        Networking.SetOwner(player, gameObject);
+        Debug.Log("Following player: " + Player.displayName);
+        Networking.SetOwner(Player, gameObject);
     }
 
-    public String GetPlayerName() {
-        if (playerToFollow == null) {
+    public string GetPlayerName() {
+        if (Player == null) {
             return "[No player]";
         }
-        return playerToFollow.displayName;
+        return Player.displayName;
     }
 
-    public VRCPlayerApi GetPlayer() {
-        return playerToFollow;
+    public int GetPlayer() {
+        return playerId;
     }
 
     void Update() {
-        if (playerToFollow != null) {
-            transform.position = playerToFollow.GetPosition() + offset;
+        if (Player != null) {
+            transform.position = Player.GetPosition() + offset;
         }
     }
 }

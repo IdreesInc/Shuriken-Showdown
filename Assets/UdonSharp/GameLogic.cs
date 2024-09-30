@@ -57,7 +57,7 @@ public class GameLogic : UdonSharpBehaviour {
         }
         playerCollider.SetActive(true);
         PlayerCollider playerColliderComponent = playerCollider.GetComponent<PlayerCollider>();
-        playerColliderComponent.FollowPlayer(player);
+        playerColliderComponent.FollowPlayer(player.playerId);
         playerCollider.transform.position = player.GetPosition();
         Debug.Log("PlayerCollider spawned for player: " + player.displayName);
 
@@ -69,7 +69,7 @@ public class GameLogic : UdonSharpBehaviour {
         }
         shuriken.SetActive(true);
         Shuriken shurikenComponent = shuriken.GetComponent<Shuriken>();
-        shurikenComponent.SetOwner(player);
+        shurikenComponent.SetOwner(player.playerId);
         shurikenComponent.ReturnToOwner();
     }
 }
