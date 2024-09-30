@@ -6,11 +6,36 @@ using VRC.Udon;
 
 public class GameLogic : UdonSharpBehaviour {
 
-    public GameObject playerCollider;
-    public GameObject shuriken;
+    public GameObject[] playerColliderPool;
+    public GameObject[] shurikenPool;
+
+    private bool[] playerCollidersInUse;
+    private bool[] shurikensInUse;
 
     void Start() {
         Debug.Log("GameLogic initialized");
+        playerCollidersInUse = new bool[playerColliderPool.Length];
+        shurikensInUse = new bool[shurikenPool.Length];
+    }
+
+    private GameObject GetAvailablePlayerCollider() {
+        for (int i = 0; i < playerColliderPool.Length; i++) {
+            if (!playerCollidersInUse[i]) {
+                playerCollidersInUse[i] = true;
+                return playerColliderPool[i];
+            }
+        }
+        return null;
+    }
+
+    private GameObject GetAvailableShuriken() {
+        for (int i = 0; i < shurikenPool.Length; i++) {
+            if (!shurikensInUse[i]) {
+                shurikensInUse[i] = true;
+                return shurikenPool[i];
+            }
+        }
+        return null;
     }
 
     public override void OnPlayerJoined(VRCPlayerApi player) {
@@ -25,28 +50,36 @@ public class GameLogic : UdonSharpBehaviour {
         //     Debug.LogError("Game Logic: Error setting player speed: " + e.Message);
         // }
         Debug.Log("Player joined: " + player.displayName);
-        if (playerCollider == null) {
-            Debug.LogError("Game Logic: Player Collider is not set");
+        if (playerColliderPool == null) {
+            Debug.LogError("Game Logic: Player Collider Pool is not set");
             return;
         } else if (player == null) {
             Debug.LogError("Game Logic: Interacting player is not set");
             return;
-        } else if (shuriken == null) {
-            Debug.LogError("Game Logic: Shuriken is not set");
+        } else if (shurikenPool == null) {
+            Debug.LogError("Game Logic: Shuriken Pool is not set");
+        }
+
+        // Assign a player collider to the player
+        GameObject playerCollider = GetAvailablePlayerCollider();
+        if (playerCollider == null) {
+            Debug.LogError("Game Logic: No available player colliders");
             return;
         }
-        // Spawn the object
-        GameObject spawnedObject = Object.Instantiate(playerCollider);
-        spawnedObject.SetActive(true);
-        PlayerCollider playerColliderComponent = spawnedObject.GetComponent<PlayerCollider>();
+        playerCollider.SetActive(true);
+        PlayerCollider playerColliderComponent = playerCollider.GetComponent<PlayerCollider>();
         playerColliderComponent.FollowPlayer(player);
-        spawnedObject.transform.position = player.GetPosition();
+        playerCollider.transform.position = player.GetPosition();
         Debug.Log("PlayerCollider spawned for player: " + player.displayName);
-        
-        // Create a shuriken for them
-        GameObject shurikenObject = Object.Instantiate(shuriken);
-        shurikenObject.SetActive(true);
-        Shuriken shurikenComponent = shurikenObject.GetComponent<Shuriken>();
+
+        // Assign a shuriken to the player
+        GameObject shuriken = GetAvailableShuriken();
+        if (shuriken == null) {
+            Debug.LogError("Game Logic: No available shurikens");
+            return;
+        }
+        shuriken.SetActive(true);
+        Shuriken shurikenComponent = shuriken.GetComponent<Shuriken>();
         shurikenComponent.SetOwner(player);
         shurikenComponent.ReturnToOwner();
     }

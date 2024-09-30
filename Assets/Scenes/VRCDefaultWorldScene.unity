@@ -2207,6 +2207,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1119089337}
   - component: {fileID: 1119089336}
+  - component: {fileID: 1119089338}
   m_Layer: 0
   m_Name: Hit Sound Effect
   m_TagString: Untagged
@@ -2325,6 +2326,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1119089338
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1119089335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1783056023, guid: 661092b4961be7145bfbe56e1e62337b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AllowCollisionOwnershipTransfer: 1
 --- !u!1 &1125052455
 GameObject:
   m_ObjectHideFlags: 0
@@ -2843,8 +2857,8 @@ MonoBehaviour:
   allowManipulationWhenEquipped: 0
   orientation: 0
   AutoHold: 0
-  InteractionText: 
-  UseText: Use
+  InteractionText: Fuck em up
+  UseText: 
   useEventBroadcastType: 0
   UseDownEventName: 
   UseUpEventName: 
@@ -5392,7 +5406,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!136 &2145716173
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -5744,7 +5758,6 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 3b5aa7069686a0f448973d864d715001, type: 2}
   - {fileID: 2100000, guid: 3c88d4c4e5ad5ad45a3733155943ddd3, type: 2}
   - {fileID: 2100000, guid: 3ee1b7b636b521b4494794f33c347d11, type: 2}
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
   LightMapsNear: []
   LightMapsFar: []
   LightMode: 0
@@ -5823,6 +5836,10 @@ MonoBehaviour:
     ID: 16
     SerializedTypeNames:
     - VRC.Udon.UdonBehaviour
+  - gameObject: {fileID: 1119089335}
+    ID: 17
+    SerializedTypeNames:
+    - VRC.SDK3.Components.VRCObjectSync
   portraitCameraPositionOffset: {x: 0, y: 0, z: 0}
   portraitCameraRotationOffset: {x: 0, y: 1, z: 0, w: -0.00000004371139}
   NavigationAreas: []
