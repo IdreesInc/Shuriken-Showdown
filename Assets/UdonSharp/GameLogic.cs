@@ -39,16 +39,12 @@ public class GameLogic : UdonSharpBehaviour {
     }
 
     public override void OnPlayerJoined(VRCPlayerApi player) {
-        // try {
-        //     // Increase player speed
-        //     player.SetWalkSpeed(5);
-        //     player.SetRunSpeed(10);
-        //     // Increase player jump height
-        //     player.SetJumpImpulse(5);
-        // } catch (System.Exception e) {
-        //     // Could occur if player is remote
-        //     Debug.LogError("Game Logic: Error setting player speed: " + e.Message);
-        // }
+        // Increase player speed
+        player.SetWalkSpeed(5);
+        player.SetRunSpeed(10);
+        // Increase player jump height
+        player.SetJumpImpulse(5);
+        
         Debug.Log("Player joined: " + player.displayName);
         if (playerColliderPool == null) {
             Debug.LogError("Game Logic: Player Collider Pool is not set");
