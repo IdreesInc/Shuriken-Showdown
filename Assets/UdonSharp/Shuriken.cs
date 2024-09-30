@@ -60,8 +60,13 @@ public class Shuriken : UdonSharpBehaviour {
             }
         }
         // If the shuriken is too far from the owner, return it no matter what
-        if (owner != null && Vector3.Distance(transform.position, owner.GetPosition()) > maxDistanceFromOwner) {
-            ReturnToOwner();
+        if (owner != null) {
+            if (Vector3.Distance(transform.position, owner.GetPosition()) > maxDistanceFromOwner) {
+                ReturnToOwner();
+            } else if (transform.position.y < -10) {
+                // Shuriken fell below map
+                ReturnToOwner();
+            }
         }
         GetComponent<Rigidbody>().AddForce(gravity, ForceMode.Acceleration);
     }

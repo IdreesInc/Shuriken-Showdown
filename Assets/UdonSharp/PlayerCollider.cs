@@ -10,6 +10,7 @@ public class PlayerCollider : UdonSharpBehaviour {
     public void FollowPlayer(VRCPlayerApi player) {
         playerToFollow = player;
         Debug.Log("Following player: " + player.displayName);
+        Networking.SetOwner(player, gameObject);
     }
 
     public String GetPlayerName() {
