@@ -77,7 +77,7 @@ public class Shuriken : UdonSharpBehaviour {
         // Disable collision with anything
         GetComponent<Rigidbody>().detectCollisions = false;
         if (Networking.LocalPlayer != owner) {
-            Debug.Log("Shuriken owned by " + owner.displayName + " has been picked up by " + Networking.LocalPlayer.displayName);
+            Debug.Log("Shuriken owned by " + owner.playerId + " has been picked up by " + Networking.LocalPlayer.playerId);
             ReturnToOwner();
         }
     }
@@ -95,7 +95,7 @@ public class Shuriken : UdonSharpBehaviour {
         if (collision.gameObject.GetComponent<PlayerCollider>() != null) {
             PlayerCollider playerCollider = collision.gameObject.GetComponent<PlayerCollider>();
             if (owner == null || playerCollider.GetPlayer() != owner) {
-                string ownerName = owner == null ? "Unknown" : owner.displayName;
+                string ownerName = owner == null ? "Unknown" : (owner.displayName == null ? "Unknown" : owner.displayName);
                 Debug.Log(ownerName + "'s shuriken has hit " + playerCollider.GetPlayerName());
                 // Play hit sound
                 if (audioSource != null) {

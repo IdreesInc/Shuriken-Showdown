@@ -6,22 +6,14 @@ using VRC.Udon;
 
 public class GameLogic : UdonSharpBehaviour {
 
-    public GameObject[] playerColliderPool;
-    public GameObject[] shurikenPool;
-    public GameObject[] powerUpPool;
-
-    private bool[] playerCollidersInUse;
-    private bool[] shurikensInUse;
-    private bool[] powerUpsInUse;
+    public VRC.SDK3.Components.VRCObjectPool shurikenPool;
+    public VRC.SDK3.Components.VRCObjectPool playerColliderPool;
+    public VRC.SDK3.Components.VRCObjectPool powerUpPool;
 
     void Start() {
         Debug.Log("GameLogic initialized");
-        playerCollidersInUse = new bool[playerColliderPool.Length];
-        shurikensInUse = new bool[shurikenPool.Length];
-        powerUpsInUse = new bool[powerUpPool.Length];
 
-        // Put a power up at position -1, 3, -0.3
-        GameObject powerUp = GetFromPool(powerUpPool, powerUpsInUse);
+        GameObject powerUp = powerUpPool.TryToSpawn();
         if (powerUp == null) {
             Debug.LogError("Game Logic: No available power ups");
             return;
@@ -30,30 +22,17 @@ public class GameLogic : UdonSharpBehaviour {
         powerUp.transform.position = new Vector3(-1, 2, -0.3f);
     }
 
-    private GameObject GetFromPool(GameObject[] pool, bool[] inUse) {
-        for (int i = 0; i < pool.Length; i++) {
-            if (!inUse[i]) {
-                inUse[i] = true;
-                return pool[i];
-            }
-        }
-        return null;
-    }
-
-    private GameObject GetAvailablePlayerCollider() {
-        return GetFromPool(playerColliderPool, playerCollidersInUse);
-    }
-
-    private GameObject GetAvailableShuriken() {
-        return GetFromPool(shurikenPool, shurikensInUse);
-    }
-
     public override void OnPlayerJoined(VRCPlayerApi player) {
+        if (player == null || !Utilities.IsValid(player)) {
+            Debug.LogError("Game Logic: Somehow, the player is null in OnPlayerJoined");
+            return;
+        }
+
         // Increase player speed
-        player.SetWalkSpeed(5);
-        player.SetRunSpeed(8);
-        // Increase player jump height
-        player.SetJumpImpulse(5);
+        // player.SetWalkSpeed(5);
+        // player.SetRunSpeed(8);
+        // // Increase player jump height
+        // player.SetJumpImpulse(5);
 
         Debug.Log("Player joined: " + player.displayName);
         if (playerColliderPool == null) {
@@ -71,7 +50,7 @@ public class GameLogic : UdonSharpBehaviour {
         }
 
         // Assign a player collider to the player
-        GameObject playerCollider = GetAvailablePlayerCollider();
+        GameObject playerCollider = playerColliderPool.TryToSpawn();
         if (playerCollider == null) {
             Debug.LogError("Game Logic: No available player colliders");
             return;
@@ -83,7 +62,7 @@ public class GameLogic : UdonSharpBehaviour {
         Debug.Log("PlayerCollider spawned for player: " + player.displayName);
 
         // Assign a shuriken to the player
-        GameObject shuriken = GetAvailableShuriken();
+        GameObject shuriken = shurikenPool.TryToSpawn();
         if (shuriken == null) {
             Debug.LogError("Game Logic: No available shurikens");
             return;
