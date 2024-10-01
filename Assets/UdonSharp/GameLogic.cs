@@ -79,15 +79,13 @@ public class GameLogic : UdonSharpBehaviour {
 
 
         // Assign a player collider to the player
-        // GameObject playerCollider = playerColliderPool.TryToSpawn();
-        // if (playerCollider == null) {
-        //     LogError("Game Logic: No available player colliders");
-        //     return;
-        // }
-        // playerCollider.SetActive(true);
-        // PlayerCollider playerColliderComponent = playerCollider.GetComponent<PlayerCollider>();
-        // playerColliderComponent.FollowPlayer(player.playerId);
-        // playerCollider.transform.position = player.GetPosition();
-        // Log("PlayerCollider spawned for player: " + player.displayName);
+        GameObject playerCollider = playerColliderPool.TryToSpawn();
+        if (playerCollider == null) {
+            LogError("Game Logic: No available player colliders");
+            return;
+        }
+        playerCollider.SetActive(true);
+        PlayerCollider playerColliderComponent = playerCollider.GetComponent<PlayerCollider>();
+        playerColliderComponent.SetPlayerId(player.playerId);
     }
 }

@@ -16,6 +16,15 @@ public class Shuriken : UdonSharpBehaviour {
     [UdonSynced] private bool isHeld = false;
     [UdonSynced] private bool hasBeenThrown = false;
 
+    private VRCPlayerApi Player {
+        get {
+            if (playerId == -1) {
+                return null;
+            }
+            return VRCPlayerApi.GetPlayerById(playerId);
+        }
+    }
+
     private void Log(string message) {
         Debug.Log("[Shuriken - " + playerId + "]: " + message);
     }
@@ -46,16 +55,6 @@ public class Shuriken : UdonSharpBehaviour {
             ReturnToPlayer();
         }
         GetComponent<Renderer>().material.color = COLORS[playerId];
-        GetComponent<Rigidbody>().useGravity = false;
-    }
-
-    private VRCPlayerApi Player {
-        get {
-            if (playerId == -1) {
-                return null;
-            }
-            return VRCPlayerApi.GetPlayerById(playerId);
-        }
     }
 
     public bool HasPlayer() {
@@ -79,6 +78,10 @@ public class Shuriken : UdonSharpBehaviour {
     }
 
     void FixedUpdate() {
+        GetComponent<Rigidbody>().useGravity = false;
+        if (!Networking.IsOwner(gameObject)) {
+            return;
+        }
         float velocity = GetComponent<Rigidbody>().velocity.magnitude;
         if (!isHeld) {
             if (velocity > 0.3f) {
