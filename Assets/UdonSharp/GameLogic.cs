@@ -75,8 +75,7 @@ public class GameLogic : UdonSharpBehaviour {
         shuriken.SetActive(true);
         Shuriken shurikenComponent = shuriken.GetComponent<Shuriken>();
         shurikenComponent.SetOwnerId(player.playerId);
-        shurikenComponent.ClaimIfLocal();
-        // Networking.SetOwner(player, shuriken);
+        shurikenComponent.ReturnToOwner();
 
 
         // Assign a player collider to the player

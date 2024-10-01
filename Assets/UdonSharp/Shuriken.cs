@@ -26,30 +26,27 @@ public class Shuriken : UdonSharpBehaviour {
 
     void Start() {
         Log("Shuriken has been spawned.");
-        // Reduce gravity
-        GetComponent<Rigidbody>().useGravity = false;
     }
 
     public void SetOwnerId(int playerId) {
         Log("Setting owner id to " + playerId);
         ownerId = playerId;
-    }
-
-    public void ClaimIfLocal() {
-        if (ownerId == Networking.LocalPlayer.playerId && Networking.IsOwner(gameObject)) {
-            GetComponent<Renderer>().material.color = COLORS[ownerId];
-            ReturnToOwner();
-        }
+        UpdateOwnership();
     }
 
     public override void OnDeserialization() {
         Log("Deserializing shuriken with owner id " + ownerId);
+        UpdateOwnership();
+    }
+
+    public void UpdateOwnership() {
         if (ownerId == Networking.LocalPlayer.playerId && !Networking.IsOwner(gameObject)) {
             Log("Claiming network ownership of shuriken");
             Networking.SetOwner(Networking.LocalPlayer, gameObject);
             ReturnToOwner();
         }
         GetComponent<Renderer>().material.color = COLORS[ownerId];
+        GetComponent<Rigidbody>().useGravity = false;
     }
 
     private VRCPlayerApi Owner {
