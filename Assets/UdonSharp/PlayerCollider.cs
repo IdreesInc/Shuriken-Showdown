@@ -8,6 +8,14 @@ public class PlayerCollider : UdonSharpBehaviour {
     [UdonSynced] private int playerId = -1;
     private readonly Vector3 offset = new Vector3(0, 1, 0);
 
+    private void Log(string message) {
+        Debug.Log("[PlayerCollider - " + playerId + "]: " + message);
+    }
+
+    private void LogError(string message) {
+        Debug.LogError("[PlayerCollider - " + playerId + "]: " + message);
+    }
+
     public VRCPlayerApi Player {
         get {
             if (playerId == -1) {
@@ -20,11 +28,11 @@ public class PlayerCollider : UdonSharpBehaviour {
     public void FollowPlayer(int playerId) {
         this.playerId = playerId;
         if (Player == null) {
-            Debug.LogError("Player Collider: Attempted to follow a null player with id: " + playerId);
+            LogError("Player Collider: Attempted to follow a null player with id: " + playerId);
             this.playerId = -1;
             return;
         }
-        Debug.Log("Following player: " + Player.displayName);
+        Log("Following player: " + Player.displayName);
         Networking.SetOwner(Player, gameObject);
     }
 

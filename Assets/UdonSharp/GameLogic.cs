@@ -9,22 +9,40 @@ public class GameLogic : UdonSharpBehaviour {
     public VRC.SDK3.Components.VRCObjectPool shurikenPool;
     public VRC.SDK3.Components.VRCObjectPool playerColliderPool;
     public VRC.SDK3.Components.VRCObjectPool powerUpPool;
+    
+    private void Log(string message) {
+        Debug.Log("[GameLogic - " + Networking.LocalPlayer.playerId + "]: " + message);
+    }
 
+    private void LogError(string message) {
+        LogError("[GameLogic - " + Networking.LocalPlayer.playerId + "]: " + message);
+    }
     void Start() {
-        Debug.Log("GameLogic initialized");
-
-        GameObject powerUp = powerUpPool.TryToSpawn();
-        if (powerUp == null) {
-            Debug.LogError("Game Logic: No available power ups");
+        Log("GameLogic initializing...");
+        if (!Networking.IsOwner(gameObject)) {
+            Log("Not the owner, skipping rest of initialization");
             return;
         }
-        powerUp.SetActive(true);
-        powerUp.transform.position = new Vector3(-1, 2, -0.3f);
+
+        // GameObject powerUp = powerUpPool.TryToSpawn();
+        // if (powerUp == null) {
+        //     LogError("Game Logic: No available power ups");
+        //     return;
+        // }
+        // powerUp.SetActive(true);
+        // powerUp.transform.position = new Vector3(-1, 2, -0.3f);
     }
 
     public override void OnPlayerJoined(VRCPlayerApi player) {
+        Log("Player joined: " + player.displayName);
+
+        if (!Networking.IsOwner(gameObject)) {
+            Log("A player joined but we are not the owner so who cares");
+            return;
+        }
+
         if (player == null || !Utilities.IsValid(player)) {
-            Debug.LogError("Game Logic: Somehow, the player is null in OnPlayerJoined");
+            LogError("Game Logic: Somehow, the player is null in OnPlayerJoined");
             return;
         }
 
@@ -34,42 +52,43 @@ public class GameLogic : UdonSharpBehaviour {
         // // Increase player jump height
         // player.SetJumpImpulse(5);
 
-        Debug.Log("Player joined: " + player.displayName);
         if (playerColliderPool == null) {
-            Debug.LogError("Game Logic: Player Collider Pool is not set");
+            LogError("Game Logic: Player Collider Pool is not set");
             return;
         } else if (player == null) {
-            Debug.LogError("Game Logic: Interacting player is not set");
+            LogError("Game Logic: Interacting player is not set");
             return;
         } else if (shurikenPool == null) {
-            Debug.LogError("Game Logic: Shuriken Pool is not set");
+            LogError("Game Logic: Shuriken Pool is not set");
             return;
         } else if (powerUpPool == null) {
-            Debug.LogError("Game Logic: Power Up Pool is not set");
+            LogError("Game Logic: Power Up Pool is not set");
             return;
         }
-
-        // Assign a player collider to the player
-        GameObject playerCollider = playerColliderPool.TryToSpawn();
-        if (playerCollider == null) {
-            Debug.LogError("Game Logic: No available player colliders");
-            return;
-        }
-        playerCollider.SetActive(true);
-        PlayerCollider playerColliderComponent = playerCollider.GetComponent<PlayerCollider>();
-        playerColliderComponent.FollowPlayer(player.playerId);
-        playerCollider.transform.position = player.GetPosition();
-        Debug.Log("PlayerCollider spawned for player: " + player.displayName);
 
         // Assign a shuriken to the player
         GameObject shuriken = shurikenPool.TryToSpawn();
         if (shuriken == null) {
-            Debug.LogError("Game Logic: No available shurikens");
+            LogError("Game Logic: No available shurikens");
             return;
         }
         shuriken.SetActive(true);
         Shuriken shurikenComponent = shuriken.GetComponent<Shuriken>();
-        shurikenComponent.SetOwner(player.playerId);
-        shurikenComponent.ReturnToOwner();
+        shurikenComponent.SetOwnerId(player.playerId);
+        shurikenComponent.ClaimIfLocal();
+        // Networking.SetOwner(player, shuriken);
+
+
+        // Assign a player collider to the player
+        // GameObject playerCollider = playerColliderPool.TryToSpawn();
+        // if (playerCollider == null) {
+        //     LogError("Game Logic: No available player colliders");
+        //     return;
+        // }
+        // playerCollider.SetActive(true);
+        // PlayerCollider playerColliderComponent = playerCollider.GetComponent<PlayerCollider>();
+        // playerColliderComponent.FollowPlayer(player.playerId);
+        // playerCollider.transform.position = player.GetPosition();
+        // Log("PlayerCollider spawned for player: " + player.displayName);
     }
 }
