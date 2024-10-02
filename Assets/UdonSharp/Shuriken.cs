@@ -10,6 +10,7 @@ public class Shuriken : UdonSharpBehaviour {
     
     private const float ROTATION_SPEED = 360f * 2;
     private const float MAX_DISTANCE = 75;
+    private const float THROW_FORCE = 5;
     private readonly Vector3 GRAVITY_FORCE = new Vector3(0, -9.81f / 3, 0);
     private readonly Color[] COLORS = { Color.gray, Color.red, Color.blue, Color.green, Color.yellow, Color.cyan, Color.magenta };
 
@@ -52,6 +53,7 @@ public class Shuriken : UdonSharpBehaviour {
 
     public override void OnDeserialization() {
         // Log("Deserializing shuriken with owner id " + playerId);
+        ApplyPowerUpEffects();
         UpdateOwnership();
     }
 
@@ -61,6 +63,7 @@ public class Shuriken : UdonSharpBehaviour {
 
     private void AddPowerUp(int type) {
         Log("Adding power up: " + PowerUp.GetPowerUpName(type));
+        ReturnToPlayer();
         // Move every power up down one slot and add the new power up to the first slot
         for (int i = powerUps.Length - 1; i > 0; i--) {
             powerUps[i] = powerUps[i - 1];
@@ -170,6 +173,9 @@ public class Shuriken : UdonSharpBehaviour {
 
     public override void OnPickup() {
         Log("Object has been gripped");
+        if (!Networking.IsOwner(gameObject)) {
+            return;
+        }
         isHeld = true;
         // Disable collision with anything
         GetComponent<Rigidbody>().detectCollisions = false;
@@ -181,10 +187,18 @@ public class Shuriken : UdonSharpBehaviour {
 
     public override void OnDrop() {
         Log("Object has been released");
+        if (!Networking.IsOwner(gameObject)) {
+            return;
+        }
         isHeld = false;
         hasBeenThrown = true;
         // Enable collision with anything
         GetComponent<Rigidbody>().detectCollisions = true;
+        // Throw the shuriken if the initial velocity is high enough
+        if (GetComponent<Rigidbody>().velocity.magnitude > 1) {
+            Log("Velocity: " + GetComponent<Rigidbody>().velocity.magnitude + ", throwing shuriken");
+            GetComponent<Rigidbody>().AddForce(Player.GetRotation() * Vector3.forward * THROW_FORCE, ForceMode.Impulse);
+        }
     }
 
     private void OnCollisionEnter(Collision collision) {
@@ -211,12 +225,8 @@ public class Shuriken : UdonSharpBehaviour {
             // Return the shuriken to the owner
             ReturnToPlayer();
         } else if (collision.gameObject.GetComponent<PowerUp>() != null) {
-            // Collided with a power up
-            PowerUp powerUp = collision.gameObject.GetComponent<PowerUp>();
-            Log("Shuriken has collided with a power up of type " + powerUp.GetPowerUpType());
-            // Return the shuriken to the owner
-            ReturnToPlayer();
-            SendCustomNetworkEvent(NetworkEventTarget.Owner, "OnPowerUpCollision");
+            // // Return the shuriken to the owner
+            // ReturnToPlayer();
         } else {
             Log("Shuriken has collided with " + collision.gameObject.name);
         }
