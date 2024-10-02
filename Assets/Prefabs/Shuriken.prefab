@@ -67,7 +67,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 8966743439128388229, guid: 0f51d957cc41b694ca4742f7e8f78d2c, type: 3}
+  - {fileID: 2100000, guid: 6a28734fd8cf4154187a16385563965c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -135,7 +135,7 @@ MonoBehaviour:
   allowManipulationWhenEquipped: 0
   orientation: 0
   AutoHold: 0
-  InteractionText: Fuck em up
+  InteractionText: It's shuriken, not shurican't
   UseText: 
   useEventBroadcastType: 0
   UseDownEventName: 

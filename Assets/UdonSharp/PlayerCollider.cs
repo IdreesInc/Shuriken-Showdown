@@ -44,7 +44,7 @@ public class PlayerCollider : UdonSharpBehaviour {
     }
 
     public override void OnDeserialization() {
-        Log("Deserializing collider with owner id " + playerId);
+        // Log("Deserializing collider with owner id " + playerId);
         UpdateOwnership();
     }
 

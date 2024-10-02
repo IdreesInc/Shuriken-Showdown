@@ -24,13 +24,15 @@ public class GameLogic : UdonSharpBehaviour {
             return;
         }
 
-        // GameObject powerUp = powerUpPool.TryToSpawn();
-        // if (powerUp == null) {
-        //     LogError("Game Logic: No available power ups");
-        //     return;
-        // }
-        // powerUp.SetActive(true);
-        // powerUp.transform.position = new Vector3(-1, 2, -0.3f);
+        GameObject powerUp = powerUpPool.TryToSpawn();
+        if (powerUp == null) {
+            LogError("Game Logic: No available power ups");
+            return;
+        }
+        powerUp.SetActive(true);
+        PowerUp powerUpComponent = powerUp.GetComponent<PowerUp>();
+        powerUpComponent.SetPowerUpType(0);
+        powerUp.transform.position = new Vector3(-1, 1, -0.3f);
     }
 
     public override void OnPlayerJoined(VRCPlayerApi player) {

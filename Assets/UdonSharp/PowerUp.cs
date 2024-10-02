@@ -3,8 +3,22 @@ using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
 using VRC.Udon;
+using VRC.Udon.Common.Interfaces;
 
 public class PowerUp : UdonSharpBehaviour {
+
+    [UdonSynced] private int powerUpType = 0;
+
+    public static string GetPowerUpName(int type) {
+        // Can't make this static due to UdonSharp limitations, using getter instead
+        string[] POWER_UP_NAMES = {
+            "Embiggen",
+        };
+        if (type < 0 || type >= POWER_UP_NAMES.Length) {
+            return "Unknown";
+        }
+        return POWER_UP_NAMES[type];
+    }
 
     private void Log(string message) {
         Debug.Log("[PowerUp]: " + message);
@@ -18,12 +32,25 @@ public class PowerUp : UdonSharpBehaviour {
         Log("Power up has been spawned");
     }
 
+    public void SetPowerUpType(int powerUpType) {
+        Log("Setting power up type to " + powerUpType);
+        this.powerUpType = powerUpType;
+    }
+
+    public int GetPowerUpType() {
+        return powerUpType;
+    }
+
     private void OnCollisionEnter(Collision collision) {
+        if (!Networking.IsOwner(gameObject)) {
+            Log("Not the owner, skipping collision");
+            return;
+        }
         Log("Power up has collided with " + collision.gameObject.name);
-        // Determine if the object is a "Player Collider"
-        if (collision.gameObject.GetComponent<PlayerCollider>() != null) {
-            PlayerCollider playerCollider = collision.gameObject.GetComponent<PlayerCollider>();
-            Log(playerCollider.GetPlayerName() + " has picked up a power up");
+        if (collision.gameObject.GetComponent<Shuriken>() != null) {
+            Shuriken shuriken = collision.gameObject.GetComponent<Shuriken>();
+            Log("Power up has collided with a shuriken owned by " + shuriken.GetPlayerId());
+            shuriken.SendCustomNetworkEvent(NetworkEventTarget.Owner, "ActivatePowerUp" + powerUpType);
         }
         // Move 0.5 units to the right
         transform.position = new Vector3(transform.position.x + 0.5f, transform.position.y, transform.position.z);
