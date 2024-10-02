@@ -41,6 +41,12 @@ public class PowerUp : UdonSharpBehaviour {
         return powerUpType;
     }
 
+    private void FixedUpdate() {
+        transform.Rotate(0, 1, 0);
+        float yOffset = Mathf.Sin(Time.time * 2f) * 0.005f;
+        transform.position = new Vector3(transform.position.x, transform.position.y + yOffset, transform.position.z);
+    }
+
     private void OnCollisionEnter(Collision collision) {
         if (!Networking.IsOwner(gameObject)) {
             Log("Not the owner, skipping collision");

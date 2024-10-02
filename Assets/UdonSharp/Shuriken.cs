@@ -110,6 +110,16 @@ public class Shuriken : UdonSharpBehaviour {
         return Player != null;
     }
 
+    private Vector3 GetSpawnOffset() {
+        int numOfEmbiggens = 0;
+        for (int i = 0; i < powerUps.Length; i++) {
+            if (powerUps[i] == 0) {
+                numOfEmbiggens++;
+            }
+        }
+        return new Vector3(0, 0.5f, 1f + 0.25f * numOfEmbiggens);
+    }
+
     public void ReturnToPlayer() {
         if (!HasPlayer()) {
             LogError("Owner is not set");
@@ -120,8 +130,7 @@ public class Shuriken : UdonSharpBehaviour {
         }
         Log("Returning shuriken to " + playerId);
         // Place the shuriken in front of the player
-        transform.position = Player.GetPosition() + Player.GetRotation()
-            * new Vector3(0, 0.5f, 1.5f);
+        transform.position = Player.GetPosition() + Player.GetRotation() * GetSpawnOffset();
         GetComponent<Rigidbody>().velocity = Vector3.zero;
         GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
         hasBeenThrown = false;

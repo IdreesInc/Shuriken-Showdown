@@ -32,7 +32,7 @@ public class GameLogic : UdonSharpBehaviour {
         powerUp.SetActive(true);
         PowerUp powerUpComponent = powerUp.GetComponent<PowerUp>();
         powerUpComponent.SetPowerUpType(0);
-        powerUp.transform.position = new Vector3(-1, 1, -0.3f);
+        powerUp.transform.position = new Vector3(-1, 1f, -0.3f);
     }
 
     public override void OnPlayerJoined(VRCPlayerApi player) {
