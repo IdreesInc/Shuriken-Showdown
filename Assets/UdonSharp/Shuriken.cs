@@ -93,8 +93,6 @@ public class Shuriken : UdonSharpBehaviour {
         }
     }
 
-
-
     private void ResetPowerUpEffects() {
         // Reset all effects of power ups
         transform.localScale = new Vector3(1, 1, 1);
@@ -120,7 +118,7 @@ public class Shuriken : UdonSharpBehaviour {
                 numOfEmbiggens++;
             }
         }
-        return new Vector3(0, 0.5f, 1f + 0.25f * numOfEmbiggens);
+        return new Vector3(0, 1f, 1f + 0.5f * numOfEmbiggens);
     }
 
     public void ReturnToPlayer() {
@@ -133,10 +131,19 @@ public class Shuriken : UdonSharpBehaviour {
         }
         Log("Returning shuriken to " + playerId);
         // Place the shuriken in front of the player
-        transform.position = Player.GetPosition() + Player.GetRotation() * GetSpawnOffset();
+        PutInFrontOfPlayer();
         GetComponent<Rigidbody>().velocity = Vector3.zero;
         GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
         hasBeenThrown = false;
+    }
+
+    private void PutInFrontOfPlayer() {
+        if (!HasPlayer()) {
+            LogError("Owner is not set");
+            return;
+        }
+        // Place the shuriken in front of the player
+        transform.position = Player.GetPosition() + Player.GetRotation() * GetSpawnOffset();
     }
 
     void FixedUpdate() {
@@ -168,7 +175,15 @@ public class Shuriken : UdonSharpBehaviour {
                 ReturnToPlayer();
             }
         }
-        GetComponent<Rigidbody>().AddForce(GRAVITY_FORCE, ForceMode.Acceleration);
+        if (hasBeenThrown) {
+            GetComponent<Rigidbody>().AddForce(GRAVITY_FORCE, ForceMode.Acceleration);
+        } else if (!isHeld) {
+            // Freeze the shuriken in place
+            GetComponent<Rigidbody>().velocity = Vector3.zero;
+            PutInFrontOfPlayer();
+            // Spin that baby
+            transform.Rotate(Vector3.up, ROTATION_SPEED / 2 * Time.deltaTime);
+        }
     }
 
     public override void OnPickup() {
