@@ -19,7 +19,7 @@ public class Shuriken : UdonSharpBehaviour {
     [UdonSynced] private bool hasBeenThrown = false;
 
     [UdonSynced] private readonly int[] powerUps = { -1, -1, -1 };
-    [UdonSynced] public int score = 0;
+    [UdonSynced] private int score = 0;
 
     private VRCPlayerApi Player {
         get {
@@ -50,6 +50,10 @@ public class Shuriken : UdonSharpBehaviour {
 
     public int GetPlayerId() {
         return playerId;
+    }
+
+    public int GetScore() {
+        return score;
     }
 
     public override void OnDeserialization() {
@@ -238,10 +242,10 @@ public class Shuriken : UdonSharpBehaviour {
                 if (audioSource != null) {
                     audioSource.Play();
                 }
-                // Increase the score
-                score++;
                 // Return the shuriken to the owner
                 ReturnToPlayer();
+                // Increase the score
+                score++;
             }
         } else if (collision.gameObject.GetComponent<Shuriken>() != null) {
             // Collided with another shuriken

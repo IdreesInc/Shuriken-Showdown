@@ -10166,10 +10166,11 @@ MonoBehaviour:
     PrefabModifications: []
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 1125052456}
-  shurikensParent: {fileID: 677054601}
   shurikenPool: {fileID: 1951865632}
   playerColliderPool: {fileID: 838210316}
   powerUpPool: {fileID: 1979525389}
+  shurikensParent: {fileID: 677054601}
+  scoreText: {fileID: 1845644474}
 --- !u!114 &1125052458
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16561,7 +16562,7 @@ GameObject:
   - component: {fileID: 1845644477}
   - component: {fileID: 1845644476}
   m_Layer: 0
-  m_Name: Text (TMP)
+  m_Name: Score Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16669,7 +16670,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: -758.4739, w: -341.65048}
+  m_margin: {x: 0, y: 0, z: -2838.7966, w: -341.65048}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0

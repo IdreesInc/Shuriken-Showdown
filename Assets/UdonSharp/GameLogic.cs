@@ -1,4 +1,5 @@
 ﻿
+using TMPro;
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
@@ -11,6 +12,9 @@ public class GameLogic : UdonSharpBehaviour {
     public VRC.SDK3.Components.VRCObjectPool powerUpPool;
     // Used for iterating over the shurikens
     public GameObject shurikensParent;
+    public GameObject scoreText;
+
+    private int[] playerScores = new int[16];
     
     private void Log(string message) {
         Debug.Log("[GameLogic - " + Networking.LocalPlayer.playerId + "]: " + message);
@@ -38,16 +42,32 @@ public class GameLogic : UdonSharpBehaviour {
     }
 
     void Update() {
-        if (!Networking.IsOwner(gameObject)) {
-            return;
-        }
         foreach (Transform child in shurikensParent.transform) {
             if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null) {
                 Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
-                // Print the score for each player
-                Log("Player " + shuriken.GetPlayerId() + " has a score of " + shuriken.score);
+                if (shuriken.GetPlayerId() != -1) {
+                    playerScores[shuriken.GetPlayerId()] = shuriken.GetScore();
+                }
             }
         }
+        UpdateUI();
+        if (!Networking.IsOwner(gameObject)) {
+            return;
+        }
+    }
+
+    public override void OnDeserialization() {
+        UpdateUI();
+    }
+
+    private void UpdateUI() {
+        string text = "Scores:\n";
+        for (int i = 0; i < playerScores.Length; i++) {
+            if (playerScores[i] > 0) {
+                text += "Player " + i + ": " + playerScores[i] + "\n";
+            }
+        }
+        scoreText.GetComponent<TextMeshProUGUI>().text = text;
     }
 
     public override void OnPlayerJoined(VRCPlayerApi player) {
