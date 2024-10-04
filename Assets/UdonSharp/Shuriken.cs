@@ -118,7 +118,7 @@ public class Shuriken : UdonSharpBehaviour {
                 numOfEmbiggens++;
             }
         }
-        return new Vector3(0, 1f, 1f + 0.5f * numOfEmbiggens);
+        return new Vector3(0, 0.5f, 1f + 0.5f * numOfEmbiggens);
     }
 
     public void ReturnToPlayer() {
@@ -177,12 +177,18 @@ public class Shuriken : UdonSharpBehaviour {
         }
         if (hasBeenThrown) {
             GetComponent<Rigidbody>().AddForce(GRAVITY_FORCE, ForceMode.Acceleration);
-        } else if (!isHeld) {
+        }
+        if (!hasBeenThrown && !isHeld) {
             // Freeze the shuriken in place
             GetComponent<Rigidbody>().velocity = Vector3.zero;
             PutInFrontOfPlayer();
+            // Set collision layer to PickupNoEnvironment
+            gameObject.layer = 14;
             // Spin that baby
             transform.Rotate(Vector3.up, ROTATION_SPEED / 2 * Time.deltaTime);
+        } else {
+            // Set collision layer to Pickup
+            gameObject.layer = 13;
         }
     }
 
