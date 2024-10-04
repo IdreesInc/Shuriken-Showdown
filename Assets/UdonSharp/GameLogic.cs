@@ -9,6 +9,8 @@ public class GameLogic : UdonSharpBehaviour {
     public VRC.SDK3.Components.VRCObjectPool shurikenPool;
     public VRC.SDK3.Components.VRCObjectPool playerColliderPool;
     public VRC.SDK3.Components.VRCObjectPool powerUpPool;
+    // Used for iterating over the shurikens
+    public GameObject shurikensParent;
     
     private void Log(string message) {
         Debug.Log("[GameLogic - " + Networking.LocalPlayer.playerId + "]: " + message);
@@ -33,6 +35,19 @@ public class GameLogic : UdonSharpBehaviour {
         PowerUp powerUpComponent = powerUp.GetComponent<PowerUp>();
         powerUpComponent.SetPowerUpType(0);
         powerUp.transform.position = new Vector3(-1, 1f, -0.3f);
+    }
+
+    void Update() {
+        if (!Networking.IsOwner(gameObject)) {
+            return;
+        }
+        foreach (Transform child in shurikensParent.transform) {
+            if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null) {
+                Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
+                // Print the score for each player
+                Log("Player " + shuriken.GetPlayerId() + " has a score of " + shuriken.score);
+            }
+        }
     }
 
     public override void OnPlayerJoined(VRCPlayerApi player) {
