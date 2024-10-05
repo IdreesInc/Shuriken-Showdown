@@ -1,4 +1,10 @@
 {
+	"PlayerCollider.OnHit": {
+		"methodName": "__0_OnHit",
+		"parameters": [
+			"__0_senderId__param"
+		]
+	},
 	"Shuriken.ActivatePowerUp": {
 		"methodName": "__0_ActivatePowerUp",
 		"parameters": [

@@ -3,8 +3,9 @@ using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
 using VRC.Udon;
+using Miner28.UdonUtils.Network;
 
-public class PlayerCollider : UdonSharpBehaviour {
+public class PlayerCollider : NetworkInterface {
     private readonly Vector3 offset = new Vector3(0, 1, 0);
     [UdonSynced] private int playerId = -1;
 
@@ -57,6 +58,21 @@ public class PlayerCollider : UdonSharpBehaviour {
 
     public int GetPlayer() {
         return playerId;
+    }
+
+    [NetworkedMethod]
+    public void OnHit(int senderId) {
+        if (Networking.LocalPlayer.playerId != playerId) {
+            return;
+        }
+        VRCPlayerApi sender = VRCPlayerApi.GetPlayerById(senderId);
+        if (sender == null) {
+            LogError("Player hit by unknown player with id: " + senderId + ", ignoring");
+            return;
+        }
+        string senderName = sender.displayName;
+        Log("Player hit by " + senderName);
+        GameLogic.GetLocalGameLogic().OnHit(senderName, "sliced");
     }
 
     void Update() {

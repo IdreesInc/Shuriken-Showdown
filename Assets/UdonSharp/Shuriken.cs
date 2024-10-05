@@ -22,8 +22,6 @@ public class Shuriken : NetworkInterface {
     [UdonSynced] private readonly int[] powerUps = { -1, -1, -1 };
     [UdonSynced] private int score = 0;
 
-    private GameLogic localGameLogic;
-
     private VRCPlayerApi Player {
         get {
             if (playerId == -1) {
@@ -49,10 +47,6 @@ public class Shuriken : NetworkInterface {
         Log("Setting owner id to " + playerId);
         this.playerId = playerId;
         UpdateOwnership();
-    }
-
-    public void SetLocalGameLogic(GameLogic gameLogic) {
-        localGameLogic = gameLogic;
     }
 
     public int GetPlayerId() {
@@ -87,7 +81,7 @@ public class Shuriken : NetworkInterface {
         powerUps[0] = type;
         ApplyPowerUpEffects();
         if (Networking.LocalPlayer.playerId == playerId) {
-            localGameLogic.OnPowerUpCollected(type, powerUps);
+            GameLogic.GetLocalGameLogic().OnPowerUpCollected(type, powerUps);
         }
     }
 
@@ -255,6 +249,8 @@ public class Shuriken : NetworkInterface {
             PlayerCollider playerCollider = collision.gameObject.GetComponent<PlayerCollider>();
             if (!HasPlayer() || playerCollider.GetPlayer() != playerId) {
                 Log(playerId + "'s shuriken has hit " + playerCollider.GetPlayer());
+                // Notify the player
+                playerCollider.SendMethodNetworked(nameof(PlayerCollider.OnHit), SyncTarget.All, playerId);
                 // Play hit sound
                 if (audioSource != null) {
                     audioSource.Play();

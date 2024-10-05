@@ -42,6 +42,11 @@ public class GameLogic : UdonSharpBehaviour {
     private void LogError(string message) {
         LogError("[GameLogic - " + Networking.LocalPlayer.playerId + "]: " + message);
     }
+
+    public static GameLogic GetLocalGameLogic() {
+        return GameObject.Find("Logic").GetComponent<GameLogic>();
+    }
+    
     void Start() {
         Log("GameLogic initializing...");
         if (!Networking.IsOwner(gameObject)) {
@@ -103,6 +108,10 @@ public class GameLogic : UdonSharpBehaviour {
             false,
             1200
         );
+    }
+
+    public void OnHit(string senderName, string verb) {
+        ShowMessage((verb + " by").ToUpper(), senderName, null, null, true, 1500);
     }
 
     private void ShowMessage(string topText = "", string highlightText = "", string middleText = "", string bottomText = "", bool backgroundEnabled = true, float duration = 2000) {
@@ -237,7 +246,6 @@ public class GameLogic : UdonSharpBehaviour {
         }
         shuriken.SetActive(true);
         Shuriken shurikenComponent = shuriken.GetComponent<Shuriken>();
-        shurikenComponent.SetLocalGameLogic(this);
         shurikenComponent.SetPlayerId(player.playerId);
         shurikenComponent.ReturnToPlayer();
 
