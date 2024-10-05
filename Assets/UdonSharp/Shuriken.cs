@@ -21,6 +21,8 @@ public class Shuriken : UdonSharpBehaviour {
     [UdonSynced] private readonly int[] powerUps = { -1, -1, -1 };
     [UdonSynced] private int score = 0;
 
+    private GameLogic localGameLogic;
+
     private VRCPlayerApi Player {
         get {
             if (playerId == -1) {
@@ -48,6 +50,10 @@ public class Shuriken : UdonSharpBehaviour {
         UpdateOwnership();
     }
 
+    public void SetLocalGameLogic(GameLogic gameLogic) {
+        localGameLogic = gameLogic;
+    }
+
     public int GetPlayerId() {
         return playerId;
     }
@@ -62,6 +68,9 @@ public class Shuriken : UdonSharpBehaviour {
         UpdateOwnership();
     }
 
+    /// <summary>
+    /// Triggered over networking by PowerUp when it detects a collision with this shuriken
+    /// </summary>
     public void ActivatePowerUp0() {
         AddPowerUp(0);
     }
@@ -75,6 +84,9 @@ public class Shuriken : UdonSharpBehaviour {
         }
         powerUps[0] = type;
         ApplyPowerUpEffects();
+        if (Networking.LocalPlayer.playerId == playerId) {
+            localGameLogic.OnPowerUpCollected(type, powerUps);
+        }
     }
 
     private void ApplyPowerUpEffects() {
@@ -103,7 +115,7 @@ public class Shuriken : UdonSharpBehaviour {
         transform.localScale = new Vector3(1, 1, 1);
     }
 
-    public void UpdateOwnership() {
+    private void UpdateOwnership() {
         if (playerId == Networking.LocalPlayer.playerId && !Networking.IsOwner(gameObject)) {
             Log("Claiming network ownership of shuriken");
             Networking.SetOwner(Networking.LocalPlayer, gameObject);
@@ -126,6 +138,9 @@ public class Shuriken : UdonSharpBehaviour {
         return new Vector3(0, 0.5f, 1f + 0.5f * numOfEmbiggens);
     }
 
+    /// <summary>
+    /// Return the shuriken to the player who owns it
+    /// </summary>
     public void ReturnToPlayer() {
         if (!HasPlayer()) {
             LogError("Owner is not set");

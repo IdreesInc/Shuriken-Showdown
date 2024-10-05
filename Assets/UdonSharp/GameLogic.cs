@@ -1,4 +1,5 @@
 ﻿
+using System.Linq;
 using TMPro;
 using UdonSharp;
 using UnityEngine;
@@ -22,7 +23,16 @@ public class GameLogic : UdonSharpBehaviour {
 
     private int[] playerScores = new int[16];
 
-    private UIType currentUI = UIType.MESSAGE_UI;
+    private UIType visibleUI = UIType.NONE;
+    private const float UI_FADE_TIME = 200;
+    /// <summary>
+    /// The time at which the current UI should be fully visible (in milliseconds)
+    /// </summary>
+    private float timeToShowUI = 0;
+    /// <summary>
+    /// The time at which the current UI should be fully hidden (in milliseconds)
+    /// </summary>
+    private float timeToHideUI = 0;
 
     
     private void Log(string message) {
@@ -48,7 +58,6 @@ public class GameLogic : UdonSharpBehaviour {
         PowerUp powerUpComponent = powerUp.GetComponent<PowerUp>();
         powerUpComponent.SetPowerUpType(0);
         powerUp.transform.position = new Vector3(-1, 1f, -0.3f);
-        SetMessage("Toppy", "Highlight", "Middle", "Bottom");
     }
 
     void Update() {
@@ -70,7 +79,41 @@ public class GameLogic : UdonSharpBehaviour {
         UpdateUI();
     }
 
-    private void SetMessage(string topText = "", string highlightText = "", string middleText = "", string bottomText = "") {
+    /// <summary>
+    /// Triggered by the local player's shuriken when a power up is collected
+    /// </summary>
+    public void OnPowerUpCollected(int powerUpType, int[] powerUps) {
+        string currentlyEquipped = "Equipped: ";
+        bool start = true;
+        for (int i = 0; i < powerUps.Length; i++) {
+            if (powerUps[i] != -1) {
+                if (!start) {
+                    currentlyEquipped += ", ";
+                }
+                currentlyEquipped += PowerUp.GetPowerUpName(powerUps[i]);
+                start = false;
+            }
+        }
+
+        ShowMessage(
+            null,
+            PowerUp.GetPowerUpName(powerUpType),
+            PowerUp.GetPowerUpSubtitle(powerUpType),
+            currentlyEquipped,
+            false,
+            1200
+        );
+    }
+
+    private void ShowMessage(string topText = "", string highlightText = "", string middleText = "", string bottomText = "", bool backgroundEnabled = true, float duration = 2000) {
+        SetMessage(topText, highlightText, middleText, bottomText, backgroundEnabled);
+        timeToShowUI = Time.time * 1000 + UI_FADE_TIME;
+        timeToHideUI = timeToShowUI + duration + UI_FADE_TIME;
+        visibleUI = UIType.MESSAGE_UI;
+        UpdateUI();
+    }
+
+    private void SetMessage(string topText = "", string highlightText = "", string middleText = "", string bottomText = "", bool backgroundEnabled = true) {
         GameObject background = messageUI.transform.Find("Background").gameObject;
         GameObject topTextUI = messageUI.transform.Find("Top Text").gameObject;
         GameObject highlight = messageUI.transform.Find("Highlight").gameObject;
@@ -97,7 +140,8 @@ public class GameLogic : UdonSharpBehaviour {
             LogError("Game Logic: Bottom Text is null");
             return;
         }
-        
+
+        background.SetActive(backgroundEnabled);
         topTextUI.GetComponent<TextMeshProUGUI>().text = topText;
         highlightTextUI.GetComponent<TextMeshProUGUI>().text = highlightText;
         middleTextUI.GetComponent<TextMeshProUGUI>().text = middleText;
@@ -105,15 +149,37 @@ public class GameLogic : UdonSharpBehaviour {
     }
 
     private void UpdateUI() {
-        GameObject ui = null;
-        if (currentUI == UIType.MESSAGE_UI) {
+        GameObject visibleUIObject = null;
+        float alpha = 1;
+        float timeInMs = Time.time * 1000;
+
+        // Fade in
+        if (timeToShowUI != 0 && timeInMs >= timeToShowUI - UI_FADE_TIME) {
+            if (timeInMs >= timeToShowUI) {
+                timeToShowUI = 0;
+            } else {
+                alpha = 1 - (timeToShowUI - timeInMs) / UI_FADE_TIME;
+            }
+        }
+
+        // Fade out
+        if (timeToHideUI != 0 && timeInMs >= timeToHideUI - UI_FADE_TIME) {
+            if (timeInMs >= timeToHideUI) {
+                visibleUI = UIType.NONE;
+                timeToHideUI = 0;
+            } else {
+                alpha = (timeToHideUI - timeInMs) / UI_FADE_TIME;
+            }
+        }
+        
+        if (visibleUI == UIType.MESSAGE_UI) {
             messageUI.SetActive(true);
-            ui = messageUI;
+            visibleUIObject = messageUI;
         } else {
             messageUI.SetActive(false);
         }
 
-        if (ui != null) {
+        if (visibleUIObject != null) {
             // Put UI in front of player's camera
             VRCPlayerApi localPlayer = Networking.LocalPlayer;
             // Get the player's head tracking data (camera position and rotation)
@@ -123,8 +189,10 @@ public class GameLogic : UdonSharpBehaviour {
             Vector3 newPosition = headData.position + headData.rotation * Vector3.forward * 1.25f;
 
             // Set the target object's position and rotation
-            ui.transform.position = newPosition;
-            ui.transform.rotation = headData.rotation;
+            visibleUIObject.transform.position = newPosition;
+            visibleUIObject.transform.rotation = headData.rotation;
+
+            visibleUIObject.GetComponent<CanvasGroup>().alpha = alpha;
         }
     }
 
@@ -169,6 +237,7 @@ public class GameLogic : UdonSharpBehaviour {
         }
         shuriken.SetActive(true);
         Shuriken shurikenComponent = shuriken.GetComponent<Shuriken>();
+        shurikenComponent.SetLocalGameLogic(this);
         shurikenComponent.SetPlayerId(player.playerId);
         shurikenComponent.ReturnToPlayer();
 

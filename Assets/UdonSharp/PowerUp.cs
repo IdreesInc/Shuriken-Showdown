@@ -20,6 +20,16 @@ public class PowerUp : UdonSharpBehaviour {
         return POWER_UP_NAMES[type];
     }
 
+    public static string GetPowerUpSubtitle(int type) {
+        string[] POWER_UP_SUBTITLES = {
+            "Go big or go home",
+        };
+        if (type < 0 || type >= POWER_UP_SUBTITLES.Length) {
+            return "Unknown";
+        }
+        return POWER_UP_SUBTITLES[type];
+    }
+
     private void Log(string message) {
         Debug.Log("[PowerUp]: " + message);
     }
