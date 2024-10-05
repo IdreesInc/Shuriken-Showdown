@@ -5,6 +5,12 @@ using UnityEngine;
 using VRC.SDKBase;
 using VRC.Udon;
 
+enum UIType {
+    NONE,
+    SCORE_UI,
+    MESSAGE_UI
+}
+
 public class GameLogic : UdonSharpBehaviour {
 
     public VRC.SDK3.Components.VRCObjectPool shurikenPool;
@@ -12,9 +18,12 @@ public class GameLogic : UdonSharpBehaviour {
     public VRC.SDK3.Components.VRCObjectPool powerUpPool;
     // Used for iterating over the shurikens
     public GameObject shurikensParent;
-    public GameObject scoreText;
+    public GameObject messageUI;
 
     private int[] playerScores = new int[16];
+
+    private UIType currentUI = UIType.MESSAGE_UI;
+
     
     private void Log(string message) {
         Debug.Log("[GameLogic - " + Networking.LocalPlayer.playerId + "]: " + message);
@@ -39,6 +48,7 @@ public class GameLogic : UdonSharpBehaviour {
         PowerUp powerUpComponent = powerUp.GetComponent<PowerUp>();
         powerUpComponent.SetPowerUpType(0);
         powerUp.transform.position = new Vector3(-1, 1f, -0.3f);
+        SetMessage("Toppy", "Highlight", "Middle", "Bottom");
     }
 
     void Update() {
@@ -60,14 +70,62 @@ public class GameLogic : UdonSharpBehaviour {
         UpdateUI();
     }
 
-    private void UpdateUI() {
-        string text = "Scores:\n";
-        for (int i = 0; i < playerScores.Length; i++) {
-            if (playerScores[i] > 0) {
-                text += "Player " + i + ": " + playerScores[i] + "\n";
-            }
+    private void SetMessage(string topText = "", string highlightText = "", string middleText = "", string bottomText = "") {
+        GameObject background = messageUI.transform.Find("Background").gameObject;
+        GameObject topTextUI = messageUI.transform.Find("Top Text").gameObject;
+        GameObject highlight = messageUI.transform.Find("Highlight").gameObject;
+        GameObject highlightTextUI = highlight.transform.Find("Highlight Text").gameObject;
+        GameObject middleTextUI = messageUI.transform.Find("Middle Text").gameObject;
+        GameObject bottomTextUI = messageUI.transform.Find("Bottom Text").gameObject;
+
+        if (background == null) {
+            LogError("Game Logic: Background is null");
+            return;
+        } else if (topTextUI == null) {
+            LogError("Game Logic: Top Text is null");
+            return;
+        } else if (highlight == null) {
+            LogError("Game Logic: Highlight is null");
+            return;
+        } else if (highlightTextUI == null) {
+            LogError("Game Logic: Highlight Text is null");
+            return;
+        } else if (middleTextUI == null) {
+            LogError("Game Logic: Middle Text is null");
+            return;
+        } else if (bottomTextUI == null) {
+            LogError("Game Logic: Bottom Text is null");
+            return;
         }
-        scoreText.GetComponent<TextMeshProUGUI>().text = text;
+        
+        topTextUI.GetComponent<TextMeshProUGUI>().text = topText;
+        highlightTextUI.GetComponent<TextMeshProUGUI>().text = highlightText;
+        middleTextUI.GetComponent<TextMeshProUGUI>().text = middleText;
+        bottomTextUI.GetComponent<TextMeshProUGUI>().text = bottomText;
+    }
+
+    private void UpdateUI() {
+        GameObject ui = null;
+        if (currentUI == UIType.MESSAGE_UI) {
+            messageUI.SetActive(true);
+            ui = messageUI;
+        } else {
+            messageUI.SetActive(false);
+        }
+
+        if (ui != null) {
+            // Put UI in front of player's camera
+            VRCPlayerApi localPlayer = Networking.LocalPlayer;
+            // Get the player's head tracking data (camera position and rotation)
+            VRCPlayerApi.TrackingData headData = localPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
+
+            // Calculate position in front of the player's camera
+            Vector3 newPosition = headData.position + headData.rotation * Vector3.forward * 1.25f;
+
+            // Set the target object's position and rotation
+            ui.transform.position = newPosition;
+            ui.transform.rotation = headData.rotation;
+        }
     }
 
     public override void OnPlayerJoined(VRCPlayerApi player) {
