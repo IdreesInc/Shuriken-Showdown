@@ -4,8 +4,9 @@ using UnityEngine;
 using VRC.SDKBase;
 using VRC.Udon;
 using VRC.Udon.Common.Interfaces;
+using Miner28.UdonUtils.Network;
 
-public class PowerUp : UdonSharpBehaviour {
+public class PowerUp : NetworkInterface {
 
     [UdonSynced] private int powerUpType = 0;
 
@@ -66,7 +67,7 @@ public class PowerUp : UdonSharpBehaviour {
         if (collision.gameObject.GetComponent<Shuriken>() != null) {
             Shuriken shuriken = collision.gameObject.GetComponent<Shuriken>();
             Log("Power up has collided with a shuriken owned by " + shuriken.GetPlayerId());
-            shuriken.SendCustomNetworkEvent(NetworkEventTarget.Owner, "ActivatePowerUp" + powerUpType);
+            shuriken.SendMethodNetworked(nameof(Shuriken.ActivatePowerUp), SyncTarget.All, powerUpType);
         }
         // Move 0.5 units to the right
         transform.position = new Vector3(transform.position.x + 0.5f, transform.position.y, transform.position.z);

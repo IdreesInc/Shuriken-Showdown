@@ -1,0 +1,8 @@
+{
+	"Shuriken.ActivatePowerUp": {
+		"methodName": "__0_ActivatePowerUp",
+		"parameters": [
+			"__0_type__param"
+		]
+	}
+}

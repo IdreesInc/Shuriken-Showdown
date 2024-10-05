@@ -3,8 +3,9 @@ using UnityEngine;
 using VRC.SDKBase;
 using VRC.Udon;
 using VRC.Udon.Common.Interfaces;
+using Miner28.UdonUtils.Network;
 
-public class Shuriken : UdonSharpBehaviour {
+public class Shuriken : NetworkInterface {
 
     public AudioSource audioSource;
     
@@ -71,8 +72,9 @@ public class Shuriken : UdonSharpBehaviour {
     /// <summary>
     /// Triggered over networking by PowerUp when it detects a collision with this shuriken
     /// </summary>
-    public void ActivatePowerUp0() {
-        AddPowerUp(0);
+    [NetworkedMethod]
+    public void ActivatePowerUp(int type) {
+        AddPowerUp(type);
     }
 
     private void AddPowerUp(int type) {

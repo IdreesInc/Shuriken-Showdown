@@ -8,6 +8,9 @@
     },
     "com.vrchat.core.vpm-resolver": {
       "version": "0.1.29"
+    },
+    "com.miner28.networked-event-caller": {
+      "version": "3.1.15"
     }
   },
   "locked": {
@@ -23,6 +26,10 @@
     },
     "com.vrchat.core.vpm-resolver": {
       "version": "0.1.29",
+      "dependencies": {}
+    },
+    "com.miner28.networked-event-caller": {
+      "version": "3.1.15",
       "dependencies": {}
     }
   }
