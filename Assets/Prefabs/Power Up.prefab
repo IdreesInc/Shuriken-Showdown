@@ -184,8 +184,13 @@ MonoBehaviour:
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
     PrefabModifications: []
-    SerializationNodes: []
+    SerializationNodes:
+    - Name: eventSenderPlayer
+      Entry: 6
+      Data: 
   _udonSharpBackingUdonBehaviour: {fileID: 3750053586143466610}
+  networkID: 0
+  networkManagerInternal: {fileID: 0}
 --- !u!114 &3750053586143466610
 MonoBehaviour:
   m_ObjectHideFlags: 0

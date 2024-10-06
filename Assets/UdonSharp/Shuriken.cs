@@ -165,6 +165,7 @@ public class Shuriken : NetworkInterface {
     void FixedUpdate() {
         GetComponent<Rigidbody>().useGravity = false;
         if (!Networking.IsOwner(gameObject)) {
+            // TODO: Might be able to remove this in the future
             return;
         }
         float velocity = GetComponent<Rigidbody>().velocity.magnitude;
@@ -202,6 +203,7 @@ public class Shuriken : NetworkInterface {
             gameObject.layer = 14;
             // Spin that baby
             transform.Rotate(Vector3.up, ROTATION_SPEED / 2 * Time.deltaTime);
+            transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
         } else {
             // Set collision layer to Pickup
             gameObject.layer = 13;

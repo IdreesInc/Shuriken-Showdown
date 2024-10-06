@@ -19,6 +19,7 @@ public class GameLogic : UdonSharpBehaviour {
     public VRC.SDK3.Components.VRCObjectPool powerUpPool;
     // Used for iterating over the shurikens
     public GameObject shurikensParent;
+    public GameObject playerCollidersParent;
     public GameObject messageUI;
 
     private int[] playerScores = new int[16];
@@ -46,7 +47,27 @@ public class GameLogic : UdonSharpBehaviour {
     public static GameLogic GetLocalGameLogic() {
         return GameObject.Find("Logic").GetComponent<GameLogic>();
     }
-    
+
+    public PlayerCollider GetLocalPlayerCollider(int playerId) {
+        foreach (Transform child in shurikensParent.transform) {
+            if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null && child.gameObject.GetComponent<Shuriken>().GetPlayerId() == playerId && Networking.IsOwner(child.gameObject)) {
+                return child.gameObject.GetComponent<PlayerCollider>();
+            }
+        }
+        LogError("Could not find player collider for local player " + playerId);
+        return null;
+    }
+
+    public int GetAlivePlayerCount() {
+        int count = 0;
+        foreach (Transform child in playerCollidersParent.transform) {
+            if (child.gameObject.activeSelf && child.gameObject.GetComponent<PlayerCollider>() != null && child.gameObject.GetComponent<PlayerCollider>().IsAlive()) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     void Start() {
         Log("GameLogic initializing...");
         if (!Networking.IsOwner(gameObject)) {
@@ -66,6 +87,7 @@ public class GameLogic : UdonSharpBehaviour {
     }
 
     void Update() {
+        // Log("Alive players: " + GetAlivePlayerCount());
         foreach (Transform child in shurikensParent.transform) {
             if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null) {
                 Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
@@ -111,7 +133,14 @@ public class GameLogic : UdonSharpBehaviour {
     }
 
     public void OnHit(string senderName, string verb) {
-        ShowMessage((verb + " by").ToUpper(), senderName, null, null, true, 1500);
+        int numRemaining = GetAlivePlayerCount();
+        string remaining = "Players Remaining";
+        if (numRemaining < 1) {
+            remaining = "No " + remaining;
+        } else {
+            remaining = numRemaining + " " + remaining;
+        }
+        ShowMessage((verb + " by").ToUpper(), senderName, remaining, null, true, 1500);
     }
 
     private void ShowMessage(string topText = "", string highlightText = "", string middleText = "", string bottomText = "", bool backgroundEnabled = true, float duration = 2000) {
@@ -131,22 +160,22 @@ public class GameLogic : UdonSharpBehaviour {
         GameObject bottomTextUI = messageUI.transform.Find("Bottom Text").gameObject;
 
         if (background == null) {
-            LogError("Game Logic: Background is null");
+            LogError("Background is null");
             return;
         } else if (topTextUI == null) {
-            LogError("Game Logic: Top Text is null");
+            LogError("Top Text is null");
             return;
         } else if (highlight == null) {
-            LogError("Game Logic: Highlight is null");
+            LogError("Highlight is null");
             return;
         } else if (highlightTextUI == null) {
-            LogError("Game Logic: Highlight Text is null");
+            LogError("Highlight Text is null");
             return;
         } else if (middleTextUI == null) {
-            LogError("Game Logic: Middle Text is null");
+            LogError("Middle Text is null");
             return;
         } else if (bottomTextUI == null) {
-            LogError("Game Logic: Bottom Text is null");
+            LogError("Bottom Text is null");
             return;
         }
 
@@ -214,7 +243,7 @@ public class GameLogic : UdonSharpBehaviour {
         }
 
         if (player == null || !Utilities.IsValid(player)) {
-            LogError("Game Logic: Somehow, the player is null in OnPlayerJoined");
+            LogError("Somehow, the player is null in OnPlayerJoined");
             return;
         }
 
@@ -225,23 +254,23 @@ public class GameLogic : UdonSharpBehaviour {
         // player.SetJumpImpulse(5);
 
         if (playerColliderPool == null) {
-            LogError("Game Logic: Player Collider Pool is not set");
+            LogError("Player Collider Pool is not set");
             return;
         } else if (player == null) {
-            LogError("Game Logic: Interacting player is not set");
+            LogError("Interacting player is not set");
             return;
         } else if (shurikenPool == null) {
-            LogError("Game Logic: Shuriken Pool is not set");
+            LogError("Shuriken Pool is not set");
             return;
         } else if (powerUpPool == null) {
-            LogError("Game Logic: Power Up Pool is not set");
+            LogError("Power Up Pool is not set");
             return;
         }
 
         // Assign a shuriken to the player
         GameObject shuriken = shurikenPool.TryToSpawn();
         if (shuriken == null) {
-            LogError("Game Logic: No available shurikens");
+            LogError("No available shurikens");
             return;
         }
         shuriken.SetActive(true);
@@ -253,7 +282,7 @@ public class GameLogic : UdonSharpBehaviour {
         // Assign a player collider to the player
         GameObject playerCollider = playerColliderPool.TryToSpawn();
         if (playerCollider == null) {
-            LogError("Game Logic: No available player colliders");
+            LogError("No available player colliders");
             return;
         }
         playerCollider.SetActive(true);

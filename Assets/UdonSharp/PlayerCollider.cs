@@ -8,6 +8,7 @@ using Miner28.UdonUtils.Network;
 public class PlayerCollider : NetworkInterface {
     private readonly Vector3 offset = new Vector3(0, 1, 0);
     [UdonSynced] private int playerId = -1;
+    [UdonSynced] private bool isAlive = true;
 
     public VRCPlayerApi Player {
         get {
@@ -46,6 +47,7 @@ public class PlayerCollider : NetworkInterface {
 
     public override void OnDeserialization() {
         // Log("Deserializing collider with owner id " + playerId);
+        // Log("Is alive: " + isAlive);
         UpdateOwnership();
     }
 
@@ -60,19 +62,26 @@ public class PlayerCollider : NetworkInterface {
         return playerId;
     }
 
+    public bool IsAlive() {
+        return isAlive;
+    }
+
     [NetworkedMethod]
     public void OnHit(int senderId) {
-        if (Networking.LocalPlayer.playerId != playerId) {
-            return;
-        }
         VRCPlayerApi sender = VRCPlayerApi.GetPlayerById(senderId);
         if (sender == null) {
             LogError("Player hit by unknown player with id: " + senderId + ", ignoring");
             return;
         }
+        isAlive = false;
+        if (!Networking.IsOwner(gameObject)) {
+            Log("Not the owner, skipping collision");
+            return;
+        }
         string senderName = sender.displayName;
         Log("Player hit by " + senderName);
         GameLogic.GetLocalGameLogic().OnHit(senderName, "sliced");
+
     }
 
     void Update() {
