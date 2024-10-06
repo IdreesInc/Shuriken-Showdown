@@ -58,14 +58,18 @@ public class PowerUp : NetworkInterface {
         transform.position = new Vector3(transform.position.x, transform.position.y + yOffset, transform.position.z);
     }
 
-    private void OnCollisionEnter(Collision collision) {
+    private void OnTriggerEnter(Collider collider) {
+        if (!Utilities.IsValid(collider)) {
+            return;
+        }
+        Log("Power up has triggered with " + collider.gameObject.name);
         if (!Networking.IsOwner(gameObject)) {
             Log("Not the owner, skipping collision");
             return;
         }
-        Log("Power up has collided with " + collision.gameObject.name);
-        if (collision.gameObject.GetComponent<Shuriken>() != null) {
-            Shuriken shuriken = collision.gameObject.GetComponent<Shuriken>();
+        Log("Power up has collided with " + collider.gameObject.name);
+        if (collider.gameObject.GetComponent<Shuriken>() != null) {
+            Shuriken shuriken = collider.gameObject.GetComponent<Shuriken>();
             Log("Power up has collided with a shuriken owned by " + shuriken.GetPlayerId());
             shuriken.SendMethodNetworked(nameof(Shuriken.ActivatePowerUp), SyncTarget.All, powerUpType);
         }
