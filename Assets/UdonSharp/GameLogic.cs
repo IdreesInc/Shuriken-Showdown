@@ -21,6 +21,7 @@ public class GameLogic : UdonSharpBehaviour {
     public GameObject shurikensParent;
     public GameObject playerCollidersParent;
     public GameObject messageUI;
+    public ScoreBoard scoreBoard;
 
     private int[] playerScores = new int[16];
 
@@ -96,6 +97,7 @@ public class GameLogic : UdonSharpBehaviour {
                 }
             }
         }
+        scoreBoard.updateScores(playerScores);
         UpdateUI();
         if (!Networking.IsOwner(gameObject)) {
             return;
@@ -128,11 +130,12 @@ public class GameLogic : UdonSharpBehaviour {
             PowerUp.GetPowerUpSubtitle(powerUpType),
             currentlyEquipped,
             false,
+            Shared.Colors()[powerUpType % Shared.Colors().Length],
             1200
         );
     }
 
-    public void OnHit(string senderName, string verb) {
+    public void OnHit(int senderId, string senderName, string verb) {
         int numRemaining = GetAlivePlayerCount();
         string remaining = "Players Remaining";
         if (numRemaining < 1) {
@@ -140,18 +143,37 @@ public class GameLogic : UdonSharpBehaviour {
         } else {
             remaining = numRemaining + " " + remaining;
         }
-        ShowMessage((verb + " by").ToUpper(), senderName, remaining, null, true, 1500);
+        ShowMessage((verb + " by").ToUpper(),
+            senderName,
+            remaining,
+            null,
+            true,
+            Shared.Colors()[senderId % Shared.Colors().Length],
+            1500);
     }
+    private void ShowMessage(
+        string topText = "", 
+        string highlightText = "", 
+        string middleText = "", 
+        string bottomText = "", 
+        bool backgroundEnabled = true, 
+        Color highlightColor = new Color(),
+        float duration = 2000) {
 
-    private void ShowMessage(string topText = "", string highlightText = "", string middleText = "", string bottomText = "", bool backgroundEnabled = true, float duration = 2000) {
-        SetMessage(topText, highlightText, middleText, bottomText, backgroundEnabled);
+        SetMessage(topText, highlightText, middleText, bottomText, backgroundEnabled, highlightColor);
         timeToShowUI = Time.time * 1000 + UI_FADE_TIME;
         timeToHideUI = timeToShowUI + duration + UI_FADE_TIME;
         visibleUI = UIType.MESSAGE_UI;
         UpdateUI();
     }
+    private void SetMessage(
+        string topText = "", 
+        string highlightText = "", 
+        string middleText = "", 
+        string bottomText = "", 
+        bool backgroundEnabled = true, 
+        Color highlightColor = new Color()) {
 
-    private void SetMessage(string topText = "", string highlightText = "", string middleText = "", string bottomText = "", bool backgroundEnabled = true) {
         GameObject background = messageUI.transform.Find("Background").gameObject;
         GameObject topTextUI = messageUI.transform.Find("Top Text").gameObject;
         GameObject highlight = messageUI.transform.Find("Highlight").gameObject;
@@ -184,6 +206,7 @@ public class GameLogic : UdonSharpBehaviour {
         highlightTextUI.GetComponent<TextMeshProUGUI>().text = highlightText;
         middleTextUI.GetComponent<TextMeshProUGUI>().text = middleText;
         bottomTextUI.GetComponent<TextMeshProUGUI>().text = bottomText;
+        highlight.GetComponent<UnityEngine.UI.Image>().color = highlightColor;
     }
 
     private void UpdateUI() {

@@ -80,7 +80,7 @@ public class PlayerCollider : NetworkInterface {
         }
         string senderName = sender.displayName;
         Log("Player hit by " + senderName);
-        GameLogic.GetLocalGameLogic().OnHit(senderName, "sliced");
+        GameLogic.GetLocalGameLogic().OnHit(senderId, senderName, "sliced");
 
     }
 

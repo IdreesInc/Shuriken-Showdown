@@ -13,7 +13,6 @@ public class Shuriken : NetworkInterface {
     private const float MAX_DISTANCE = 75;
     private const float THROW_FORCE = 5;
     private readonly Vector3 GRAVITY_FORCE = new Vector3(0, -9.81f / 3, 0);
-    private readonly Color[] COLORS = { Color.gray, Color.red, Color.blue, Color.green, Color.yellow, Color.cyan, Color.magenta };
 
     [UdonSynced] private int playerId = -1;
     [UdonSynced] private bool isHeld = false;
@@ -117,7 +116,7 @@ public class Shuriken : NetworkInterface {
             Networking.SetOwner(Networking.LocalPlayer, gameObject);
             ReturnToPlayer();
         }
-        GetComponent<Renderer>().material.color = COLORS[playerId];
+        GetComponent<Renderer>().material.color = Shared.ShurikenColors()[playerId % Shared.Colors().Length];
     }
 
     public bool HasPlayer() {
