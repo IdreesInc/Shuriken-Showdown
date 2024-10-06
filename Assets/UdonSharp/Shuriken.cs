@@ -246,9 +246,24 @@ public class Shuriken : NetworkInterface {
             return;
         }
 
-        if (collision.gameObject.GetComponent<PlayerCollider>() != null) {
-            // Collided with a player
-            PlayerCollider playerCollider = collision.gameObject.GetComponent<PlayerCollider>();
+        if (collision.gameObject.GetComponent<Shuriken>() != null) {
+            // Collided with another shuriken
+            Log("Shuriken has collided with another shuriken");
+            // Return the shuriken to the owner
+            ReturnToPlayer();
+        } else {
+            Log("Shuriken has collided with " + collision.gameObject.name);
+        }
+    }
+
+    private void OnTriggerEnter(Collider collider) {
+        if (!Networking.IsOwner(gameObject)) {
+            Log("Not the owner, skipping collision");
+            return;
+        }
+        
+        if (collider.gameObject.GetComponent<PlayerCollider>() != null) {
+            PlayerCollider playerCollider = collider.gameObject.GetComponent<PlayerCollider>();
             if (!HasPlayer() || playerCollider.GetPlayer() != playerId) {
                 Log(playerId + "'s shuriken has hit " + playerCollider.GetPlayer());
                 // Notify the player
@@ -262,13 +277,8 @@ public class Shuriken : NetworkInterface {
                 // Increase the score
                 score++;
             }
-        } else if (collision.gameObject.GetComponent<Shuriken>() != null) {
-            // Collided with another shuriken
-            Log("Shuriken has collided with another shuriken");
-            // Return the shuriken to the owner
-            ReturnToPlayer();
         } else {
-            Log("Shuriken has collided with " + collision.gameObject.name);
+            Log("Shuriken has triggered with " + collider.gameObject.name);
         }
     }
 }
