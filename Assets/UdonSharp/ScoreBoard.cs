@@ -1,4 +1,5 @@
 ﻿
+using TMPro;
 using UdonSharp;
 using UnityEngine;
 using UnityEngine.UI;
@@ -29,18 +30,21 @@ public class ScoreBoard : UdonSharpBehaviour {
         }
     }
 
-    public void updateScores(int[] scores) {
+    public void updateScores(int[] scores, string[] names) {
         for (int i = 0; i < scores.Length; i++) {
-            updateScore(i, scores[i]);
+            updateScore(i, names[i], scores[i]);
         }
     }
 
-    private void updateScore(int playerId, int score) {
+    private void updateScore(int playerId, string name, int score) {
         if (playerId < 1 || playerId > 8) {
             return;
         }
         // Get the scoreLine for the player
         GameObject scoreLine = scoreLines[playerId - 1];
+        GameObject scoreName = scoreLine.transform.Find("Score Name").gameObject;
+        // Get the Text component of the scoreName
+        scoreName.GetComponent<TextMeshProUGUI>().text = name;
         for (int i = 0; i < 10; i++) {
             // Get child of scoreLine with name "Score Dot " + i
             GameObject scoreDot = scoreLine.transform.Find("Score Dot " + i).gameObject;

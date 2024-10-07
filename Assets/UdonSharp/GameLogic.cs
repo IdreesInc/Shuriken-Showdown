@@ -23,7 +23,8 @@ public class GameLogic : UdonSharpBehaviour {
     public GameObject messageUI;
     public ScoreBoard scoreBoard;
 
-    private int[] playerScores = new int[16];
+    private string[] playerNames = new string[256]; 
+    private int[] playerScores = new int[256];
 
     private UIType visibleUI = UIType.NONE;
     private const float UI_FADE_TIME = 200;
@@ -94,10 +95,11 @@ public class GameLogic : UdonSharpBehaviour {
                 Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
                 if (shuriken.GetPlayerId() != -1) {
                     playerScores[shuriken.GetPlayerId()] = shuriken.GetScore();
+                    playerNames[shuriken.GetPlayerId()] = Networking.GetOwner(child.gameObject).displayName;
                 }
             }
         }
-        scoreBoard.updateScores(playerScores);
+        scoreBoard.updateScores(playerScores, playerNames);
         UpdateUI();
         if (!Networking.IsOwner(gameObject)) {
             return;
