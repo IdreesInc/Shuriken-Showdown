@@ -23,9 +23,22 @@ public class GameLogic : UdonSharpBehaviour {
     public GameObject messageUI;
     public ScoreBoard scoreBoard;
 
-    private string[] playerNames = new string[256]; 
-    private int[] playerScores = new int[256];
+    /// <summary>
+    /// The current number of players
+    /// </summary>
+    [UdonSynced] private int numberOfPlayers = 0;
 
+    /// <summary>
+    /// Player names indexed by player number (not player ID)
+    /// </summary>
+    private readonly string[] playerNames = new string[Shared.MaxPlayers() + 1]; 
+    /// <summary>
+    /// Player scores indexed by player number (not player ID)
+    /// </summary>
+    private readonly int[] playerScores = new int[Shared.MaxPlayers() + 1];
+    /// <summary>
+    /// The currently visible UI
+    /// </summary>
     private UIType visibleUI = UIType.NONE;
     private const float UI_FADE_TIME = 200;
     /// <summary>
@@ -93,13 +106,13 @@ public class GameLogic : UdonSharpBehaviour {
         foreach (Transform child in shurikensParent.transform) {
             if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null) {
                 Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
-                if (shuriken.GetPlayerId() != -1) {
-                    playerScores[shuriken.GetPlayerId()] = shuriken.GetScore();
-                    playerNames[shuriken.GetPlayerId()] = Networking.GetOwner(child.gameObject).displayName;
+                if (shuriken.GetPlayerNumber() != -1) {
+                    playerScores[shuriken.GetPlayerNumber()] = shuriken.GetScore();
+                    playerNames[shuriken.GetPlayerNumber()] = Networking.GetOwner(child.gameObject).displayName;
                 }
             }
         }
-        scoreBoard.updateScores(playerScores, playerNames);
+        scoreBoard.UpdateScores(playerScores, playerNames);
         UpdateUI();
         if (!Networking.IsOwner(gameObject)) {
             return;
@@ -292,6 +305,13 @@ public class GameLogic : UdonSharpBehaviour {
             return;
         }
 
+        if (numberOfPlayers == Shared.MaxPlayers()) {
+            LogError("Max players reached, not adding components for " + player.playerId);
+            return;
+        }
+
+        numberOfPlayers++;
+
         // Assign a shuriken to the player
         GameObject shuriken = shurikenPool.TryToSpawn();
         if (shuriken == null) {
@@ -301,6 +321,7 @@ public class GameLogic : UdonSharpBehaviour {
         shuriken.SetActive(true);
         Shuriken shurikenComponent = shuriken.GetComponent<Shuriken>();
         shurikenComponent.SetPlayerId(player.playerId);
+        shurikenComponent.SetPlayerNumber(numberOfPlayers);
         shurikenComponent.ReturnToPlayer();
 
 

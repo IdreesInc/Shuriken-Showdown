@@ -15,6 +15,7 @@ public class Shuriken : NetworkInterface {
     private readonly Vector3 GRAVITY_FORCE = new Vector3(0, -9.81f / 3, 0);
 
     [UdonSynced] private int playerId = -1;
+    [UdonSynced] private int playerNumber = -1;
     [UdonSynced] private bool isHeld = false;
     [UdonSynced] private bool hasBeenThrown = false;
 
@@ -39,6 +40,12 @@ public class Shuriken : NetworkInterface {
     }
 
     void Start() {
+        if (playerId == -1) {
+            LogError("playerId is not set");
+        }
+        if (playerNumber == -1) {
+            LogError("playerNumber is not set");
+        }
         Log("Shuriken has been spawned.");
     }
 
@@ -48,8 +55,17 @@ public class Shuriken : NetworkInterface {
         UpdateOwnership();
     }
 
+    public void SetPlayerNumber(int playerNumber) {
+        Log("Setting player number to " + playerNumber);
+        this.playerNumber = playerNumber;
+    }
+
     public int GetPlayerId() {
         return playerId;
+    }
+
+    public int GetPlayerNumber() {
+        return playerNumber;
     }
 
     public int GetScore() {

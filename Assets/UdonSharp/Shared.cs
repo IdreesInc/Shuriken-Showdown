@@ -50,4 +50,8 @@ public static class Shared {
         };
         return colors;
     }
+
+    public static int MaxPlayers() {
+        return 8;
+    }
 }
