@@ -5,6 +5,8 @@ using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
 using VRC.Udon;
+using VRC.Udon.Common.Interfaces;
+using Miner28.UdonUtils.Network;
 
 enum UIType {
     NONE,
@@ -115,14 +117,27 @@ public class GameLogic : UdonSharpBehaviour {
         scoreBoard.UpdateScores(playerScores, playerNames);
         UpdateUI();
 
-        /** Logic for game owner **/
+        /** Logic for instance owner **/
         if (!Networking.IsOwner(gameObject)) {
             return;
         }
         int numAlive = GetAlivePlayerCount();
         if (numAlive <= 1) {
             // Round over
-
+            // Send an event to each shuriken
+            foreach (Transform child in shurikensParent.transform) {
+                if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null) {
+                    Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
+                    shuriken.SendMethodNetworked("OnRoundOver", SyncTarget.All);
+                }
+            }
+            // Send an event to each player collider
+            foreach (Transform child in playerCollidersParent.transform) {
+                if (child.gameObject.activeSelf && child.gameObject.GetComponent<PlayerCollider>() != null) {
+                    PlayerCollider playerCollider = child.gameObject.GetComponent<PlayerCollider>();
+                    playerCollider.SendMethodNetworked("OnRoundOver", SyncTarget.All);
+                }
+            }
         }
     }
 
@@ -146,7 +161,7 @@ public class GameLogic : UdonSharpBehaviour {
             }
         }
 
-        ShowMessage(
+        ShowMessageUI(
             null,
             PowerUp.GetPowerUpName(powerUpType),
             PowerUp.GetPowerUpSubtitle(powerUpType),
@@ -157,15 +172,19 @@ public class GameLogic : UdonSharpBehaviour {
         );
     }
 
-    public void OnHit(int playerNumber, string senderName, string verb) {
+    public void UpdateUIOnHit(int playerNumber, string senderName, string verb) {
         int numRemaining = GetAlivePlayerCount();
+        if (numRemaining <= 1) {
+            // Round is over, ignore this UI to wait for round update from instance owner
+            return;
+        }
         string remaining = "Players Remaining";
         if (numRemaining < 1) {
             remaining = "No " + remaining;
         } else {
             remaining = numRemaining + " " + remaining;
         }
-        ShowMessage((verb + " by").ToUpper(),
+        ShowMessageUI((verb + " by").ToUpper(),
             senderName,
             remaining,
             null,
@@ -174,7 +193,11 @@ public class GameLogic : UdonSharpBehaviour {
             1500);
     }
 
-    private void ShowMessage(
+    public void UpdateUIOnRoundOver() {
+        ShowScoreUI(3000);
+    }
+
+    private void ShowMessageUI(
         string topText = "", 
         string highlightText = "", 
         string middleText = "", 
@@ -183,14 +206,21 @@ public class GameLogic : UdonSharpBehaviour {
         Color highlightColor = new Color(),
         float duration = 2000) {
 
-        SetMessage(topText, highlightText, middleText, bottomText, backgroundEnabled, highlightColor);
+        SetMessageUI(topText, highlightText, middleText, bottomText, backgroundEnabled, highlightColor);
         timeToShowUI = Time.time * 1000 + UI_FADE_TIME;
         timeToHideUI = timeToShowUI + duration + UI_FADE_TIME;
         visibleUI = UIType.MESSAGE_UI;
         UpdateUI();
     }
 
-    private void SetMessage(
+    private void ShowScoreUI(float duration = 2000) {
+        timeToShowUI = Time.time * 1000 + UI_FADE_TIME;
+        timeToHideUI = timeToShowUI + duration + UI_FADE_TIME;
+        visibleUI = UIType.SCORE_UI;
+        UpdateUI();
+    }
+
+    private void SetMessageUI(
         string topText = "", 
         string highlightText = "", 
         string middleText = "", 
@@ -242,6 +272,7 @@ public class GameLogic : UdonSharpBehaviour {
         if (timeToShowUI != 0 && timeInMs >= timeToShowUI - UI_FADE_TIME) {
             if (timeInMs >= timeToShowUI) {
                 timeToShowUI = 0;
+                alpha = 1;
             } else {
                 alpha = 1 - (timeToShowUI - timeInMs) / UI_FADE_TIME;
             }
@@ -252,6 +283,7 @@ public class GameLogic : UdonSharpBehaviour {
             if (timeInMs >= timeToHideUI) {
                 visibleUI = UIType.NONE;
                 timeToHideUI = 0;
+                alpha = 0;
             } else {
                 alpha = (timeToHideUI - timeInMs) / UI_FADE_TIME;
             }
@@ -260,6 +292,9 @@ public class GameLogic : UdonSharpBehaviour {
         if (visibleUI == UIType.MESSAGE_UI) {
             messageUI.SetActive(true);
             visibleUIObject = messageUI;
+        } else if (visibleUI == UIType.SCORE_UI) {
+            messageUI.SetActive(true);
+            visibleUIObject = scoreBoard.gameObject;
         } else {
             messageUI.SetActive(false);
         }

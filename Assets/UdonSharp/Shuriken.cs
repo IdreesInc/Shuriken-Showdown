@@ -94,6 +94,18 @@ public class Shuriken : NetworkInterface {
         AddPowerUp(type);
     }
 
+    /// <summary>
+    /// Triggered over networking by GameLogic when the round is over
+    /// </summary>
+    [NetworkedMethod]
+    public void OnRoundOver() {
+        ResetShurikenBetweenRounds();
+    }
+
+    private void ResetShurikenBetweenRounds() {
+        ReturnToPlayer();
+    }
+
     private void AddPowerUp(int type) {
         Log("Adding power up: " + PowerUp.GetPowerUpName(type));
         ReturnToPlayer();

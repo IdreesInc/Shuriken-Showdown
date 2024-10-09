@@ -84,9 +84,20 @@ public class PlayerCollider : NetworkInterface {
         }
         Log("Player hit by " + playerName);
         // Notify local game logic to update UI
-        GameLogic.GetLocalGameLogic().OnHit(playerNumber, playerName, "sliced");
+        GameLogic.GetLocalGameLogic().UpdateUIOnHit(playerNumber, playerName, "sliced");
         // Teleport player to death marker
         Player.TeleportTo(GetDeathMarkerLocation(), Player.GetRotation());
+    }
+
+    [NetworkedMethod]
+    public void OnRoundOver() {
+        isAlive = true;
+        if (!Networking.IsOwner(gameObject)) {
+            return;
+        }
+        Log("Round over, resetting player collider");
+        // Notify local game logic to update UI
+        GameLogic.GetLocalGameLogic().UpdateUIOnRoundOver();
     }
 
     void Update() {
