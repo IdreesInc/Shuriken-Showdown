@@ -62,7 +62,7 @@ public class GameLogic : UdonSharpBehaviour {
     }
 
     public static GameLogic GetLocalGameLogic() {
-        return GameObject.Find("Logic").GetComponent<GameLogic>();
+        return GameObject.Find("Game Logic").GetComponent<GameLogic>();
     }
 
     public PlayerCollider GetLocalPlayerCollider(int playerId) {
@@ -122,7 +122,7 @@ public class GameLogic : UdonSharpBehaviour {
             return;
         }
         int numAlive = GetAlivePlayerCount();
-        if (numAlive <= 1) {
+        if (numAlive <= 1 && numberOfPlayers > 1) {
             // Round over
             // Send an event to each shuriken
             foreach (Transform child in shurikensParent.transform) {
@@ -293,10 +293,11 @@ public class GameLogic : UdonSharpBehaviour {
             messageUI.SetActive(true);
             visibleUIObject = messageUI;
         } else if (visibleUI == UIType.SCORE_UI) {
-            messageUI.SetActive(true);
+            scoreBoard.gameObject.SetActive(true);
             visibleUIObject = scoreBoard.gameObject;
         } else {
             messageUI.SetActive(false);
+            scoreBoard.gameObject.SetActive(false);
         }
 
         if (visibleUIObject != null) {
