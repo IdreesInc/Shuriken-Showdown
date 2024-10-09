@@ -33,7 +33,7 @@ public class ScoreBoard : UdonSharpBehaviour {
     public void UpdateScores(int[] scores, string[] names) {
         // Start iterating at one since there is no player 0
         for (int i = 1; i < scores.Length; i++) {
-            Log("Updating score for player " + i + " to " + scores[i]);
+            // Log("Updating score for player " + i + " to " + scores[i]);
             UpdateScore(i, names[i], scores[i]);
         }
     }

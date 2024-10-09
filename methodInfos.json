@@ -1,86 +1,4 @@
 {
-	"ScoreBoard.Log(string)": {
-		"methodName": "__0_Log",
-		"parameters": [
-			"__0_message__param"
-		]
-	},
-	"ScoreBoard.LogError(string)": {
-		"methodName": "__0_LogError",
-		"parameters": [
-			"__1_message__param"
-		]
-	},
-	"ScoreBoard.Start()": {
-		"methodName": "_start",
-		"parameters": null
-	},
-	"ScoreBoard.UpdateScores(int[], string[])": {
-		"methodName": "__0_UpdateScores",
-		"parameters": [
-			"__0_scores__param",
-			"__0_names__param"
-		]
-	},
-	"ScoreBoard.UpdateScore(int, string, int)": {
-		"methodName": "__0_UpdateScore",
-		"parameters": [
-			"__0_playerNumber__param",
-			"__0_name__param",
-			"__0_score__param"
-		]
-	},
-	"UdonSharp.Examples.Utilities.GlobalToggleObject.Start()": {
-		"methodName": "_start",
-		"parameters": null
-	},
-	"UdonSharp.Examples.Utilities.GlobalToggleObject.OnDeserialization()": {
-		"methodName": "_onDeserialization",
-		"parameters": null
-	},
-	"UdonSharp.Examples.Utilities.GlobalToggleObject.Interact()": {
-		"methodName": "_interact",
-		"parameters": null
-	},
-	"UdonSharp.Examples.Utilities.MasterToggleObject.Start()": {
-		"methodName": "_start",
-		"parameters": null
-	},
-	"UdonSharp.Examples.Utilities.MasterToggleObject.OnOwnershipRequest(VRC.SDKBase.VRCPlayerApi, VRC.SDKBase.VRCPlayerApi)": {
-		"methodName": "_onOwnershipRequest",
-		"parameters": [
-			"onOwnershipRequestRequester",
-			"onOwnershipRequestNewOwner"
-		]
-	},
-	"UdonSharp.Examples.Utilities.MasterToggleObject.OnDeserialization()": {
-		"methodName": "_onDeserialization",
-		"parameters": null
-	},
-	"UdonSharp.Examples.Utilities.MasterToggleObject.Interact()": {
-		"methodName": "_interact",
-		"parameters": null
-	},
-	"UdonSharp.Examples.Utilities.InteractToggle.Interact()": {
-		"methodName": "_interact",
-		"parameters": null
-	},
-	"UdonSharp.Examples.Utilities.WorldAudioSettings.OnPlayerJoined(VRC.SDKBase.VRCPlayerApi)": {
-		"methodName": "_onPlayerJoined",
-		"parameters": [
-			"onPlayerJoinedPlayer"
-		]
-	},
-	"ButtonTest.Interact()": {
-		"methodName": "_interact",
-		"parameters": null
-	},
-	"InnerCollider.OnCollisionEnter(UnityEngine.Collision)": {
-		"methodName": "_onCollisionEnter",
-		"parameters": [
-			"onCollisionEnterOther"
-		]
-	},
 	"Miner28.UdonUtils.Network.NetworkInterface.SendMethodNetworked(string, SyncTarget, params VRC.SDK3.Data.DataToken[])": {
 		"methodName": "__0_SendMethodNetworked",
 		"parameters": [
@@ -111,6 +29,10 @@
 	},
 	"Miner28.UdonUtils.Network.NetworkInterface.OnCallerAssigned()": {
 		"methodName": "OnCallerAssigned",
+		"parameters": null
+	},
+	"UdonSharp.Examples.Utilities.InteractToggle.Interact()": {
+		"methodName": "_interact",
 		"parameters": null
 	},
 	"Miner28.UdonUtils.Network.NetworkManager.OnEnable()": {
@@ -171,6 +93,24 @@
 		"methodName": "OnCallerAssigned",
 		"parameters": null
 	},
+	"ButtonTest.Interact()": {
+		"methodName": "_interact",
+		"parameters": null
+	},
+	"InnerCollider.OnCollisionEnter(UnityEngine.Collision)": {
+		"methodName": "_onCollisionEnter",
+		"parameters": [
+			"onCollisionEnterOther"
+		]
+	},
+	"UdonSharp.Examples.Utilities.BoneFollower.Start()": {
+		"methodName": "_start",
+		"parameters": null
+	},
+	"UdonSharp.Examples.Utilities.BoneFollower.Update()": {
+		"methodName": "_update",
+		"parameters": null
+	},
 	"GameLogic.Log(string)": {
 		"methodName": "__0_Log",
 		"parameters": [
@@ -219,7 +159,7 @@
 	"GameLogic.OnHit(int, string, string)": {
 		"methodName": "__0_OnHit",
 		"parameters": [
-			"__0_senderId__param",
+			"__0_playerNumber__param",
 			"__0_senderName__param",
 			"__0_verb__param"
 		]
@@ -257,9 +197,11 @@
 			"onPlayerJoinedPlayer"
 		]
 	},
-	"UdonSharp.Examples.Utilities.PlayerModSetter.Start()": {
-		"methodName": "_start",
-		"parameters": null
+	"UdonSharp.Examples.Utilities.WorldAudioSettings.OnPlayerJoined(VRC.SDKBase.VRCPlayerApi)": {
+		"methodName": "_onPlayerJoined",
+		"parameters": [
+			"onPlayerJoinedPlayer"
+		]
 	},
 	"Miner28.UdonUtils.Network.NetworkedEventCaller.SendData(uint, uint, uint, VRC.SDK3.Data.DataToken[])": {
 		"methodName": "__0_SendData",
@@ -268,12 +210,6 @@
 			"__0_scriptTarget__param",
 			"__0_target__param",
 			"__0_data__param"
-		]
-	},
-	"Miner28.UdonUtils.Network.NetworkedEventCaller.ReceiveData(int)": {
-		"methodName": "__0_ReceiveData",
-		"parameters": [
-			"__0_startIndex__param"
 		]
 	},
 	"Miner28.UdonUtils.Network.NetworkedEventCaller.SetupCaller()": {
@@ -353,24 +289,41 @@
 			"__2_log__param"
 		]
 	},
-	"UdonSharp.Examples.Utilities.TrackingDataFollower.Start()": {
+	"Miner28.UdonUtils.Network.NetworkedEventCaller.ReceiveData(int)": {
+		"methodName": "__0_ReceiveData",
+		"parameters": [
+			"__0_startIndex__param"
+		]
+	},
+	"UdonSharp.Examples.Utilities.PlayerModSetter.Start()": {
 		"methodName": "_start",
 		"parameters": null
 	},
-	"UdonSharp.Examples.Utilities.TrackingDataFollower.LateUpdate()": {
-		"methodName": "_lateUpdate",
-		"parameters": null
-	},
-	"UdonSharp.Examples.Utilities.BoneFollower.Start()": {
+	"UdonSharp.Examples.Utilities.MasterToggleObject.Start()": {
 		"methodName": "_start",
 		"parameters": null
 	},
-	"UdonSharp.Examples.Utilities.BoneFollower.Update()": {
-		"methodName": "_update",
+	"UdonSharp.Examples.Utilities.MasterToggleObject.OnOwnershipRequest(VRC.SDKBase.VRCPlayerApi, VRC.SDKBase.VRCPlayerApi)": {
+		"methodName": "_onOwnershipRequest",
+		"parameters": [
+			"onOwnershipRequestRequester",
+			"onOwnershipRequestNewOwner"
+		]
+	},
+	"UdonSharp.Examples.Utilities.MasterToggleObject.OnDeserialization()": {
+		"methodName": "_onDeserialization",
+		"parameters": null
+	},
+	"UdonSharp.Examples.Utilities.MasterToggleObject.Interact()": {
+		"methodName": "_interact",
 		"parameters": null
 	},
 	"Shuriken.Player.get": {
 		"methodName": "get_Player",
+		"parameters": null
+	},
+	"Shuriken.GetPlayerName()": {
+		"methodName": "GetPlayerName",
 		"parameters": null
 	},
 	"Shuriken.Log(string)": {
@@ -577,14 +530,70 @@
 		"methodName": "IsAlive",
 		"parameters": null
 	},
-	"PlayerCollider.OnHit(int)": {
+	"PlayerCollider.GetDeathMarkerLocation()": {
+		"methodName": "GetDeathMarkerLocation",
+		"parameters": null
+	},
+	"PlayerCollider.OnHit(string, int)": {
 		"methodName": "__0_OnHit",
 		"parameters": [
-			"__0_senderId__param"
+			"__0_playerName__param",
+			"__0_playerNumber__param"
 		]
 	},
 	"PlayerCollider.Update()": {
 		"methodName": "_update",
+		"parameters": null
+	},
+	"ScoreBoard.Log(string)": {
+		"methodName": "__0_Log",
+		"parameters": [
+			"__0_message__param"
+		]
+	},
+	"ScoreBoard.LogError(string)": {
+		"methodName": "__0_LogError",
+		"parameters": [
+			"__1_message__param"
+		]
+	},
+	"ScoreBoard.Start()": {
+		"methodName": "_start",
+		"parameters": null
+	},
+	"ScoreBoard.UpdateScores(int[], string[])": {
+		"methodName": "__0_UpdateScores",
+		"parameters": [
+			"__0_scores__param",
+			"__0_names__param"
+		]
+	},
+	"ScoreBoard.UpdateScore(int, string, int)": {
+		"methodName": "__0_UpdateScore",
+		"parameters": [
+			"__0_playerNumber__param",
+			"__0_name__param",
+			"__0_score__param"
+		]
+	},
+	"UdonSharp.Examples.Utilities.TrackingDataFollower.Start()": {
+		"methodName": "_start",
+		"parameters": null
+	},
+	"UdonSharp.Examples.Utilities.TrackingDataFollower.LateUpdate()": {
+		"methodName": "_lateUpdate",
+		"parameters": null
+	},
+	"UdonSharp.Examples.Utilities.GlobalToggleObject.Start()": {
+		"methodName": "_start",
+		"parameters": null
+	},
+	"UdonSharp.Examples.Utilities.GlobalToggleObject.OnDeserialization()": {
+		"methodName": "_onDeserialization",
+		"parameters": null
+	},
+	"UdonSharp.Examples.Utilities.GlobalToggleObject.Interact()": {
+		"methodName": "_interact",
 		"parameters": null
 	}
 }

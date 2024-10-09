@@ -102,7 +102,7 @@ public class GameLogic : UdonSharpBehaviour {
     }
 
     void Update() {
-        // Log("Alive players: " + GetAlivePlayerCount());
+        /** Logic for all players **/
         foreach (Transform child in shurikensParent.transform) {
             if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null) {
                 Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
@@ -114,8 +114,15 @@ public class GameLogic : UdonSharpBehaviour {
         }
         scoreBoard.UpdateScores(playerScores, playerNames);
         UpdateUI();
+
+        /** Logic for game owner **/
         if (!Networking.IsOwner(gameObject)) {
             return;
+        }
+        int numAlive = GetAlivePlayerCount();
+        if (numAlive <= 1) {
+            // Round over
+
         }
     }
 
@@ -150,7 +157,7 @@ public class GameLogic : UdonSharpBehaviour {
         );
     }
 
-    public void OnHit(int senderId, string senderName, string verb) {
+    public void OnHit(int playerNumber, string senderName, string verb) {
         int numRemaining = GetAlivePlayerCount();
         string remaining = "Players Remaining";
         if (numRemaining < 1) {
@@ -163,9 +170,10 @@ public class GameLogic : UdonSharpBehaviour {
             remaining,
             null,
             true,
-            Shared.Colors()[senderId % Shared.Colors().Length],
+            Shared.Colors()[(playerNumber - 1) % Shared.Colors().Length],
             1500);
     }
+
     private void ShowMessage(
         string topText = "", 
         string highlightText = "", 
@@ -181,6 +189,7 @@ public class GameLogic : UdonSharpBehaviour {
         visibleUI = UIType.MESSAGE_UI;
         UpdateUI();
     }
+
     private void SetMessage(
         string topText = "", 
         string highlightText = "", 

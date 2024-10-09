@@ -4,6 +4,7 @@ using VRC.SDKBase;
 using VRC.Udon;
 using VRC.Udon.Common.Interfaces;
 using Miner28.UdonUtils.Network;
+using System;
 
 public class Shuriken : NetworkInterface {
 
@@ -29,6 +30,13 @@ public class Shuriken : NetworkInterface {
             }
             return VRCPlayerApi.GetPlayerById(playerId);
         }
+    }
+
+    private string GetPlayerName() {
+        if (Player == null) {
+            return "[Unnamed Player]";
+        }
+        return Player.displayName;
     }
 
     private void Log(string message) {
@@ -282,7 +290,7 @@ public class Shuriken : NetworkInterface {
             if (!HasPlayer() || playerCollider.GetPlayer() != playerId) {
                 Log(playerId + "'s shuriken has hit " + playerCollider.GetPlayer());
                 // Notify the player
-                playerCollider.SendMethodNetworked(nameof(PlayerCollider.OnHit), SyncTarget.All, playerId);
+                playerCollider.SendMethodNetworked(nameof(PlayerCollider.OnHit), SyncTarget.All, GetPlayerName(), playerNumber);
                 // Play hit sound
                 if (audioSource != null) {
                     audioSource.Play();

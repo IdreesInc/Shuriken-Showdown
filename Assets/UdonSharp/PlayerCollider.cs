@@ -66,22 +66,27 @@ public class PlayerCollider : NetworkInterface {
         return isAlive;
     }
 
-    [NetworkedMethod]
-    public void OnHit(int senderId) {
-        VRCPlayerApi sender = VRCPlayerApi.GetPlayerById(senderId);
-        if (sender == null) {
-            LogError("Player hit by unknown player with id: " + senderId + ", ignoring");
-            return;
+    private Vector3 GetDeathMarkerLocation() {
+        GameObject deathMarker = GameObject.Find("Death Marker");
+        if (deathMarker == null) {
+            LogError("Death marker not found");
+            return Vector3.zero;
         }
+        return deathMarker.transform.position;
+    }
+
+    [NetworkedMethod]
+    public void OnHit(string playerName, int playerNumber) {
         isAlive = false;
         if (!Networking.IsOwner(gameObject)) {
             Log("Not the owner, skipping collision");
             return;
         }
-        string senderName = sender.displayName;
-        Log("Player hit by " + senderName);
-        GameLogic.GetLocalGameLogic().OnHit(senderId, senderName, "sliced");
-
+        Log("Player hit by " + playerName);
+        // Notify local game logic to update UI
+        GameLogic.GetLocalGameLogic().OnHit(playerNumber, playerName, "sliced");
+        // Teleport player to death marker
+        Player.TeleportTo(GetDeathMarkerLocation(), Player.GetRotation());
     }
 
     void Update() {
