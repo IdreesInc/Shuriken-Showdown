@@ -4,6 +4,9 @@ using UnityEngine;
 using VRC.SDKBase;
 using VRC.Udon;
 
+/// <summary>
+/// Non-networked UdonSharpBehaviour for switching between levels/terrains
+/// </summary>
 public class LevelManager : UdonSharpBehaviour {
 
     public GameObject sharedTerrain;

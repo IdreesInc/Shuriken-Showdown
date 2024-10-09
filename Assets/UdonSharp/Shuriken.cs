@@ -87,7 +87,7 @@ public class Shuriken : NetworkInterface {
     }
 
     /// <summary>
-    /// Triggered over networking by PowerUp when it detects a collision with this shuriken
+    /// Triggered over the network by PowerUp when it detects a collision with this shuriken
     /// </summary>
     [NetworkedMethod]
     public void ActivatePowerUp(int type) {
@@ -95,7 +95,7 @@ public class Shuriken : NetworkInterface {
     }
 
     /// <summary>
-    /// Triggered over networking by GameLogic when the round is over
+    /// Triggered over the network by GameLogic when the round is over
     /// </summary>
     [NetworkedMethod]
     public void OnRoundOver() {
@@ -116,7 +116,7 @@ public class Shuriken : NetworkInterface {
         powerUps[0] = type;
         ApplyPowerUpEffects();
         if (Networking.LocalPlayer.playerId == playerId) {
-            GameLogic.GetLocalGameLogic().OnPowerUpCollected(type, powerUps);
+            GameLogic.GetGameLogic().OnPowerUpCollected(type, powerUps);
         }
     }
 

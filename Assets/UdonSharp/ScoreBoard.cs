@@ -7,6 +7,9 @@ using UnityEngine.UIElements;
 using VRC.SDKBase;
 using VRC.Udon;
 
+/// <summary>
+/// Non-networked UdonSharpBehaviour for updating the score board UI
+/// </summary>
 public class ScoreBoard : UdonSharpBehaviour {
 
     public GameObject[] scoreLines;
