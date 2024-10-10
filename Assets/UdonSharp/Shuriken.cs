@@ -12,6 +12,7 @@ public class Shuriken : NetworkInterface {
     
     private const float ROTATION_SPEED = 360f * 2;
     private const float MAX_DISTANCE = 75;
+    private const float MAX_GROUND_DISTANCE = 5;
     private const float THROW_FORCE = 5;
     private readonly Vector3 GRAVITY_FORCE = new Vector3(0, -9.81f / 3, 0);
 
@@ -199,17 +200,13 @@ public class Shuriken : NetworkInterface {
 
     void FixedUpdate() {
         GetComponent<Rigidbody>().useGravity = false;
-        if (!Networking.IsOwner(gameObject)) {
-            // TODO: Might be able to remove this in the future
-            return;
-        }
         float velocity = GetComponent<Rigidbody>().velocity.magnitude;
         if (!isHeld) {
             if (velocity > 0.3f) {
                 transform.Rotate(Vector3.up, ROTATION_SPEED * Time.deltaTime);
                 transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
-            } else if (HasPlayer()) {
-                if (velocity < 0.01f && hasBeenThrown && Vector3.Distance(transform.position, Player.GetPosition()) > 10) {
+            } else if (HasPlayer() && Networking.IsOwner(gameObject)) {
+                if (velocity < 0.01f && hasBeenThrown && Vector3.Distance(transform.position, Player.GetPosition()) > MAX_GROUND_DISTANCE) {
                     // Shuriken at rest after being thrown
                     ReturnToPlayer();
                 } else if (!hasBeenThrown && Vector3.Distance(transform.position, Player.GetPosition()) > 5) {
@@ -219,10 +216,10 @@ public class Shuriken : NetworkInterface {
             }
         }
         // If the shuriken is too far from the owner, return it no matter what
-        if (HasPlayer()) {
+        if (HasPlayer() && Networking.IsOwner(gameObject)) {
             if (Vector3.Distance(transform.position, Player.GetPosition()) > MAX_DISTANCE) {
                 ReturnToPlayer();
-            } else if (transform.position.y < -10) {
+            } else if (transform.position.y < -1) {
                 // Shuriken fell below map
                 ReturnToPlayer();
             }
@@ -234,8 +231,9 @@ public class Shuriken : NetworkInterface {
             // Freeze the shuriken in place
             GetComponent<Rigidbody>().velocity = Vector3.zero;
             PutInFrontOfPlayer();
-            // Set collision layer to PickupNoEnvironment
-            gameObject.layer = 14;
+            // Set collision layer to Walkthrough
+            // TODO: Determine if this has any adverse effects
+            gameObject.layer = 17;
             // Spin that baby
             transform.Rotate(Vector3.up, ROTATION_SPEED / 2 * Time.deltaTime);
             transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
