@@ -1,8 +1,6 @@
-﻿using System;
-using UdonSharp;
+﻿using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
-using VRC.Udon;
 using Miner28.UdonUtils.Network;
 
 public class PlayerCollider : NetworkInterface {
@@ -83,10 +81,13 @@ public class PlayerCollider : NetworkInterface {
             return;
         }
         Log("Player hit by " + playerName);
+        GameLogic gameLogic = GameLogic.GetGameLogic();
         // Notify local game logic to update UI
-        GameLogic.GetGameLogic().OnHit(playerNumber, playerName, "sliced");
-        // Teleport player to death marker
-        Player.TeleportTo(GetDeathMarkerLocation(), Player.GetRotation());
+        gameLogic.ShowHitUI(playerNumber, playerName, "sliced");
+        if (gameLogic.GetAlivePlayerCount() > 1) {
+            // Only teleport player if this isn't the end of the round
+            Player.TeleportTo(GetDeathMarkerLocation(), Player.GetRotation());
+        }
     }
 
     [NetworkedMethod]
@@ -97,7 +98,21 @@ public class PlayerCollider : NetworkInterface {
         }
         Log("Round over, resetting player collider");
         // Notify local game logic to update UI
-        GameLogic.GetGameLogic().OnRoundOver();
+        GameLogic.GetGameLogic().ShowScoreUI();
+    }
+
+    [NetworkedMethod]
+    public void OnRoundStart(int level) {
+        isAlive = true;
+        if (!Networking.IsOwner(gameObject)) {
+            return;
+        }
+        Log("Next round, resetting player collider");
+        LevelManager manager = LevelManager.GetLevelManager();
+        // Get spawn point
+        Vector3 spawnPoint = manager.GetSpawnPosition((Level) level);
+        // Teleport player to spawn point
+        Player.TeleportTo(spawnPoint, Player.GetRotation());
     }
 
     void Update() {

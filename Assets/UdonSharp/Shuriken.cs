@@ -301,16 +301,20 @@ public class Shuriken : NetworkInterface {
             PlayerCollider playerCollider = collider.gameObject.GetComponent<PlayerCollider>();
             if (!HasPlayer() || playerCollider.GetPlayer() != playerId) {
                 Log(playerId + "'s shuriken has hit " + playerCollider.GetPlayer());
-                // Notify the player
-                playerCollider.SendMethodNetworked(nameof(PlayerCollider.OnHit), SyncTarget.All, GetPlayerName(), playerNumber);
-                // Play hit sound
-                if (audioSource != null) {
-                    audioSource.Play();
+                if (playerCollider.IsAlive()) {
+                    // Notify the player
+                    playerCollider.SendMethodNetworked(nameof(PlayerCollider.OnHit), SyncTarget.All, GetPlayerName(), playerNumber);
+                    // Play hit sound
+                    if (audioSource != null) {
+                        audioSource.Play();
+                    }
+                    // Increase the score
+                    score++;
+                } else {
+                    Log("Player is already dead, ignoring");
                 }
                 // Return the shuriken to the owner
                 ReturnToPlayer();
-                // Increase the score
-                score++;
             }
         } else {
             Log("Shuriken has triggered with " + collider.gameObject.name);

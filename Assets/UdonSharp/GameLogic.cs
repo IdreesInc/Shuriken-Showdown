@@ -8,12 +8,6 @@ using VRC.Udon;
 using VRC.Udon.Common.Interfaces;
 using Miner28.UdonUtils.Network;
 
-enum UIType {
-    NONE,
-    SCORE_UI,
-    MESSAGE_UI
-}
-
 public class GameLogic : UdonSharpBehaviour {
 
     public VRC.SDK3.Components.VRCObjectPool shurikenPool;
@@ -26,7 +20,11 @@ public class GameLogic : UdonSharpBehaviour {
     /// <summary>
     /// The current number of players
     /// </summary>
-    [UdonSynced] private int numberOfPlayers = 0;
+    private int numberOfPlayers = 0;
+    /// <summary>
+    /// The current level (cast to an int for syncing)
+    /// </summary>
+    private int currentLevel = (int) Level.LOBBY;
 
     /// <summary>
     /// Player names indexed by player number (not player ID)
@@ -36,6 +34,7 @@ public class GameLogic : UdonSharpBehaviour {
     /// Player scores indexed by player number (not player ID)
     /// </summary>
     private readonly int[] playerScores = new int[Shared.MaxPlayers() + 1];
+    private float nextRoundTime = 0;
 
     
     private void Log(string message) {
@@ -75,20 +74,25 @@ public class GameLogic : UdonSharpBehaviour {
 
     void Start() {
         Log("GameLogic initializing...");
+        LoadCurrentLevel();
         if (!Networking.IsOwner(gameObject)) {
             Log("Not the owner, skipping rest of initialization");
             return;
         }
 
-        GameObject powerUp = powerUpPool.TryToSpawn();
-        if (powerUp == null) {
-            LogError("Game Logic: No available power ups");
-            return;
-        }
-        powerUp.SetActive(true);
-        PowerUp powerUpComponent = powerUp.GetComponent<PowerUp>();
-        powerUpComponent.SetPowerUpType(0);
-        powerUp.transform.position = new Vector3(-1, 1f, -0.3f);
+        // GameObject powerUp = powerUpPool.TryToSpawn();
+        // if (powerUp == null) {
+        //     LogError("Game Logic: No available power ups");
+        //     return;
+        // }
+        // powerUp.SetActive(true);
+        // PowerUp powerUpComponent = powerUp.GetComponent<PowerUp>();
+        // powerUpComponent.SetPowerUpType(0);
+        // powerUp.transform.position = new Vector3(-1, 1f, -0.3f);
+    }
+
+    public override void OnDeserialization() {
+        LoadCurrentLevel();
     }
 
     void Update() {
@@ -109,22 +113,62 @@ public class GameLogic : UdonSharpBehaviour {
         }
         int numAlive = GetAlivePlayerCount();
         if (numAlive <= 1 && numberOfPlayers > 1) {
-            // Round over
-            // Send an event to each shuriken
-            foreach (Transform child in shurikensParent.transform) {
-                if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null) {
-                    Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
-                    shuriken.SendMethodNetworked("OnRoundOver", SyncTarget.All);
-                }
-            }
-            // Send an event to each player collider
-            foreach (Transform child in playerCollidersParent.transform) {
-                if (child.gameObject.activeSelf && child.gameObject.GetComponent<PlayerCollider>() != null) {
-                    PlayerCollider playerCollider = child.gameObject.GetComponent<PlayerCollider>();
-                    playerCollider.SendMethodNetworked("OnRoundOver", SyncTarget.All);
-                }
+            EndRound();
+        }
+        if (nextRoundTime != 0 && Time.time * 1000 >= nextRoundTime) {
+            StartNextRound();
+        }
+    }
+
+    private void EndRound() {
+        if (!Networking.IsOwner(gameObject)) {
+            return;
+        }
+        nextRoundTime = 0;
+        // Send an event to each shuriken
+        foreach (Transform child in shurikensParent.transform) {
+            if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null) {
+                Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
+                shuriken.SendMethodNetworked(nameof(Shuriken.OnRoundOver), SyncTarget.All);
             }
         }
+        // Send an event to each player collider
+        foreach (Transform child in playerCollidersParent.transform) {
+            if (child.gameObject.activeSelf && child.gameObject.GetComponent<PlayerCollider>() != null) {
+                PlayerCollider playerCollider = child.gameObject.GetComponent<PlayerCollider>();
+                playerCollider.SendMethodNetworked(nameof(PlayerCollider.OnRoundOver), SyncTarget.All);
+            }
+        }
+        nextRoundTime = (Time.time + 3) * 1000;
+    }
+
+    private void StartNextRound() {
+        nextRoundTime = 0;
+        if (currentLevel == (int) Level.LOBBY) {
+            SwitchLevel(Level.ISLAND_ONE);
+        } else {
+            SwitchLevel(Level.LOBBY);
+        }
+
+        foreach (Transform child in playerCollidersParent.transform) {
+            if (child.gameObject.activeSelf && child.gameObject.GetComponent<PlayerCollider>() != null) {
+                PlayerCollider playerCollider = child.gameObject.GetComponent<PlayerCollider>();
+                playerCollider.SendMethodNetworked(nameof(PlayerCollider.OnRoundStart), SyncTarget.All, currentLevel);
+            }
+        }
+    }
+
+    private void SwitchLevel(Level level) {
+        if (!Networking.IsOwner(gameObject)) {
+            LogError("Non-owner is trying to switch the level, should not happen");
+            return;
+        }
+        currentLevel = (int) level;
+        LoadCurrentLevel();
+    }
+
+    private void LoadCurrentLevel() {
+        LevelManager.GetLevelManager().SwitchLevel((Level) currentLevel);
     }
 
     /// <summary>
@@ -135,6 +179,7 @@ public class GameLogic : UdonSharpBehaviour {
             return;
         }
         Log("Starting game");
+        StartNextRound();
     }
 
     /// <summary>
@@ -164,7 +209,7 @@ public class GameLogic : UdonSharpBehaviour {
         );
     }
 
-    public void OnHit(int playerNumber, string senderName, string verb) {
+    public void ShowHitUI(int playerNumber, string senderName, string verb) {
         int numRemaining = GetAlivePlayerCount();
         if (numRemaining <= 1) {
             // Round is over, ignore this UI to wait for round update from instance owner
@@ -185,7 +230,7 @@ public class GameLogic : UdonSharpBehaviour {
             1500);
     }
 
-    public void OnRoundOver() {
+    public void ShowScoreUI() {
         UIManager.GetUIManager().ShowScoreUI(playerScores, playerNames, 3000);
     }
 

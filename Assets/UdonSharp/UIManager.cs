@@ -2,8 +2,13 @@
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
-using VRC.Udon;
 using TMPro;
+
+enum UIType {
+    NONE,
+    SCORE_UI,
+    MESSAGE_UI
+}
 
 /// <summary>
 /// Non-networked UdonSharpBehaviour for managing the local UI

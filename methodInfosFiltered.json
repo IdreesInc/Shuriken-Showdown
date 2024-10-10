@@ -10,6 +10,12 @@
 		"methodName": "OnRoundOver",
 		"parameters": null
 	},
+	"PlayerCollider.OnRoundStart": {
+		"methodName": "__0_OnRoundStart",
+		"parameters": [
+			"__0_level__param"
+		]
+	},
 	"Shuriken.ActivatePowerUp": {
 		"methodName": "__0_ActivatePowerUp",
 		"parameters": [
