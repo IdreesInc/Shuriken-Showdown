@@ -1,8 +1,4 @@
 {
-	"UdonSharp.Examples.Utilities.PlayerModSetter.Start()": {
-		"methodName": "_start",
-		"parameters": null
-	},
 	"Miner28.UdonUtils.Network.NetworkInterface.SendMethodNetworked(string, SyncTarget, params VRC.SDK3.Data.DataToken[])": {
 		"methodName": "__0_SendMethodNetworked",
 		"parameters": [
@@ -35,89 +31,74 @@
 		"methodName": "OnCallerAssigned",
 		"parameters": null
 	},
-	"GameLogic.Log(string)": {
+	"UdonSharp.Examples.Utilities.GlobalToggleObject.Start()": {
+		"methodName": "_start",
+		"parameters": null
+	},
+	"UdonSharp.Examples.Utilities.GlobalToggleObject.OnDeserialization()": {
+		"methodName": "_onDeserialization",
+		"parameters": null
+	},
+	"UdonSharp.Examples.Utilities.GlobalToggleObject.Interact()": {
+		"methodName": "_interact",
+		"parameters": null
+	},
+	"LevelManager.Log(string)": {
 		"methodName": "__0_Log",
 		"parameters": [
 			"__0_message__param"
 		]
 	},
-	"GameLogic.LogError(string)": {
+	"LevelManager.LogError(string)": {
 		"methodName": "__0_LogError",
 		"parameters": [
 			"__1_message__param"
 		]
 	},
-	"GameLogic.GetGameLogic()": {
-		"methodName": "GetGameLogic",
+	"LevelManager.GetLevelManager()": {
+		"methodName": "GetLevelManager",
 		"parameters": null
 	},
-	"GameLogic.GetLocalPlayerCollider(int)": {
-		"methodName": "__0_GetLocalPlayerCollider",
-		"parameters": [
-			"__0_playerId__param"
-		]
-	},
-	"GameLogic.GetAlivePlayerCount()": {
-		"methodName": "GetAlivePlayerCount",
-		"parameters": null
-	},
-	"GameLogic.Start()": {
-		"methodName": "_start",
-		"parameters": null
-	},
-	"GameLogic.OnDeserialization()": {
-		"methodName": "_onDeserialization",
-		"parameters": null
-	},
-	"GameLogic.Update()": {
-		"methodName": "_update",
-		"parameters": null
-	},
-	"GameLogic.EndRound()": {
-		"methodName": "EndRound",
-		"parameters": null
-	},
-	"GameLogic.StartNextRound()": {
-		"methodName": "StartNextRound",
-		"parameters": null
-	},
-	"GameLogic.SwitchLevel(Level)": {
-		"methodName": "__0_SwitchLevel",
+	"LevelManager.GetLevelObject(Level)": {
+		"methodName": "__0_GetLevelObject",
 		"parameters": [
 			"__0_level__param"
 		]
 	},
-	"GameLogic.LoadCurrentLevel()": {
-		"methodName": "LoadCurrentLevel",
-		"parameters": null
-	},
-	"GameLogic.StartGame()": {
-		"methodName": "StartGame",
-		"parameters": null
-	},
-	"GameLogic.OnPowerUpCollected(int, int[])": {
-		"methodName": "__0_OnPowerUpCollected",
+	"LevelManager.SwitchLevel(Level)": {
+		"methodName": "__0_SwitchLevel",
 		"parameters": [
-			"__0_powerUpType__param",
-			"__0_powerUps__param"
+			"__1_level__param"
 		]
 	},
-	"GameLogic.ShowHitUI(int, string, string)": {
-		"methodName": "__0_ShowHitUI",
+	"LevelManager.GetBackgroundMusic(Level)": {
+		"methodName": "__0_GetBackgroundMusic",
 		"parameters": [
-			"__0_playerNumber__param",
-			"__0_senderName__param",
-			"__0_verb__param"
+			"__2_level__param"
 		]
 	},
-	"GameLogic.ShowScoreUI()": {
-		"methodName": "ShowScoreUI",
-		"parameters": null
-	},
-	"GameLogic.OnPlayerJoined(VRC.SDKBase.VRCPlayerApi)": {
-		"methodName": "_onPlayerJoined",
+	"LevelManager.GetSpawnPosition(Level)": {
+		"methodName": "__0_GetSpawnPosition",
 		"parameters": [
-			"onPlayerJoinedPlayer"
+			"__3_level__param"
+		]
+	},
+	"LevelManager.GetDeathPosition(Level)": {
+		"methodName": "__0_GetDeathPosition",
+		"parameters": [
+			"__4_level__param"
+		]
+	},
+	"LevelManager.SetPlayerSpawnPoint(UnityEngine.Vector3)": {
+		"methodName": "__0_SetPlayerSpawnPoint",
+		"parameters": [
+			"__0_position__param"
+		]
+	},
+	"InnerCollider.OnCollisionEnter(UnityEngine.Collision)": {
+		"methodName": "_onCollisionEnter",
+		"parameters": [
+			"onCollisionEnterOther"
 		]
 	},
 	"Miner28.UdonUtils.Network.NetworkedEventCaller.SendData(uint, uint, uint, VRC.SDK3.Data.DataToken[])": {
@@ -212,31 +193,62 @@
 			"__2_log__param"
 		]
 	},
-	"UdonSharp.Examples.Utilities.TrackingDataFollower.Start()": {
-		"methodName": "_start",
+	"Miner28.UdonUtils.Network.NetworkManager.OnEnable()": {
+		"methodName": "_onEnable",
 		"parameters": null
 	},
-	"UdonSharp.Examples.Utilities.TrackingDataFollower.LateUpdate()": {
-		"methodName": "_lateUpdate",
-		"parameters": null
-	},
-	"UdonSharp.Examples.Utilities.MasterToggleObject.Start()": {
-		"methodName": "_start",
-		"parameters": null
-	},
-	"UdonSharp.Examples.Utilities.MasterToggleObject.OnOwnershipRequest(VRC.SDKBase.VRCPlayerApi, VRC.SDKBase.VRCPlayerApi)": {
-		"methodName": "_onOwnershipRequest",
+	"Miner28.UdonUtils.Network.NetworkManager.OnPlayerJoined(VRC.SDKBase.VRCPlayerApi)": {
+		"methodName": "_onPlayerJoined",
 		"parameters": [
-			"onOwnershipRequestRequester",
-			"onOwnershipRequestNewOwner"
+			"onPlayerJoinedPlayer"
 		]
 	},
-	"UdonSharp.Examples.Utilities.MasterToggleObject.OnDeserialization()": {
+	"Miner28.UdonUtils.Network.NetworkManager.OnPlayerLeft(VRC.SDKBase.VRCPlayerApi)": {
+		"methodName": "_onPlayerLeft",
+		"parameters": [
+			"onPlayerLeftPlayer"
+		]
+	},
+	"Miner28.UdonUtils.Network.NetworkManager.OnDeserialization()": {
 		"methodName": "_onDeserialization",
 		"parameters": null
 	},
-	"UdonSharp.Examples.Utilities.MasterToggleObject.Interact()": {
-		"methodName": "_interact",
+	"Miner28.UdonUtils.Network.NetworkManager._Cleanup()": {
+		"methodName": "_Cleanup",
+		"parameters": null
+	},
+	"Miner28.UdonUtils.Network.NetworkManager.ToggleNetworking(bool, bool)": {
+		"methodName": "__0_ToggleNetworking",
+		"parameters": [
+			"__0_state__param",
+			"__0_voidEvents__param"
+		]
+	},
+	"Miner28.UdonUtils.Network.NetworkManager.HandlePaused(VRC.SDKBase.VRCPlayerApi, byte[])": {
+		"methodName": "__0_HandlePaused",
+		"parameters": [
+			"__0_sender__param",
+			"__0_data__param"
+		]
+	},
+	"Miner28.UdonUtils.Network.NetworkManager._HandleNetworkResumed()": {
+		"methodName": "_HandleNetworkResumed",
+		"parameters": null
+	},
+	"Miner28.UdonUtils.Network.NetworkManager.Log(object)": {
+		"methodName": "__0_Log",
+		"parameters": [
+			"__0_log__param"
+		]
+	},
+	"Miner28.UdonUtils.Network.NetworkManager.Log(string)": {
+		"methodName": "__1_Log",
+		"parameters": [
+			"__1_log__param"
+		]
+	},
+	"Miner28.UdonUtils.Network.NetworkManager.OnCallerAssigned()": {
+		"methodName": "OnCallerAssigned",
 		"parameters": null
 	},
 	"ScoreBoard.Log(string)": {
@@ -270,18 +282,6 @@
 			"__0_score__param"
 		]
 	},
-	"UdonSharp.Examples.Utilities.GlobalToggleObject.Start()": {
-		"methodName": "_start",
-		"parameters": null
-	},
-	"UdonSharp.Examples.Utilities.GlobalToggleObject.OnDeserialization()": {
-		"methodName": "_onDeserialization",
-		"parameters": null
-	},
-	"UdonSharp.Examples.Utilities.GlobalToggleObject.Interact()": {
-		"methodName": "_interact",
-		"parameters": null
-	},
 	"UdonSharp.Examples.Utilities.BoneFollower.Start()": {
 		"methodName": "_start",
 		"parameters": null
@@ -290,60 +290,160 @@
 		"methodName": "_update",
 		"parameters": null
 	},
-	"UIManager.Log(string)": {
+	"StartButton.Log(string)": {
 		"methodName": "__0_Log",
 		"parameters": [
 			"__0_message__param"
 		]
 	},
-	"UIManager.LogError(string)": {
+	"StartButton.LogError(string)": {
 		"methodName": "__0_LogError",
 		"parameters": [
 			"__1_message__param"
 		]
 	},
-	"UIManager.GetUIManager()": {
-		"methodName": "GetUIManager",
+	"StartButton.Start()": {
+		"methodName": "_start",
 		"parameters": null
 	},
-	"UIManager.ShowMessageUI(string, string, string, string, bool, UnityEngine.Color, float)": {
-		"methodName": "__0_ShowMessageUI",
+	"StartButton.OnTriggerEnter(UnityEngine.Collider)": {
+		"methodName": "_onTriggerEnter",
 		"parameters": [
-			"__0_topText__param",
-			"__0_highlightText__param",
-			"__0_middleText__param",
-			"__0_bottomText__param",
-			"__0_backgroundEnabled__param",
-			"__0_highlightColor__param",
-			"__0_duration__param"
+			"onTriggerEnterOther"
 		]
 	},
-	"UIManager.ShowScoreUI(int[], string[], float)": {
-		"methodName": "__0_ShowScoreUI",
-		"parameters": [
-			"__0_playerScores__param",
-			"__0_playerNames__param",
-			"__1_duration__param"
-		]
-	},
-	"UIManager.SetMessageUI(string, string, string, string, bool, UnityEngine.Color)": {
-		"methodName": "__0_SetMessageUI",
-		"parameters": [
-			"__1_topText__param",
-			"__1_highlightText__param",
-			"__1_middleText__param",
-			"__1_bottomText__param",
-			"__1_backgroundEnabled__param",
-			"__1_highlightColor__param"
-		]
-	},
-	"UIManager.UpdateUI()": {
-		"methodName": "UpdateUI",
+	"ButtonTest.Interact()": {
+		"methodName": "_interact",
 		"parameters": null
 	},
-	"UIManager.Update()": {
+	"UdonSharp.Examples.Utilities.TrackingDataFollower.Start()": {
+		"methodName": "_start",
+		"parameters": null
+	},
+	"UdonSharp.Examples.Utilities.TrackingDataFollower.LateUpdate()": {
+		"methodName": "_lateUpdate",
+		"parameters": null
+	},
+	"PowerUp.GetPowerUpName(int)": {
+		"methodName": "__0_GetPowerUpName",
+		"parameters": [
+			"__0_type__param"
+		]
+	},
+	"PowerUp.GetPowerUpSubtitle(int)": {
+		"methodName": "__0_GetPowerUpSubtitle",
+		"parameters": [
+			"__1_type__param"
+		]
+	},
+	"PowerUp.Log(string)": {
+		"methodName": "__0_Log",
+		"parameters": [
+			"__0_message__param"
+		]
+	},
+	"PowerUp.LogError(string)": {
+		"methodName": "__0_LogError",
+		"parameters": [
+			"__1_message__param"
+		]
+	},
+	"PowerUp.Start()": {
+		"methodName": "_start",
+		"parameters": null
+	},
+	"PowerUp.SetPowerUpType(int)": {
+		"methodName": "__0_SetPowerUpType",
+		"parameters": [
+			"__0_powerUpType__param"
+		]
+	},
+	"PowerUp.GetPowerUpType()": {
+		"methodName": "GetPowerUpType",
+		"parameters": null
+	},
+	"PowerUp.FixedUpdate()": {
+		"methodName": "_fixedUpdate",
+		"parameters": null
+	},
+	"PowerUp.OnTriggerEnter(UnityEngine.Collider)": {
+		"methodName": "_onTriggerEnter",
+		"parameters": [
+			"onTriggerEnterOther"
+		]
+	},
+	"PlayerCollider.Player.get": {
+		"methodName": "get_Player",
+		"parameters": null
+	},
+	"PlayerCollider.Log(string)": {
+		"methodName": "__0_Log",
+		"parameters": [
+			"__0_message__param"
+		]
+	},
+	"PlayerCollider.LogError(string)": {
+		"methodName": "__0_LogError",
+		"parameters": [
+			"__1_message__param"
+		]
+	},
+	"PlayerCollider.SetPlayerId(int)": {
+		"methodName": "__0_SetPlayerId",
+		"parameters": [
+			"__0_playerId__param"
+		]
+	},
+	"PlayerCollider.UpdateOwnership()": {
+		"methodName": "UpdateOwnership",
+		"parameters": null
+	},
+	"PlayerCollider.OnDeserialization()": {
+		"methodName": "_onDeserialization",
+		"parameters": null
+	},
+	"PlayerCollider.GetPlayerName()": {
+		"methodName": "GetPlayerName",
+		"parameters": null
+	},
+	"PlayerCollider.GetPlayer()": {
+		"methodName": "GetPlayer",
+		"parameters": null
+	},
+	"PlayerCollider.IsAlive()": {
+		"methodName": "IsAlive",
+		"parameters": null
+	},
+	"PlayerCollider.GetDeathMarkerLocation()": {
+		"methodName": "GetDeathMarkerLocation",
+		"parameters": null
+	},
+	"PlayerCollider.OnHit(string, int)": {
+		"methodName": "__0_OnHit",
+		"parameters": [
+			"__0_playerName__param",
+			"__0_playerNumber__param"
+		]
+	},
+	"PlayerCollider.OnRoundOver()": {
+		"methodName": "OnRoundOver",
+		"parameters": null
+	},
+	"PlayerCollider.OnRoundStart(int)": {
+		"methodName": "__0_OnRoundStart",
+		"parameters": [
+			"__0_level__param"
+		]
+	},
+	"PlayerCollider.Update()": {
 		"methodName": "_update",
 		"parameters": null
+	},
+	"UdonSharp.Examples.Utilities.WorldAudioSettings.OnPlayerJoined(VRC.SDKBase.VRCPlayerApi)": {
+		"methodName": "_onPlayerJoined",
+		"parameters": [
+			"onPlayerJoinedPlayer"
+		]
 	},
 	"Shuriken.Player.get": {
 		"methodName": "get_Player",
@@ -475,271 +575,171 @@
 			"onTriggerEnterOther"
 		]
 	},
-	"PowerUp.GetPowerUpName(int)": {
-		"methodName": "__0_GetPowerUpName",
-		"parameters": [
-			"__0_type__param"
-		]
-	},
-	"PowerUp.GetPowerUpSubtitle(int)": {
-		"methodName": "__0_GetPowerUpSubtitle",
-		"parameters": [
-			"__1_type__param"
-		]
-	},
-	"PowerUp.Log(string)": {
+	"GameLogic.Log(string)": {
 		"methodName": "__0_Log",
 		"parameters": [
 			"__0_message__param"
 		]
 	},
-	"PowerUp.LogError(string)": {
+	"GameLogic.LogError(string)": {
 		"methodName": "__0_LogError",
 		"parameters": [
 			"__1_message__param"
 		]
 	},
-	"PowerUp.Start()": {
-		"methodName": "_start",
+	"GameLogic.GetGameLogic()": {
+		"methodName": "GetGameLogic",
 		"parameters": null
 	},
-	"PowerUp.SetPowerUpType(int)": {
-		"methodName": "__0_SetPowerUpType",
-		"parameters": [
-			"__0_powerUpType__param"
-		]
-	},
-	"PowerUp.GetPowerUpType()": {
-		"methodName": "GetPowerUpType",
-		"parameters": null
-	},
-	"PowerUp.FixedUpdate()": {
-		"methodName": "_fixedUpdate",
-		"parameters": null
-	},
-	"PowerUp.OnTriggerEnter(UnityEngine.Collider)": {
-		"methodName": "_onTriggerEnter",
-		"parameters": [
-			"onTriggerEnterOther"
-		]
-	},
-	"PlayerCollider.Player.get": {
-		"methodName": "get_Player",
-		"parameters": null
-	},
-	"PlayerCollider.Log(string)": {
-		"methodName": "__0_Log",
-		"parameters": [
-			"__0_message__param"
-		]
-	},
-	"PlayerCollider.LogError(string)": {
-		"methodName": "__0_LogError",
-		"parameters": [
-			"__1_message__param"
-		]
-	},
-	"PlayerCollider.SetPlayerId(int)": {
-		"methodName": "__0_SetPlayerId",
+	"GameLogic.GetLocalPlayerCollider(int)": {
+		"methodName": "__0_GetLocalPlayerCollider",
 		"parameters": [
 			"__0_playerId__param"
 		]
 	},
-	"PlayerCollider.UpdateOwnership()": {
-		"methodName": "UpdateOwnership",
+	"GameLogic.GetAlivePlayerCount()": {
+		"methodName": "GetAlivePlayerCount",
 		"parameters": null
 	},
-	"PlayerCollider.OnDeserialization()": {
+	"GameLogic.Start()": {
+		"methodName": "_start",
+		"parameters": null
+	},
+	"GameLogic.OnDeserialization()": {
 		"methodName": "_onDeserialization",
 		"parameters": null
 	},
-	"PlayerCollider.GetPlayerName()": {
-		"methodName": "GetPlayerName",
-		"parameters": null
-	},
-	"PlayerCollider.GetPlayer()": {
-		"methodName": "GetPlayer",
-		"parameters": null
-	},
-	"PlayerCollider.IsAlive()": {
-		"methodName": "IsAlive",
-		"parameters": null
-	},
-	"PlayerCollider.GetDeathMarkerLocation()": {
-		"methodName": "GetDeathMarkerLocation",
-		"parameters": null
-	},
-	"PlayerCollider.OnHit(string, int)": {
-		"methodName": "__0_OnHit",
-		"parameters": [
-			"__0_playerName__param",
-			"__0_playerNumber__param"
-		]
-	},
-	"PlayerCollider.OnRoundOver()": {
-		"methodName": "OnRoundOver",
-		"parameters": null
-	},
-	"PlayerCollider.OnRoundStart(int)": {
-		"methodName": "__0_OnRoundStart",
-		"parameters": [
-			"__0_level__param"
-		]
-	},
-	"PlayerCollider.Update()": {
+	"GameLogic.Update()": {
 		"methodName": "_update",
 		"parameters": null
 	},
-	"LevelManager.Log(string)": {
-		"methodName": "__0_Log",
-		"parameters": [
-			"__0_message__param"
-		]
-	},
-	"LevelManager.LogError(string)": {
-		"methodName": "__0_LogError",
-		"parameters": [
-			"__1_message__param"
-		]
-	},
-	"LevelManager.GetLevelManager()": {
-		"methodName": "GetLevelManager",
+	"GameLogic.EndRound()": {
+		"methodName": "EndRound",
 		"parameters": null
 	},
-	"LevelManager.SwitchLevel(Level)": {
+	"GameLogic.StartNextRound()": {
+		"methodName": "StartNextRound",
+		"parameters": null
+	},
+	"GameLogic.SwitchLevel(Level)": {
 		"methodName": "__0_SwitchLevel",
 		"parameters": [
 			"__0_level__param"
 		]
 	},
-	"LevelManager.GetDeathPosition(Level)": {
-		"methodName": "__0_GetDeathPosition",
+	"GameLogic.LoadCurrentLevel()": {
+		"methodName": "LoadCurrentLevel",
+		"parameters": null
+	},
+	"GameLogic.StartGame()": {
+		"methodName": "StartGame",
+		"parameters": null
+	},
+	"GameLogic.OnPowerUpCollected(int, int[])": {
+		"methodName": "__0_OnPowerUpCollected",
 		"parameters": [
-			"__1_level__param"
+			"__0_powerUpType__param",
+			"__0_powerUps__param"
 		]
 	},
-	"LevelManager.GetDeathMarkerPosition(UnityEngine.GameObject)": {
-		"methodName": "__0_GetDeathMarkerPosition",
+	"GameLogic.ShowHitUI(int, string, string)": {
+		"methodName": "__0_ShowHitUI",
 		"parameters": [
-			"__0_parent__param"
+			"__0_playerNumber__param",
+			"__0_senderName__param",
+			"__0_verb__param"
 		]
 	},
-	"LevelManager.GetSpawnPosition(Level)": {
-		"methodName": "__0_GetSpawnPosition",
-		"parameters": [
-			"__2_level__param"
-		]
+	"GameLogic.ShowScoreUI()": {
+		"methodName": "ShowScoreUI",
+		"parameters": null
 	},
-	"LevelManager.GetSpawnMarkerPosition(UnityEngine.GameObject)": {
-		"methodName": "__0_GetSpawnMarkerPosition",
+	"GameLogic.OnPlayerJoined(VRC.SDKBase.VRCPlayerApi)": {
+		"methodName": "_onPlayerJoined",
 		"parameters": [
-			"__1_parent__param"
-		]
-	},
-	"LevelManager.SetPlayerSpawnPoint(UnityEngine.Vector3)": {
-		"methodName": "__0_SetPlayerSpawnPoint",
-		"parameters": [
-			"__0_position__param"
+			"onPlayerJoinedPlayer"
 		]
 	},
 	"UdonSharp.Examples.Utilities.InteractToggle.Interact()": {
 		"methodName": "_interact",
 		"parameters": null
 	},
-	"ButtonTest.Interact()": {
-		"methodName": "_interact",
+	"UdonSharp.Examples.Utilities.MasterToggleObject.Start()": {
+		"methodName": "_start",
 		"parameters": null
 	},
-	"InnerCollider.OnCollisionEnter(UnityEngine.Collision)": {
-		"methodName": "_onCollisionEnter",
+	"UdonSharp.Examples.Utilities.MasterToggleObject.OnOwnershipRequest(VRC.SDKBase.VRCPlayerApi, VRC.SDKBase.VRCPlayerApi)": {
+		"methodName": "_onOwnershipRequest",
 		"parameters": [
-			"onCollisionEnterOther"
+			"onOwnershipRequestRequester",
+			"onOwnershipRequestNewOwner"
 		]
 	},
-	"Miner28.UdonUtils.Network.NetworkManager.OnEnable()": {
-		"methodName": "_onEnable",
-		"parameters": null
-	},
-	"Miner28.UdonUtils.Network.NetworkManager.OnPlayerJoined(VRC.SDKBase.VRCPlayerApi)": {
-		"methodName": "_onPlayerJoined",
-		"parameters": [
-			"onPlayerJoinedPlayer"
-		]
-	},
-	"Miner28.UdonUtils.Network.NetworkManager.OnPlayerLeft(VRC.SDKBase.VRCPlayerApi)": {
-		"methodName": "_onPlayerLeft",
-		"parameters": [
-			"onPlayerLeftPlayer"
-		]
-	},
-	"Miner28.UdonUtils.Network.NetworkManager.OnDeserialization()": {
+	"UdonSharp.Examples.Utilities.MasterToggleObject.OnDeserialization()": {
 		"methodName": "_onDeserialization",
 		"parameters": null
 	},
-	"Miner28.UdonUtils.Network.NetworkManager._Cleanup()": {
-		"methodName": "_Cleanup",
+	"UdonSharp.Examples.Utilities.MasterToggleObject.Interact()": {
+		"methodName": "_interact",
 		"parameters": null
 	},
-	"Miner28.UdonUtils.Network.NetworkManager.ToggleNetworking(bool, bool)": {
-		"methodName": "__0_ToggleNetworking",
-		"parameters": [
-			"__0_state__param",
-			"__0_voidEvents__param"
-		]
-	},
-	"Miner28.UdonUtils.Network.NetworkManager.HandlePaused(VRC.SDKBase.VRCPlayerApi, byte[])": {
-		"methodName": "__0_HandlePaused",
-		"parameters": [
-			"__0_sender__param",
-			"__0_data__param"
-		]
-	},
-	"Miner28.UdonUtils.Network.NetworkManager._HandleNetworkResumed()": {
-		"methodName": "_HandleNetworkResumed",
+	"UdonSharp.Examples.Utilities.PlayerModSetter.Start()": {
+		"methodName": "_start",
 		"parameters": null
 	},
-	"Miner28.UdonUtils.Network.NetworkManager.Log(object)": {
-		"methodName": "__0_Log",
-		"parameters": [
-			"__0_log__param"
-		]
-	},
-	"Miner28.UdonUtils.Network.NetworkManager.Log(string)": {
-		"methodName": "__1_Log",
-		"parameters": [
-			"__1_log__param"
-		]
-	},
-	"Miner28.UdonUtils.Network.NetworkManager.OnCallerAssigned()": {
-		"methodName": "OnCallerAssigned",
-		"parameters": null
-	},
-	"StartButton.Log(string)": {
+	"UIManager.Log(string)": {
 		"methodName": "__0_Log",
 		"parameters": [
 			"__0_message__param"
 		]
 	},
-	"StartButton.LogError(string)": {
+	"UIManager.LogError(string)": {
 		"methodName": "__0_LogError",
 		"parameters": [
 			"__1_message__param"
 		]
 	},
-	"StartButton.Start()": {
-		"methodName": "_start",
+	"UIManager.GetUIManager()": {
+		"methodName": "GetUIManager",
 		"parameters": null
 	},
-	"StartButton.OnTriggerEnter(UnityEngine.Collider)": {
-		"methodName": "_onTriggerEnter",
+	"UIManager.ShowMessageUI(string, string, string, string, bool, UnityEngine.Color, float)": {
+		"methodName": "__0_ShowMessageUI",
 		"parameters": [
-			"onTriggerEnterOther"
+			"__0_topText__param",
+			"__0_highlightText__param",
+			"__0_middleText__param",
+			"__0_bottomText__param",
+			"__0_backgroundEnabled__param",
+			"__0_highlightColor__param",
+			"__0_duration__param"
 		]
 	},
-	"UdonSharp.Examples.Utilities.WorldAudioSettings.OnPlayerJoined(VRC.SDKBase.VRCPlayerApi)": {
-		"methodName": "_onPlayerJoined",
+	"UIManager.ShowScoreUI(int[], string[], float)": {
+		"methodName": "__0_ShowScoreUI",
 		"parameters": [
-			"onPlayerJoinedPlayer"
+			"__0_playerScores__param",
+			"__0_playerNames__param",
+			"__1_duration__param"
 		]
+	},
+	"UIManager.SetMessageUI(string, string, string, string, bool, UnityEngine.Color)": {
+		"methodName": "__0_SetMessageUI",
+		"parameters": [
+			"__1_topText__param",
+			"__1_highlightText__param",
+			"__1_middleText__param",
+			"__1_bottomText__param",
+			"__1_backgroundEnabled__param",
+			"__1_highlightColor__param"
+		]
+	},
+	"UIManager.UpdateUI()": {
+		"methodName": "UpdateUI",
+		"parameters": null
+	},
+	"UIManager.Update()": {
+		"methodName": "_update",
+		"parameters": null
 	}
 }

@@ -32,73 +32,63 @@ public class LevelManager : UdonSharpBehaviour {
         return GameObject.Find("Level Manager").GetComponent<LevelManager>();
     }
 
+    private GameObject GetLevelObject(Level level) {
+        switch (level) {
+            case Level.LOBBY:
+                return lobby;
+            case Level.ISLAND_ONE:
+                return islandOne;
+            default:
+                LogError("Unknown level: " + level);
+                return null;
+        }
+    }
+
     public void SwitchLevel(Level level) {
+        Log("Switching to level: " + level);
         if (loadedLevel == level) {
             Log("Already on level: " + level);
             return;
         }
+        if (loadedLevel != Level.NONE) {
+            // Stop the current background music
+            GetBackgroundMusic(loadedLevel).Stop();
+        }
+
         loadedLevel = level;
+        
         Vector3 terrainPos = sharedTerrain.transform.position;
-        switch (level) {
-            case Level.LOBBY:
-                Log("Switching to lobby");
-                Vector3 lobbyPos = lobby.transform.position;
-                sharedTerrain.transform.position = new Vector3(lobbyPos.x, terrainPos.y, lobbyPos.z);
-                break;
-            case Level.ISLAND_ONE:
-                Log("Switching to island one");
-                Vector3 islandOnePos = islandOne.transform.position;
-                sharedTerrain.transform.position = new Vector3(islandOnePos.x, terrainPos.y, islandOnePos.z);
-                break;
-            default:
-                LogError("Unknown level: " + level);
-                break;
-        }
+        Vector3 levelPos = GetLevelObject(level).transform.position;
+        // Move the shared terrain to the new level's terrain position
+        sharedTerrain.transform.position = new Vector3(levelPos.x, terrainPos.y, levelPos.z);
+        
         SetPlayerSpawnPoint(GetSpawnPosition(loadedLevel));
+        // Play the new background music
+        GetBackgroundMusic(loadedLevel).Play();
     }
 
-    public Vector3 GetDeathPosition(Level level) {
-        switch (level) {
-            case Level.LOBBY:
-                return GetDeathMarkerPosition(lobby);
-            case Level.ISLAND_ONE:
-                return GetDeathMarkerPosition(islandOne);
-            default:
-                LogError("Unknown level: " + level);
-                return Vector3.zero;
-        }
-    }
-
-    private Vector3 GetDeathMarkerPosition(GameObject parent) {
-        Transform deathMarkerTrans = parent.transform.Find("Death Marker");
-        if (deathMarkerTrans == null) {
-            LogError("Death marker not found");
-            return Vector3.zero;
-        }
-        GameObject deathMarker = deathMarkerTrans.gameObject;
-        return deathMarker.transform.position;
+    private AudioSource GetBackgroundMusic(Level level) {
+        return GetLevelObject(level).transform.Find("Background Music").GetComponent<AudioSource>();
     }
 
     public Vector3 GetSpawnPosition(Level level) {
-        switch (level) {
-            case Level.LOBBY:
-                return GetSpawnMarkerPosition(lobby);
-            case Level.ISLAND_ONE:
-                return GetSpawnMarkerPosition(islandOne);
-            default:
-                LogError("Unknown level: " + level);
-                return Vector3.zero;
-        }
-    }
-
-    private Vector3 GetSpawnMarkerPosition(GameObject parent) {
-        Transform spawnMarkerTrans = parent.transform.Find("Spawn Marker");
+        Transform spawnMarkerTrans = GetLevelObject(level).transform.Find("Spawn Marker");
         if (spawnMarkerTrans == null) {
             LogError("Spawn marker not found");
             return Vector3.zero;
         }
         GameObject spawnMarker = spawnMarkerTrans.gameObject;
         return spawnMarker.transform.position;
+    }
+
+    public Vector3 GetDeathPosition(Level level) {
+        Transform deathMarkerTrans = GetLevelObject(level).transform.Find("Death Marker");
+        if (deathMarkerTrans == null) {
+            LogError("Death marker not found");
+            return Vector3.zero;
+        }
+        GameObject deathMarker = deathMarkerTrans.gameObject;
+        return deathMarker.transform.position;
     }
 
     public void SetPlayerSpawnPoint(Vector3 position) {
