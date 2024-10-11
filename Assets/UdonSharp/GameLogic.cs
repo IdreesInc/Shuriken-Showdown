@@ -10,6 +10,7 @@ using Miner28.UdonUtils.Network;
 
 public class GameLogic : UdonSharpBehaviour {
 
+    /** Used by instance owner to set up the game **/
     public VRC.SDK3.Components.VRCObjectPool shurikenPool;
     public VRC.SDK3.Components.VRCObjectPool playerColliderPool;
     public VRC.SDK3.Components.VRCObjectPool powerUpPool;
@@ -17,15 +18,14 @@ public class GameLogic : UdonSharpBehaviour {
     public GameObject shurikensParent;
     public GameObject playerCollidersParent;
 
+    /** Constants **/
+    private const float POWER_UP_DELAY = 5000;
+
+    /** Local variables only used by the instance owner **/
     /// <summary>
     /// The current number of players
     /// </summary>
     private int numberOfPlayers = 0;
-    /// <summary>
-    /// The current level (cast to an int for syncing)
-    /// </summary>
-    private int currentLevel = (int) Level.LOBBY;
-
     /// <summary>
     /// Player names indexed by player number (not player ID)
     /// </summary>
@@ -35,6 +35,14 @@ public class GameLogic : UdonSharpBehaviour {
     /// </summary>
     private readonly int[] playerScores = new int[Shared.MaxPlayers() + 1];
     private float nextRoundTime = 0;
+    private float nextPowerUpTime = 0;
+
+
+    /** Synced variables listened to by all players **/
+    /// <summary>
+    /// The current level (cast to an int for syncing)
+    /// </summary>
+    [UdonSynced] private int currentLevel = (int) Level.LOBBY;
 
     
     private void Log(string message) {
@@ -74,24 +82,15 @@ public class GameLogic : UdonSharpBehaviour {
 
     void Start() {
         Log("GameLogic initializing...");
-        LoadCurrentLevel();
         if (!Networking.IsOwner(gameObject)) {
             Log("Not the owner, skipping rest of initialization");
             return;
         }
-
-        // GameObject powerUp = powerUpPool.TryToSpawn();
-        // if (powerUp == null) {
-        //     LogError("Game Logic: No available power ups");
-        //     return;
-        // }
-        // powerUp.SetActive(true);
-        // PowerUp powerUpComponent = powerUp.GetComponent<PowerUp>();
-        // powerUpComponent.SetPowerUpType(0);
-        // powerUp.transform.position = new Vector3(-1, 1f, -0.3f);
+        LoadCurrentLevel();
     }
 
     public override void OnDeserialization() {
+        Log("Current level: " + currentLevel);
         LoadCurrentLevel();
     }
 
@@ -117,6 +116,10 @@ public class GameLogic : UdonSharpBehaviour {
         }
         if (nextRoundTime != 0 && Time.time * 1000 >= nextRoundTime) {
             StartNextRound();
+        }
+        if (nextPowerUpTime != 0 && Time.time * 1000 >= nextPowerUpTime) {
+            nextPowerUpTime = 0;
+            SpawnPowerUp();
         }
     }
 
@@ -163,6 +166,13 @@ public class GameLogic : UdonSharpBehaviour {
             LogError("Non-owner is trying to switch the level, should not happen");
             return;
         }
+        // Deactivate all power ups
+        foreach (GameObject child in powerUpPool.Pool) {
+            powerUpPool.Return(child);
+        }
+        // Reset the power up timer
+        nextPowerUpTime = (Time.time * 1000) + POWER_UP_DELAY;
+        // Switch the level
         currentLevel = (int) level;
         LoadCurrentLevel();
     }
@@ -182,10 +192,39 @@ public class GameLogic : UdonSharpBehaviour {
         StartNextRound();
     }
 
+    private void SpawnPowerUp() {
+        Vector3[] spawnPoints = LevelManager.GetLevelManager().GetPowerUpSpawnPoints((Level) currentLevel);
+        if (spawnPoints.Length == 0) {
+            LogError("No power up spawn points");
+            return;
+        }
+        GameObject powerUp = powerUpPool.TryToSpawn();
+        if (powerUp == null) {
+            LogError("Game Logic: No available power ups");
+            return;
+        }
+        powerUp.SetActive(true);
+        PowerUp powerUpComponent = powerUp.GetComponent<PowerUp>();
+        powerUpComponent.SetRandomPowerUpType();
+        powerUp.transform.position = spawnPoints[Random.Range(0, spawnPoints.Length)];
+    }
+
+    /// <summary>
+    /// Triggered locally by the instance owner when a power up is collected
+    /// </summary>
+    public void OnPowerUpCollected(GameObject powerUp) {
+        if (!Networking.IsOwner(gameObject)) {
+            LogError("OnPowerUpCollected called by non-owner");
+            return;
+        }
+        powerUpPool.Return(powerUp);
+        nextPowerUpTime = (Time.time * 1000) + POWER_UP_DELAY;
+    }
+
     /// <summary>
     /// Triggered by the local player's shuriken when a power up is collected
     /// </summary>
-    public void OnPowerUpCollected(int powerUpType, int[] powerUps) {
+    public void ShowEquippedUI(int powerUpType, int[] powerUps) {
         string currentlyEquipped = "Equipped: ";
         bool start = true;
         for (int i = 0; i < powerUps.Length; i++) {

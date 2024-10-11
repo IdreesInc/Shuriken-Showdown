@@ -117,7 +117,7 @@ public class Shuriken : NetworkInterface {
         powerUps[0] = type;
         ApplyPowerUpEffects();
         if (Networking.LocalPlayer.playerId == playerId) {
-            GameLogic.GetGameLogic().OnPowerUpCollected(type, powerUps);
+            GameLogic.GetGameLogic().ShowEquippedUI(type, powerUps);
         }
     }
 

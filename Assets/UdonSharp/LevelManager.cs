@@ -45,11 +45,10 @@ public class LevelManager : UdonSharpBehaviour {
     }
 
     public void SwitchLevel(Level level) {
-        Log("Switching to level: " + level);
         if (loadedLevel == level) {
-            Log("Already on level: " + level);
             return;
         }
+        Log("Switching to level: " + level);
         if (loadedLevel != Level.NONE) {
             // Stop the current background music
             GetBackgroundMusic(loadedLevel).Stop();
@@ -89,6 +88,19 @@ public class LevelManager : UdonSharpBehaviour {
         }
         GameObject deathMarker = deathMarkerTrans.gameObject;
         return deathMarker.transform.position;
+    }
+
+    public Vector3[] GetPowerUpSpawnPoints(Level level) {
+        Transform powerUpMarkerParent = GetLevelObject(level).transform.Find("Power Up Markers");
+        if (powerUpMarkerParent == null) {
+            LogError("Power up markers not found for level: " + level);
+            return new Vector3[0];
+        }
+        Vector3[] powerUpSpawnPoints = new Vector3[powerUpMarkerParent.childCount];
+        for (int i = 0; i < powerUpMarkerParent.transform.childCount; i++) {
+            powerUpSpawnPoints[i] = powerUpMarkerParent.transform.GetChild(i).position;
+        }
+        return powerUpSpawnPoints;
     }
 
     public void SetPlayerSpawnPoint(Vector3 position) {

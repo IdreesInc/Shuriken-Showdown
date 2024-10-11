@@ -31,6 +31,11 @@ public class PowerUp : NetworkInterface {
         return POWER_UP_SUBTITLES[type];
     }
 
+    public static int GetNumberOfPowerUps() {
+        // Stupid necessity due to UdonSharp not allowing for static fields
+        return 1;
+    }
+
     private void Log(string message) {
         Debug.Log("[PowerUp]: " + message);
     }
@@ -48,6 +53,11 @@ public class PowerUp : NetworkInterface {
         this.powerUpType = powerUpType;
     }
 
+    public void SetRandomPowerUpType() {
+        int randomPowerUpType = Random.Range(0, GetNumberOfPowerUps());
+        SetPowerUpType(randomPowerUpType);
+    }
+
     public int GetPowerUpType() {
         return powerUpType;
     }
@@ -59,22 +69,17 @@ public class PowerUp : NetworkInterface {
     }
 
     private void OnTriggerEnter(Collider collider) {
-        if (!Utilities.IsValid(collider)) {
-            return;
-        }
-        Log("Power up has triggered with " + collider.gameObject.name);
         if (!Networking.IsOwner(gameObject)) {
             Log("Not the owner, skipping collision");
             return;
         }
-        Log("Power up has collided with " + collider.gameObject.name);
+        Log("Power up has triggered with " + collider.gameObject.name);
         if (collider.gameObject.GetComponent<Shuriken>() != null) {
             Shuriken shuriken = collider.gameObject.GetComponent<Shuriken>();
             Log("Power up has collided with a shuriken owned by " + shuriken.GetPlayerId());
             shuriken.SendMethodNetworked(nameof(Shuriken.ActivatePowerUp), SyncTarget.All, powerUpType);
+            GameLogic.GetGameLogic().OnPowerUpCollected(gameObject);
         }
-        // Move 0.5 units to the right
-        transform.position = new Vector3(transform.position.x + 0.5f, transform.position.y, transform.position.z);
     }
 
 }
