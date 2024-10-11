@@ -108,6 +108,10 @@ public class PlayerCollider : NetworkInterface {
             return;
         }
         Log("Next round, resetting player collider");
+        GoToLevelSpawn((Level) level);
+    }
+
+    public void GoToLevelSpawn(Level level) {
         LevelManager manager = LevelManager.GetLevelManager();
         // Get spawn point
         Vector3 spawnPoint = manager.GetSpawnPosition((Level) level);

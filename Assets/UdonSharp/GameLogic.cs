@@ -90,7 +90,6 @@ public class GameLogic : UdonSharpBehaviour {
     }
 
     public override void OnDeserialization() {
-        Log("Current level: " + currentLevel);
         LoadCurrentLevel();
     }
 
