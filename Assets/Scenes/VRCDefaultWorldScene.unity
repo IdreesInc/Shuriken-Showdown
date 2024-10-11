@@ -10844,6 +10844,12 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 731832430}
     m_Modifications:
+    - target: {fileID: -1509562220368616136, guid: 73f3d4181b8d1544caf35b2b909e89b0,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: -1509562220368616136, guid: 73f3d4181b8d1544caf35b2b909e89b0,
+        type: 3}
     - target: {fileID: 5123363117175709511, guid: 73f3d4181b8d1544caf35b2b909e89b0,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -10894,6 +10900,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7636934228876621515, guid: 73f3d4181b8d1544caf35b2b909e89b0,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7636934228876621515, guid: 73f3d4181b8d1544caf35b2b909e89b0,
+        type: 3}
+      propertyPath: AllowCollisionOwnershipTransfer
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7728994411802557440, guid: 73f3d4181b8d1544caf35b2b909e89b0,
         type: 3}
       propertyPath: m_Name
@@ -10907,6 +10923,12 @@ PrefabInstance:
 --- !u!4 &856473306 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5123363117175709511, guid: 73f3d4181b8d1544caf35b2b909e89b0,
+    type: 3}
+  m_PrefabInstance: {fileID: 856473305}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &856473307 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7728994411802557440, guid: 73f3d4181b8d1544caf35b2b909e89b0,
     type: 3}
   m_PrefabInstance: {fileID: 856473305}
   m_PrefabAsset: {fileID: 0}
@@ -15884,6 +15906,12 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 731832430}
     m_Modifications:
+    - target: {fileID: -5118967235906210332, guid: d028ee8a6aead6c4cab16aed6cd5c0e5,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: -5118967235906210332, guid: d028ee8a6aead6c4cab16aed6cd5c0e5,
+        type: 3}
     - target: {fileID: 1497121697056406667, guid: d028ee8a6aead6c4cab16aed6cd5c0e5,
         type: 3}
       propertyPath: m_Name
@@ -15939,6 +15967,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8757411378281368474, guid: d028ee8a6aead6c4cab16aed6cd5c0e5,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8757411378281368474, guid: d028ee8a6aead6c4cab16aed6cd5c0e5,
+        type: 3}
+      propertyPath: AllowCollisionOwnershipTransfer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -15947,6 +15985,12 @@ PrefabInstance:
 --- !u!4 &1227330765 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6377988806990279287, guid: d028ee8a6aead6c4cab16aed6cd5c0e5,
+    type: 3}
+  m_PrefabInstance: {fileID: 1227330764}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1227330766 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1497121697056406667, guid: d028ee8a6aead6c4cab16aed6cd5c0e5,
     type: 3}
   m_PrefabInstance: {fileID: 1227330764}
   m_PrefabAsset: {fileID: 0}
@@ -17173,7 +17217,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 48992f71ea79efd41bb8f8a3abac4a7b, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.5
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -17933,6 +17977,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1687264709}
     m_Modifications:
+    - target: {fileID: -6757942750570267182, guid: 90e75502e9022784aad1cf4e40b8b5fd,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: -6757942750570267182, guid: 90e75502e9022784aad1cf4e40b8b5fd,
+        type: 3}
+    - target: {fileID: -4953855799067999168, guid: 90e75502e9022784aad1cf4e40b8b5fd,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4953855799067999168, guid: 90e75502e9022784aad1cf4e40b8b5fd,
+        type: 3}
+      propertyPath: AllowCollisionOwnershipTransfer
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3538377624302445878, guid: 90e75502e9022784aad1cf4e40b8b5fd,
         type: 3}
       propertyPath: m_Name
@@ -17996,6 +18056,12 @@ PrefabInstance:
 --- !u!4 &1386855048 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5037315260809490470, guid: 90e75502e9022784aad1cf4e40b8b5fd,
+    type: 3}
+  m_PrefabInstance: {fileID: 1386855047}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1386855049 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3538377624302445878, guid: 90e75502e9022784aad1cf4e40b8b5fd,
     type: 3}
   m_PrefabInstance: {fileID: 1386855047}
   m_PrefabAsset: {fileID: 0}
@@ -22996,7 +23062,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 3d86e340cf99ea947b5fae4aac425f05, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.5
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -27214,6 +27280,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1687264709}
     m_Modifications:
+    - target: {fileID: -6757942750570267182, guid: 90e75502e9022784aad1cf4e40b8b5fd,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: -6757942750570267182, guid: 90e75502e9022784aad1cf4e40b8b5fd,
+        type: 3}
+    - target: {fileID: -4953855799067999168, guid: 90e75502e9022784aad1cf4e40b8b5fd,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -4953855799067999168, guid: 90e75502e9022784aad1cf4e40b8b5fd,
+        type: 3}
+      propertyPath: AllowCollisionOwnershipTransfer
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3538377624302445878, guid: 90e75502e9022784aad1cf4e40b8b5fd,
         type: 3}
       propertyPath: m_Name
@@ -27274,6 +27356,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 90e75502e9022784aad1cf4e40b8b5fd, type: 3}
+--- !u!1 &99261735781583990 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3538377624302445878, guid: 90e75502e9022784aad1cf4e40b8b5fd,
+    type: 3}
+  m_PrefabInstance: {fileID: 99261735781583989}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &171152523712238877
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -27282,6 +27370,12 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1794308171}
     m_Modifications:
+    - target: {fileID: -5118967235906210332, guid: d028ee8a6aead6c4cab16aed6cd5c0e5,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: -5118967235906210332, guid: d028ee8a6aead6c4cab16aed6cd5c0e5,
+        type: 3}
     - target: {fileID: 188634004548526734, guid: d028ee8a6aead6c4cab16aed6cd5c0e5,
         type: 3}
       propertyPath: m_Enabled
@@ -27342,11 +27436,27 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8757411378281368474, guid: d028ee8a6aead6c4cab16aed6cd5c0e5,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8757411378281368474, guid: d028ee8a6aead6c4cab16aed6cd5c0e5,
+        type: 3}
+      propertyPath: AllowCollisionOwnershipTransfer
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d028ee8a6aead6c4cab16aed6cd5c0e5, type: 3}
+--- !u!1 &171152523712238878 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1497121697056406667, guid: d028ee8a6aead6c4cab16aed6cd5c0e5,
+    type: 3}
+  m_PrefabInstance: {fileID: 171152523712238877}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &399305548162050885
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -27484,6 +27594,12 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1794308171}
     m_Modifications:
+    - target: {fileID: -1509562220368616136, guid: 73f3d4181b8d1544caf35b2b909e89b0,
+        type: 3}
+      propertyPath: serializationData.Prefab
+      value: 
+      objectReference: {fileID: -1509562220368616136, guid: 73f3d4181b8d1544caf35b2b909e89b0,
+        type: 3}
     - target: {fileID: 4204328325906175229, guid: 73f3d4181b8d1544caf35b2b909e89b0,
         type: 3}
       propertyPath: m_Enabled
@@ -27539,6 +27655,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7636934228876621515, guid: 73f3d4181b8d1544caf35b2b909e89b0,
+        type: 3}
+      propertyPath: _syncMethod
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7636934228876621515, guid: 73f3d4181b8d1544caf35b2b909e89b0,
+        type: 3}
+      propertyPath: AllowCollisionOwnershipTransfer
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7728994411802557440, guid: 73f3d4181b8d1544caf35b2b909e89b0,
         type: 3}
       propertyPath: m_Name
@@ -27549,6 +27675,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 73f3d4181b8d1544caf35b2b909e89b0, type: 3}
+--- !u!1 &3052308027232008321 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7728994411802557440, guid: 73f3d4181b8d1544caf35b2b909e89b0,
+    type: 3}
+  m_PrefabInstance: {fileID: 3052308027232008320}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &3231720197660963110
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27774,15 +27906,15 @@ MonoBehaviour:
   DynamicPrefabs: []
   DynamicMaterials:
   - {fileID: 2100000, guid: 653b0fff082caf549a07767b0161c779, type: 2}
-  - {fileID: 2100000, guid: 35c4bacfbc0048a44a996277d0b4136f, type: 2}
-  - {fileID: 2100000, guid: 3b5aa7069686a0f448973d864d715001, type: 2}
   - {fileID: 2100000, guid: 70b905d6110476240b67484a4e938a5a, type: 2}
-  - {fileID: 2100000, guid: 3ee1b7b636b521b4494794f33c347d11, type: 2}
+  - {fileID: 2100000, guid: 3b5aa7069686a0f448973d864d715001, type: 2}
+  - {fileID: 2100000, guid: 35c4bacfbc0048a44a996277d0b4136f, type: 2}
   - {fileID: 2100000, guid: 30a9b0f818294c4489f3ed6cffae50fe, type: 2}
-  - {fileID: 2100000, guid: b1e4e0376e366ae40800c7985e201025, type: 2}
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
   - {fileID: 2100000, guid: 3c88d4c4e5ad5ad45a3733155943ddd3, type: 2}
+  - {fileID: 2100000, guid: b1e4e0376e366ae40800c7985e201025, type: 2}
+  - {fileID: 2100000, guid: 3ee1b7b636b521b4494794f33c347d11, type: 2}
   - {fileID: 2100000, guid: 6edf1e8abaaa74941af7f2c89366d384, type: 2}
+  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
   LightMapsNear: []
   LightMapsFar: []
   LightMode: 0
@@ -28134,6 +28266,30 @@ MonoBehaviour:
     - VRC.Udon.UdonBehaviour
   - gameObject: {fileID: 620753242}
     ID: 82
+    SerializedTypeNames:
+    - VRC.Udon.UdonBehaviour
+  - gameObject: {fileID: 171152523712238878}
+    ID: 83
+    SerializedTypeNames:
+    - VRC.Udon.UdonBehaviour
+  - gameObject: {fileID: 99261735781583990}
+    ID: 84
+    SerializedTypeNames:
+    - VRC.Udon.UdonBehaviour
+  - gameObject: {fileID: 1386855049}
+    ID: 85
+    SerializedTypeNames:
+    - VRC.Udon.UdonBehaviour
+  - gameObject: {fileID: 3052308027232008321}
+    ID: 86
+    SerializedTypeNames:
+    - VRC.Udon.UdonBehaviour
+  - gameObject: {fileID: 1227330766}
+    ID: 87
+    SerializedTypeNames:
+    - VRC.Udon.UdonBehaviour
+  - gameObject: {fileID: 856473307}
+    ID: 88
     SerializedTypeNames:
     - VRC.Udon.UdonBehaviour
   portraitCameraPositionOffset: {x: 0, y: 0, z: 0}

@@ -101,7 +101,10 @@ public class GameLogic : UdonSharpBehaviour {
                 Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
                 if (shuriken.GetPlayerNumber() != -1) {
                     playerScores[shuriken.GetPlayerNumber()] = shuriken.GetScore();
-                    playerNames[shuriken.GetPlayerNumber()] = Networking.GetOwner(child.gameObject).displayName;
+                    if (Networking.GetOwner(child.gameObject) != null) {
+                        // Check needed for Unity emulator, otherwise unnecessary
+                        playerNames[shuriken.GetPlayerNumber()] = Networking.GetOwner(child.gameObject).displayName;                        
+                    }
                 }
             }
         }
