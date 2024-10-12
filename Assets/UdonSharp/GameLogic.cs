@@ -7,6 +7,7 @@ using VRC.SDKBase;
 using VRC.Udon;
 using VRC.Udon.Common.Interfaces;
 using Miner28.UdonUtils.Network;
+using System;
 
 /// <summary>
 /// Game server logic that is only executed by the instance owner (who also owns this object)
@@ -29,7 +30,7 @@ public class GameLogic : NetworkInterface {
     /// <summary>
     /// The current number of players
     /// </summary>
-    [UdonSynced] private int numberOfPlayers = 0;
+    [UdonSynced] private bool[] _activePlayers = {false, false, false, false, false, false, false, false};
     /// <summary>
     /// The time at which the next round will start
     /// </summary>
@@ -101,12 +102,15 @@ public class GameLogic : NetworkInterface {
             return;
         }
 
-        if (numberOfPlayers == Shared.MaxPlayers()) {
+        int availablePlayerSlot = Array.IndexOf(_activePlayers, false);
+
+        if (availablePlayerSlot == -1) {
+            // TODO: Create guest player
             LogError("Max players reached, not adding components for " + player.playerId);
             return;
         }
 
-        numberOfPlayers++;
+        SetPlayerActive(availablePlayerSlot, true);
 
         // Assign a shuriken to the player
         GameObject shuriken = shurikenPool.TryToSpawn();
@@ -117,7 +121,7 @@ public class GameLogic : NetworkInterface {
         shuriken.SetActive(true);
         Shuriken shurikenComponent = shuriken.GetComponent<Shuriken>();
         shurikenComponent.SetPlayerId(player.playerId);
-        shurikenComponent.SetPlayerNumber(numberOfPlayers);
+        shurikenComponent.SetPlayerNumber(availablePlayerSlot);
         shurikenComponent.ReturnToPlayer();
 
 
@@ -136,8 +140,7 @@ public class GameLogic : NetworkInterface {
         if (!Networking.IsOwner(gameObject)) {
             return;
         }
-        int numAlive = GetAlivePlayerCount();
-        if (numAlive <= 1 && numberOfPlayers > 1) {
+        if (GetAlivePlayerCount() <= 1 && GetPlayerCount() > 1) {
             EndRound();
         }
         if (nextRoundTime != 0 && Time.time * 1000 >= nextRoundTime) {
@@ -182,17 +185,7 @@ public class GameLogic : NetworkInterface {
         nextPowerUpTime = (Time.time * 1000) + POWER_UP_DELAY;
     }
 
-    /** Custom Methods **/
-
-    private int GetAlivePlayerCount() {
-        int count = 0;
-        foreach (Transform child in playerCollidersParent.transform) {
-            if (child.gameObject.activeSelf && child.gameObject.GetComponent<PlayerCollider>() != null && child.gameObject.GetComponent<PlayerCollider>().IsAlive()) {
-                count++;
-            }
-        }
-        return count;
-    }
+    /** Getters/setters for synced variables **/
 
     private Level GetCurrentLevel() {
         return (Level) _currentLevel;
@@ -211,6 +204,42 @@ public class GameLogic : NetworkInterface {
             // Since the owner doesn't get OnDeserialization, we need to manually call it
             OnDeserialization();
         }
+    }
+
+    public bool[] GetActivePlayers() {
+        return _activePlayers;
+    }
+
+    private void SetActivePlayers(bool[] activePlayers) {
+        _activePlayers = activePlayers;
+        RequestSerialization();
+    }
+
+    private void SetPlayerActive(int playerNumber, bool active) {
+        _activePlayers[playerNumber] = active;
+        RequestSerialization();
+    }
+
+    /** Custom methods **/
+
+    private int GetAlivePlayerCount() {
+        int count = 0;
+        foreach (Transform child in playerCollidersParent.transform) {
+            if (child.gameObject.activeSelf && child.gameObject.GetComponent<PlayerCollider>() != null && child.gameObject.GetComponent<PlayerCollider>().IsAlive()) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private int GetPlayerCount() {
+        int count = 0;
+        for (int i = 0; i < GetActivePlayers().Length; i++) {
+            if (GetActivePlayers()[i]) {
+                count++;
+            }
+        }
+        return count;
     }
 
     private void EndRound() {
@@ -274,6 +303,6 @@ public class GameLogic : NetworkInterface {
         powerUp.SetActive(true);
         PowerUp powerUpComponent = powerUp.GetComponent<PowerUp>();
         powerUpComponent.SetRandomPowerUpType();
-        powerUp.transform.position = spawnPoints[Random.Range(0, spawnPoints.Length)];
+        powerUp.transform.position = spawnPoints[UnityEngine.Random.Range(0, spawnPoints.Length)];
     }
 }

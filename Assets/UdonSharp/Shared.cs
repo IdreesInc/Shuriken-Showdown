@@ -26,7 +26,7 @@ public static class Shared {
         // Colors become desaturated when applied to UI elements
         // Notably, this works well with shurikens because we want those to be more saturated
         Color[] colors = {
-            HexToColor("#FD3636"),
+            HexToColor("#FD3131"),
             HexToColor("#5089DD"),
             HexToColor("#61C83E"),
             HexToColor("#FBB72F"),
