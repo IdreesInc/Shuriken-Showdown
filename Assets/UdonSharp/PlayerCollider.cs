@@ -86,7 +86,7 @@ public class PlayerCollider : NetworkInterface {
             return;
         }
         Log("Player hit by " + playerName);
-        LocalPlayerLogic playerLogic = LocalPlayerLogic.GetLocalPlayerLogic();
+        LocalPlayerLogic playerLogic = LocalPlayerLogic.Get();
         playerLogic.ShowHitUI(playerNumber, playerName, "sliced");
         if (playerLogic.GetAlivePlayerCount() > 1) {
             // Only teleport player if this isn't the end of the round
@@ -101,7 +101,7 @@ public class PlayerCollider : NetworkInterface {
             return;
         }
         Log("Round over, resetting player collider");
-        LocalPlayerLogic.GetLocalPlayerLogic().ShowScoreUI();
+        LocalPlayerLogic.Get().ShowScoreUI();
     }
 
     [NetworkedMethod]
@@ -115,7 +115,7 @@ public class PlayerCollider : NetworkInterface {
     }
 
     public void GoToLevelSpawn(Level level) {
-        LevelManager manager = LevelManager.GetLevelManager();
+        LevelManager manager = LevelManager.Get();
         // Get spawn point
         Vector3 spawnPoint = manager.GetSpawnPosition((Level) level);
         // Teleport player to spawn point

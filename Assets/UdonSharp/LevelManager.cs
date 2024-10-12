@@ -9,7 +9,7 @@ public enum Level {
 }
 
 /// <summary>
-/// Non-networked UdonSharpBehaviour for switching between levels/terrains
+/// Local UdonSharpBehaviour for switching between levels/terrains
 /// </summary>
 [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class LevelManager : UdonSharpBehaviour {
@@ -29,7 +29,7 @@ public class LevelManager : UdonSharpBehaviour {
         Debug.LogError("[LevelManager]: " + message);
     }
     
-    public static LevelManager GetLevelManager() {
+    public static LevelManager Get() {
         return GameObject.Find("Level Manager").GetComponent<LevelManager>();
     }
 
@@ -45,11 +45,11 @@ public class LevelManager : UdonSharpBehaviour {
         }
     }
 
-    public void SwitchLevel(Level level) {
+    public void TransitionToLevel(Level level) {
         if (loadedLevel == level) {
             return;
         }
-        Log("Switching to level: " + level);
+        Log("Transitioning to level: " + level);
         if (loadedLevel != Level.NONE) {
             // Stop the current background music
             GetBackgroundMusic(loadedLevel).Stop();
@@ -65,10 +65,6 @@ public class LevelManager : UdonSharpBehaviour {
         SetPlayerSpawnPoint(GetSpawnPosition(loadedLevel));
         // Play the new background music
         GetBackgroundMusic(loadedLevel).Play();
-    }
-
-    private AudioSource GetBackgroundMusic(Level level) {
-        return GetLevelObject(level).transform.Find("Background Music").GetComponent<AudioSource>();
     }
 
     public Vector3 GetSpawnPosition(Level level) {
@@ -106,5 +102,9 @@ public class LevelManager : UdonSharpBehaviour {
 
     public void SetPlayerSpawnPoint(Vector3 position) {
         vrcWorldObject.transform.position = position;
+    }
+
+    private AudioSource GetBackgroundMusic(Level level) {
+        return GetLevelObject(level).transform.Find("Background Music").GetComponent<AudioSource>();
     }
 }

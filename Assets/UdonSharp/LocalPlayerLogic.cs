@@ -31,9 +31,9 @@ public class LocalPlayerLogic : UdonSharpBehaviour {
     }
 
     /// <summary>
-    /// Get the LocalPlayerLogic singleton
+    /// Get the LocalPlayerLogic in the scene (there should only be one)
     /// </summary>
-    public static LocalPlayerLogic GetLocalPlayerLogic() {
+    public static LocalPlayerLogic Get() {
         return GameObject.Find("Local Player Logic").GetComponent<LocalPlayerLogic>();
     }
 
@@ -77,7 +77,7 @@ public class LocalPlayerLogic : UdonSharpBehaviour {
         if (currentlyEquipped.EndsWith(", ")) {
             currentlyEquipped = currentlyEquipped.Substring(0, currentlyEquipped.Length - 2);
         }
-        UIManager.GetUIManager().ShowMessageUI(
+        UIManager.Get().ShowMessageUI(
             null,
             PowerUp.GetPowerUpName(powerUpType),
             PowerUp.GetPowerUpSubtitle(powerUpType),
@@ -100,7 +100,7 @@ public class LocalPlayerLogic : UdonSharpBehaviour {
         } else {
             remaining = numRemaining + " " + remaining;
         }
-        UIManager.GetUIManager().ShowMessageUI((verb + " by").ToUpper(),
+        UIManager.Get().ShowMessageUI((verb + " by").ToUpper(),
             senderName,
             remaining,
             null,
@@ -110,7 +110,7 @@ public class LocalPlayerLogic : UdonSharpBehaviour {
     }
 
     public void ShowScoreUI() {
-        UIManager.GetUIManager().ShowScoreUI(playerScores, playerNames, 3000);
+        UIManager.Get().ShowScoreUI(playerScores, playerNames, 3000);
     }
 
     public int GetAlivePlayerCount() {

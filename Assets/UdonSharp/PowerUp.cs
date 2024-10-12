@@ -78,7 +78,7 @@ public class PowerUp : NetworkInterface {
             Shuriken shuriken = collider.gameObject.GetComponent<Shuriken>();
             Log("Power up has collided with a shuriken owned by " + shuriken.GetPlayerId());
             shuriken.SendMethodNetworked(nameof(Shuriken.ActivatePowerUp), SyncTarget.All, powerUpType);
-            GameLogic.GetGameLogic().OnPowerUpCollected(gameObject);
+            GameLogic.Get().OnPowerUpCollected(gameObject);
         }
     }
 

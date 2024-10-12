@@ -205,9 +205,6 @@ public class Shuriken : NetworkInterface {
         this.playerNumber = playerNumber;
     }
 
-    /// <summary>
-    /// Return the shuriken to the player who owns it
-    /// </summary>
     public void ReturnToPlayer() {
         if (!HasPlayer()) {
             LogError("Owner is not set");
@@ -265,7 +262,7 @@ public class Shuriken : NetworkInterface {
         powerUpOne = type;
         ApplyPowerUpEffects();
         if (Networking.LocalPlayer.playerId == playerId) {
-            LocalPlayerLogic.GetLocalPlayerLogic().ShowEquippedUI(type, powerUpOne, powerUpTwo, powerUpThree);
+            LocalPlayerLogic.Get().ShowEquippedUI(type, powerUpOne, powerUpTwo, powerUpThree);
         }
     }
 

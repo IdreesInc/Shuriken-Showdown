@@ -11,7 +11,7 @@ enum UIType {
 }
 
 /// <summary>
-/// Non-networked UdonSharpBehaviour for managing the local UI
+/// Local UdonSharpBehaviour for managing the player's UI
 /// </summary>
 [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class UIManager : UdonSharpBehaviour {
@@ -41,7 +41,10 @@ public class UIManager : UdonSharpBehaviour {
         Debug.LogError("[UIManager]: " + message);
     }
 
-    public static UIManager GetUIManager() {
+    /// <summary>
+    /// Get the UIManager in the scene (there should only be one)
+    /// </summary>
+    public static UIManager Get() {
         return GameObject.Find("UI Manager").GetComponent<UIManager>();
     }
 
@@ -167,9 +170,7 @@ public class UIManager : UdonSharpBehaviour {
             Vector3 newPosition = headData.position + headData.rotation * Vector3.forward * 1.25f;
 
             // Set the target object's position and rotation
-            visibleUIObject.transform.position = newPosition;
-            visibleUIObject.transform.rotation = headData.rotation;
-
+            visibleUIObject.transform.SetPositionAndRotation(newPosition, headData.rotation);
             visibleUIObject.GetComponent<CanvasGroup>().alpha = alpha;
         }
     }
