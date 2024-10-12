@@ -8,6 +8,10 @@ using VRC.Udon;
 using VRC.Udon.Common.Interfaces;
 using Miner28.UdonUtils.Network;
 
+/// <summary>
+/// Game server logic that is only executed by the instance owner (who also owns this object)
+/// </summary>
+[UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
 public class GameLogic : UdonSharpBehaviour {
 
     /** Used by instance owner to set up the game **/
@@ -26,14 +30,6 @@ public class GameLogic : UdonSharpBehaviour {
     /// The current number of players
     /// </summary>
     private int numberOfPlayers = 0;
-    /// <summary>
-    /// Player names indexed by player number (not player ID)
-    /// </summary>
-    private readonly string[] playerNames = new string[Shared.MaxPlayers() + 1]; 
-    /// <summary>
-    /// Player scores indexed by player number (not player ID)
-    /// </summary>
-    private readonly int[] playerScores = new int[Shared.MaxPlayers() + 1];
     private float nextRoundTime = 0;
     private float nextPowerUpTime = 0;
 
@@ -42,15 +38,14 @@ public class GameLogic : UdonSharpBehaviour {
     /// <summary>
     /// The current level (cast to an int for syncing)
     /// </summary>
-    [UdonSynced] private int currentLevel = (int) Level.LOBBY;
-
+    [UdonSynced] private int synced_currentLevel = (int) Level.LOBBY;
     
     private void Log(string message) {
         Debug.Log("[GameLogic - " + Networking.LocalPlayer.playerId + "]: " + message);
     }
 
     private void LogError(string message) {
-        LogError("[GameLogic - " + Networking.LocalPlayer.playerId + "]: " + message);
+        Debug.Log("[GameLogic - " + Networking.LocalPlayer.playerId + "]: " + message);
     }
 
     /// <summary>
@@ -80,6 +75,25 @@ public class GameLogic : UdonSharpBehaviour {
         return count;
     }
 
+    private Level GetCurrentLevel() {
+        return (Level) synced_currentLevel;
+    }
+
+    private int GetCurrentLevelInt() {
+        // Udon networking is so stupid
+        return synced_currentLevel;
+    }
+
+    private void SetCurrentLevel(Level level) {
+        if (!Networking.IsOwner(gameObject)) {
+            LogError("Non-owner is trying to set the current level, should not happen");
+            return;
+        }
+        Log("Setting current level to " + level);
+        synced_currentLevel = (int) level;
+        RequestSerialization();
+    }
+
     void Start() {
         Log("GameLogic initializing...");
         if (!Networking.IsOwner(gameObject)) {
@@ -90,24 +104,11 @@ public class GameLogic : UdonSharpBehaviour {
     }
 
     public override void OnDeserialization() {
+        Log("Deserializing GameLogic");
         LoadCurrentLevel();
     }
 
     void Update() {
-        /** Logic for all players **/
-        foreach (Transform child in shurikensParent.transform) {
-            if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null) {
-                Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
-                if (shuriken.GetPlayerNumber() != -1) {
-                    playerScores[shuriken.GetPlayerNumber()] = shuriken.GetScore();
-                    if (Networking.GetOwner(child.gameObject) != null) {
-                        // Check needed for Unity emulator, otherwise unnecessary
-                        playerNames[shuriken.GetPlayerNumber()] = Networking.GetOwner(child.gameObject).displayName;                        
-                    }
-                }
-            }
-        }
-
         /** Logic for instance owner **/
         if (!Networking.IsOwner(gameObject)) {
             return;
@@ -149,7 +150,7 @@ public class GameLogic : UdonSharpBehaviour {
 
     private void StartNextRound() {
         nextRoundTime = 0;
-        if (currentLevel == (int) Level.LOBBY) {
+        if (GetCurrentLevel() == Level.LOBBY) {
             SwitchLevel(Level.ISLAND_ONE);
         } else {
             SwitchLevel(Level.LOBBY);
@@ -158,7 +159,8 @@ public class GameLogic : UdonSharpBehaviour {
         foreach (Transform child in playerCollidersParent.transform) {
             if (child.gameObject.activeSelf && child.gameObject.GetComponent<PlayerCollider>() != null) {
                 PlayerCollider playerCollider = child.gameObject.GetComponent<PlayerCollider>();
-                playerCollider.SendMethodNetworked(nameof(PlayerCollider.OnRoundStart), SyncTarget.All, currentLevel);
+                Log("Sending start round for player collider " + child.gameObject.name);
+                playerCollider.SendMethodNetworked(nameof(PlayerCollider.OnRoundStart), SyncTarget.All, GetCurrentLevelInt());
             }
         }
     }
@@ -175,12 +177,12 @@ public class GameLogic : UdonSharpBehaviour {
         // Reset the power up timer
         nextPowerUpTime = (Time.time * 1000) + POWER_UP_DELAY;
         // Switch the level
-        currentLevel = (int) level;
+        SetCurrentLevel(level);
         LoadCurrentLevel();
     }
 
     private void LoadCurrentLevel() {
-        LevelManager.GetLevelManager().SwitchLevel((Level) currentLevel);
+        LevelManager.GetLevelManager().SwitchLevel(GetCurrentLevel());
     }
 
     /// <summary>
@@ -195,7 +197,7 @@ public class GameLogic : UdonSharpBehaviour {
     }
 
     private void SpawnPowerUp() {
-        Vector3[] spawnPoints = LevelManager.GetLevelManager().GetPowerUpSpawnPoints((Level) currentLevel);
+        Vector3[] spawnPoints = LevelManager.GetLevelManager().GetPowerUpSpawnPoints(GetCurrentLevel());
         if (spawnPoints.Length == 0) {
             LogError("No power up spawn points");
             return;
@@ -221,58 +223,6 @@ public class GameLogic : UdonSharpBehaviour {
         }
         powerUpPool.Return(powerUp);
         nextPowerUpTime = (Time.time * 1000) + POWER_UP_DELAY;
-    }
-
-    /// <summary>
-    /// Triggered by the local player's shuriken when a power up is collected
-    /// </summary>
-    public void ShowEquippedUI(int powerUpType, int[] powerUps) {
-        string currentlyEquipped = "Equipped: ";
-        bool start = true;
-        for (int i = 0; i < powerUps.Length; i++) {
-            if (powerUps[i] != -1) {
-                if (!start) {
-                    currentlyEquipped += ", ";
-                }
-                currentlyEquipped += PowerUp.GetPowerUpName(powerUps[i]);
-                start = false;
-            }
-        }
-
-        UIManager.GetUIManager().ShowMessageUI(
-            null,
-            PowerUp.GetPowerUpName(powerUpType),
-            PowerUp.GetPowerUpSubtitle(powerUpType),
-            currentlyEquipped,
-            false,
-            Shared.Colors()[powerUpType % Shared.Colors().Length],
-            1200
-        );
-    }
-
-    public void ShowHitUI(int playerNumber, string senderName, string verb) {
-        int numRemaining = GetAlivePlayerCount();
-        if (numRemaining <= 1) {
-            // Round is over, ignore this UI to wait for round update from instance owner
-            return;
-        }
-        string remaining = "Players Remaining";
-        if (numRemaining < 1) {
-            remaining = "No " + remaining;
-        } else {
-            remaining = numRemaining + " " + remaining;
-        }
-        UIManager.GetUIManager().ShowMessageUI((verb + " by").ToUpper(),
-            senderName,
-            remaining,
-            null,
-            true,
-            Shared.Colors()[(playerNumber - 1) % Shared.Colors().Length],
-            1500);
-    }
-
-    public void ShowScoreUI() {
-        UIManager.GetUIManager().ShowScoreUI(playerScores, playerNames, 3000);
     }
 
     public override void OnPlayerJoined(VRCPlayerApi player) {

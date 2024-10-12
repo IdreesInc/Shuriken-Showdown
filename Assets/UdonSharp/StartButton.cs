@@ -1,8 +1,10 @@
 ﻿
 using UdonSharp;
 using UnityEngine;
+using VRC.SDKBase;
 using VRC.Udon.Common.Interfaces;
 
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class StartButton : UdonSharpBehaviour {
 
     private void Log(string message) {
@@ -19,7 +21,9 @@ public class StartButton : UdonSharpBehaviour {
     // On collision
     void OnTriggerEnter(Collider other) {
         Log("Ya hit the start button");
-        // Send message to GameLogic to start the game
-        GameLogic.GetGameLogic().SendCustomNetworkEvent(NetworkEventTarget.Owner, "StartGame");
+        if (Networking.IsOwner(other.gameObject)) {
+            // Send message to GameLogic to start the game
+            GameLogic.GetGameLogic().SendCustomNetworkEvent(NetworkEventTarget.All, nameof(GameLogic.StartGame));
+        }
     }
 }

@@ -11,6 +11,7 @@ public enum Level {
 /// <summary>
 /// Non-networked UdonSharpBehaviour for switching between levels/terrains
 /// </summary>
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class LevelManager : UdonSharpBehaviour {
 
     public GameObject vrcWorldObject;

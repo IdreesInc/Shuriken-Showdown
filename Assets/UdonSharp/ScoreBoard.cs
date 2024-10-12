@@ -10,6 +10,7 @@ using VRC.Udon;
 /// <summary>
 /// Non-networked UdonSharpBehaviour for updating the score board UI
 /// </summary>
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class ScoreBoard : UdonSharpBehaviour {
 
     public GameObject[] scoreLines;

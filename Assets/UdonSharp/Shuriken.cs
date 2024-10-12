@@ -6,6 +6,7 @@ using VRC.Udon.Common.Interfaces;
 using Miner28.UdonUtils.Network;
 using System;
 
+[UdonBehaviourSyncMode(BehaviourSyncMode.Continuous)]
 public class Shuriken : NetworkInterface {
 
     public AudioSource audioSource;
@@ -21,7 +22,9 @@ public class Shuriken : NetworkInterface {
     [UdonSynced] private bool isHeld = false;
     [UdonSynced] private bool hasBeenThrown = false;
 
-    [UdonSynced] private readonly int[] powerUps = { -1, -1, -1 };
+    [UdonSynced] private int powerUpOne = -1;
+    [UdonSynced] private int powerUpTwo = -1;
+    [UdonSynced] private int powerUpThree = -1;
     [UdonSynced] private int score = 0;
 
     private VRCPlayerApi Player {
@@ -110,27 +113,26 @@ public class Shuriken : NetworkInterface {
     private void AddPowerUp(int type) {
         Log("Adding power up: " + PowerUp.GetPowerUpName(type));
         ReturnToPlayer();
-        // Move every power up down one slot and add the new power up to the first slot
-        for (int i = powerUps.Length - 1; i > 0; i--) {
-            powerUps[i] = powerUps[i - 1];
-        }
-        powerUps[0] = type;
+        powerUpThree = powerUpTwo;
+        powerUpTwo = powerUpOne;
+        powerUpOne = type;
         ApplyPowerUpEffects();
         if (Networking.LocalPlayer.playerId == playerId) {
-            GameLogic.GetGameLogic().ShowEquippedUI(type, powerUps);
+            LocalPlayerLogic.GetLocalPlayerLogic().ShowEquippedUI(type, powerUpOne, powerUpTwo, powerUpThree);
         }
     }
 
     private void ApplyPowerUpEffects() {
         ResetPowerUpEffects();
-        for (int i = 0; i < powerUps.Length; i++) {
-            if (powerUps[i] != -1) {
-                ApplyPowerUp(powerUps[i]);
-            }
-        }
+        ApplyPowerUp(powerUpOne);
+        ApplyPowerUp(powerUpTwo);
+        ApplyPowerUp(powerUpThree);
     }
 
     private void ApplyPowerUp(int type) {
+        if (type == -1) {
+            return;
+        }
         Log("Applying power up: " + PowerUp.GetPowerUpName(type));
         if (type == 0) {
             // Embiggen
@@ -162,10 +164,14 @@ public class Shuriken : NetworkInterface {
 
     private Vector3 GetSpawnOffset() {
         int numOfEmbiggens = 0;
-        for (int i = 0; i < powerUps.Length; i++) {
-            if (powerUps[i] == 0) {
-                numOfEmbiggens++;
-            }
+        if (powerUpOne == 0) {
+            numOfEmbiggens++;
+        }
+        if (powerUpTwo == 0) {
+            numOfEmbiggens++;
+        }
+        if (powerUpThree == 0) {
+            numOfEmbiggens++;
         }
         return new Vector3(0, 0.5f, 1f + 0.5f * numOfEmbiggens);
     }

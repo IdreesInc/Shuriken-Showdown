@@ -13,6 +13,7 @@ enum UIType {
 /// <summary>
 /// Non-networked UdonSharpBehaviour for managing the local UI
 /// </summary>
+[UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class UIManager : UdonSharpBehaviour {
 
     public GameObject messageUI;

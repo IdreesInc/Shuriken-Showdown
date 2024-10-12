@@ -6,6 +6,7 @@ using VRC.Udon;
 using VRC.Udon.Common.Interfaces;
 using Miner28.UdonUtils.Network;
 
+[UdonBehaviourSyncMode(BehaviourSyncMode.Continuous)]
 public class PowerUp : NetworkInterface {
 
     [UdonSynced] private int powerUpType = 0;
@@ -70,7 +71,6 @@ public class PowerUp : NetworkInterface {
 
     private void OnTriggerEnter(Collider collider) {
         if (!Networking.IsOwner(gameObject)) {
-            Log("Not the owner, skipping collision");
             return;
         }
         Log("Power up has triggered with " + collider.gameObject.name);

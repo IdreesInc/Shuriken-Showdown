@@ -3,6 +3,7 @@ using UnityEngine;
 using VRC.SDKBase;
 using Miner28.UdonUtils.Network;
 
+[UdonBehaviourSyncMode(BehaviourSyncMode.Continuous)]
 public class PlayerCollider : NetworkInterface {
     private readonly Vector3 offset = new Vector3(0, 1, 0);
     [UdonSynced] private int playerId = -1;
@@ -16,6 +17,10 @@ public class PlayerCollider : NetworkInterface {
             return VRCPlayerApi.GetPlayerById(playerId);
         }
     }
+
+    public int GetPlayerId() {
+        return playerId;
+}
 
     private void Log(string message) {
         Debug.Log("[PlayerCollider - " + playerId + "]: " + message);
@@ -81,10 +86,9 @@ public class PlayerCollider : NetworkInterface {
             return;
         }
         Log("Player hit by " + playerName);
-        GameLogic gameLogic = GameLogic.GetGameLogic();
-        // Notify local game logic to update UI
-        gameLogic.ShowHitUI(playerNumber, playerName, "sliced");
-        if (gameLogic.GetAlivePlayerCount() > 1) {
+        LocalPlayerLogic playerLogic = LocalPlayerLogic.GetLocalPlayerLogic();
+        playerLogic.ShowHitUI(playerNumber, playerName, "sliced");
+        if (playerLogic.GetAlivePlayerCount() > 1) {
             // Only teleport player if this isn't the end of the round
             Player.TeleportTo(GetDeathMarkerLocation(), Player.GetRotation());
         }
@@ -97,8 +101,7 @@ public class PlayerCollider : NetworkInterface {
             return;
         }
         Log("Round over, resetting player collider");
-        // Notify local game logic to update UI
-        GameLogic.GetGameLogic().ShowScoreUI();
+        LocalPlayerLogic.GetLocalPlayerLogic().ShowScoreUI();
     }
 
     [NetworkedMethod]
