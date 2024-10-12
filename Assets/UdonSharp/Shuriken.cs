@@ -299,7 +299,11 @@ public class Shuriken : NetworkInterface {
             Networking.SetOwner(Networking.LocalPlayer, gameObject);
             ReturnToPlayer();
         }
-        GetComponent<Renderer>().material.color = Shared.ShurikenColors()[playerId % Shared.Colors().Length];
+        if (playerId == -1) {
+            GetComponent<Renderer>().material.color = Color.grey;
+        } else {
+            GetComponent<Renderer>().material.color = Shared.Colors()[(playerId - 1) % Shared.Colors().Length];
+        }
     }
 
     private Vector3 GetSpawnOffset() {

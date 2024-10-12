@@ -2,7 +2,7 @@ using UnityEngine;
 
 public static class Shared {
 
-    private static Color hexToColor(string hex) {
+    private static Color HexToColor(string hex) {
         if (hex.StartsWith("#")) {
             hex = hex.Substring(1);
         }
@@ -23,30 +23,17 @@ public static class Shared {
     }
     public static Color[] Colors() {
         // TODO: Hardcode these colors when finalized
+        // Colors become desaturated when applied to UI elements
+        // Notably, this works well with shurikens because we want those to be more saturated
         Color[] colors = {
-            hexToColor("#FF6B6B"),
-            hexToColor("#97B9EC"),
-            hexToColor("#95CF81"),
-            hexToColor("#FFD87D"),
-            hexToColor("#C79FE7"),
-            hexToColor("#FBAC7F"),
-            hexToColor("#90E3E9"),
-            hexToColor("#FEA3C4"),
-        };
-        return colors;
-    }
-
-    public static Color[] ShurikenColors() {
-        Color[] colors = {
-            Color.grey,
-            Color.red,
-            Color.blue,
-            Color.green,
-            Color.yellow,
-            Color.black, // TODO: Fix
-            Color.black, // TODO: Fix
-            Color.cyan,
-            Color.magenta
+            HexToColor("#FD3636"),
+            HexToColor("#5089DD"),
+            HexToColor("#61C83E"),
+            HexToColor("#FBB72F"),
+            HexToColor("#B36DEA"),
+            HexToColor("#FD7D34"),
+            HexToColor("#45CFD9"),
+            HexToColor("#FF64A1"),
         };
         return colors;
     }

@@ -260,10 +260,6 @@ public class GameLogic : NetworkInterface {
         SetCurrentLevel(level);
     }
 
-    // private void LoadCurrentLevel() {
-    //     LevelManager.Get().TransitionToLevel(GetCurrentLevel());
-    // }
-
     private void SpawnPowerUp() {
         Vector3[] spawnPoints = LevelManager.Get().GetPowerUpSpawnPoints(GetCurrentLevel());
         if (spawnPoints.Length == 0) {
