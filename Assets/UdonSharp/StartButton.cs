@@ -23,7 +23,7 @@ public class StartButton : UdonSharpBehaviour {
         Log("Ya hit the start button");
         if (Networking.IsOwner(other.gameObject)) {
             // Send message to GameLogic to start the game
-            GameLogic.GetGameLogic().SendCustomNetworkEvent(NetworkEventTarget.All, nameof(GameLogic.StartGame));
+            GameLogic.GetGameLogic().SendMethodNetworked(nameof(GameLogic.StartGame), SyncTarget.All);
         }
     }
 }

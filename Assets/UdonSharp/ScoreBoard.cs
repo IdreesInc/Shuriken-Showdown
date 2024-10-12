@@ -23,6 +23,8 @@ public class ScoreBoard : UdonSharpBehaviour {
         Debug.LogError("[ScoreBoard]: " + message);
     }
 
+    /** Udon Overrides **/
+
     void Start() {
         if (scoreLines == null || scoreLines.Length == 0) {
             LogError("scoreLines is null or empty");
@@ -33,6 +35,8 @@ public class ScoreBoard : UdonSharpBehaviour {
             scoreLines[i].GetComponent<UnityEngine.UI.Image>().color = Shared.Colors()[i];
         }
     }
+
+    /** Custom Methods **/
 
     public void UpdateScores(int[] scores, string[] names) {
         // Start iterating at one since there is no player 0

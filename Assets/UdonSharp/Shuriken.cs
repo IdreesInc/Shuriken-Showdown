@@ -36,13 +36,6 @@ public class Shuriken : NetworkInterface {
         }
     }
 
-    private string GetPlayerName() {
-        if (Player == null) {
-            return "[Unnamed Player]";
-        }
-        return Player.displayName;
-    }
-
     private void Log(string message) {
         Debug.Log("[Shuriken - " + playerId + "]: " + message);
     }
@@ -50,6 +43,8 @@ public class Shuriken : NetworkInterface {
     private void LogError(string message) {
         Debug.LogError("[Shuriken - " + playerId + "]: " + message);
     }
+
+    /** Udon Overrides **/
 
     void Start() {
         if (playerId == -1) {
@@ -59,149 +54,6 @@ public class Shuriken : NetworkInterface {
             LogError("playerNumber is not set");
         }
         Log("Shuriken has been spawned.");
-    }
-
-    public void SetPlayerId(int playerId) {
-        Log("Setting owner id to " + playerId);
-        this.playerId = playerId;
-        UpdateOwnership();
-    }
-
-    public void SetPlayerNumber(int playerNumber) {
-        Log("Setting player number to " + playerNumber);
-        this.playerNumber = playerNumber;
-    }
-
-    public int GetPlayerId() {
-        return playerId;
-    }
-
-    public int GetPlayerNumber() {
-        return playerNumber;
-    }
-
-    public int GetScore() {
-        return score;
-    }
-
-    public override void OnDeserialization() {
-        // Log("Deserializing shuriken with owner id " + playerId);
-        ApplyPowerUpEffects();
-        UpdateOwnership();
-    }
-
-    /// <summary>
-    /// Triggered over the network by PowerUp when it detects a collision with this shuriken
-    /// </summary>
-    [NetworkedMethod]
-    public void ActivatePowerUp(int type) {
-        AddPowerUp(type);
-    }
-
-    /// <summary>
-    /// Triggered over the network by GameLogic when the round is over
-    /// </summary>
-    [NetworkedMethod]
-    public void OnRoundOver() {
-        ResetShurikenBetweenRounds();
-    }
-
-    private void ResetShurikenBetweenRounds() {
-        ReturnToPlayer();
-    }
-
-    private void AddPowerUp(int type) {
-        Log("Adding power up: " + PowerUp.GetPowerUpName(type));
-        ReturnToPlayer();
-        powerUpThree = powerUpTwo;
-        powerUpTwo = powerUpOne;
-        powerUpOne = type;
-        ApplyPowerUpEffects();
-        if (Networking.LocalPlayer.playerId == playerId) {
-            LocalPlayerLogic.GetLocalPlayerLogic().ShowEquippedUI(type, powerUpOne, powerUpTwo, powerUpThree);
-        }
-    }
-
-    private void ApplyPowerUpEffects() {
-        ResetPowerUpEffects();
-        ApplyPowerUp(powerUpOne);
-        ApplyPowerUp(powerUpTwo);
-        ApplyPowerUp(powerUpThree);
-    }
-
-    private void ApplyPowerUp(int type) {
-        if (type == -1) {
-            return;
-        }
-        Log("Applying power up: " + PowerUp.GetPowerUpName(type));
-        if (type == 0) {
-            // Embiggen
-            transform.localScale = new Vector3(
-                transform.localScale.x + 1,
-                transform.localScale.y + 1,
-                transform.localScale.z + 1
-            );
-        }
-    }
-
-    private void ResetPowerUpEffects() {
-        // Reset all effects of power ups
-        transform.localScale = new Vector3(1, 1, 1);
-    }
-
-    private void UpdateOwnership() {
-        if (playerId == Networking.LocalPlayer.playerId && !Networking.IsOwner(gameObject)) {
-            Log("Claiming network ownership of shuriken");
-            Networking.SetOwner(Networking.LocalPlayer, gameObject);
-            ReturnToPlayer();
-        }
-        GetComponent<Renderer>().material.color = Shared.ShurikenColors()[playerId % Shared.Colors().Length];
-    }
-
-    public bool HasPlayer() {
-        return Player != null;
-    }
-
-    private Vector3 GetSpawnOffset() {
-        int numOfEmbiggens = 0;
-        if (powerUpOne == 0) {
-            numOfEmbiggens++;
-        }
-        if (powerUpTwo == 0) {
-            numOfEmbiggens++;
-        }
-        if (powerUpThree == 0) {
-            numOfEmbiggens++;
-        }
-        return new Vector3(0, 0.5f, 1f + 0.5f * numOfEmbiggens);
-    }
-
-    /// <summary>
-    /// Return the shuriken to the player who owns it
-    /// </summary>
-    public void ReturnToPlayer() {
-        if (!HasPlayer()) {
-            LogError("Owner is not set");
-            return;
-        } else if (Networking.LocalPlayer.playerId != playerId) {
-            // Log("Won't return as shuriken is not owned by " + Networking.LocalPlayer.playerId);
-            return;
-        }
-        Log("Returning shuriken to " + playerId);
-        // Place the shuriken in front of the player
-        PutInFrontOfPlayer();
-        GetComponent<Rigidbody>().velocity = Vector3.zero;
-        GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
-        hasBeenThrown = false;
-    }
-
-    private void PutInFrontOfPlayer() {
-        if (!HasPlayer()) {
-            LogError("Owner is not set");
-            return;
-        }
-        // Place the shuriken in front of the player
-        transform.position = Player.GetPosition() + Player.GetRotation() * GetSpawnOffset();
     }
 
     void FixedUpdate() {
@@ -323,5 +175,156 @@ public class Shuriken : NetworkInterface {
         } else {
             Log("Shuriken has triggered with " + collider.gameObject.name);
         }
+    }
+
+    /** Event Handlers **/
+
+    /// <summary>
+    /// Triggered over the network by PowerUp when it detects a collision with this shuriken
+    /// </summary>
+    [NetworkedMethod]
+    public void ActivatePowerUp(int type) {
+        AddPowerUp(type);
+    }
+
+    [NetworkedMethod]
+    public void OnRoundOver() {
+        ResetShurikenBetweenRounds();
+    }
+
+    /** Custom Methods **/
+
+    public void SetPlayerId(int playerId) {
+        Log("Setting owner id to " + playerId);
+        this.playerId = playerId;
+        UpdateOwnership();
+    }
+
+    public void SetPlayerNumber(int playerNumber) {
+        Log("Setting player number to " + playerNumber);
+        this.playerNumber = playerNumber;
+    }
+
+    /// <summary>
+    /// Return the shuriken to the player who owns it
+    /// </summary>
+    public void ReturnToPlayer() {
+        if (!HasPlayer()) {
+            LogError("Owner is not set");
+            return;
+        } else if (Networking.LocalPlayer.playerId != playerId) {
+            // Log("Won't return as shuriken is not owned by " + Networking.LocalPlayer.playerId);
+            return;
+        }
+        Log("Returning shuriken to " + playerId);
+        // Place the shuriken in front of the player
+        PutInFrontOfPlayer();
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
+        GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+        hasBeenThrown = false;
+    }
+
+    public bool HasPlayer() {
+        return Player != null;
+    }
+
+    public int GetPlayerId() {
+        return playerId;
+    }
+
+    public int GetPlayerNumber() {
+        return playerNumber;
+    }
+
+    public int GetScore() {
+        return score;
+    }
+
+    public override void OnDeserialization() {
+        // Log("Deserializing shuriken with owner id " + playerId);
+        ApplyPowerUpEffects();
+        UpdateOwnership();
+    }
+
+    private string GetPlayerName() {
+        if (Player == null) {
+            return "[Unnamed Player]";
+        }
+        return Player.displayName;
+    }
+
+    private void ResetShurikenBetweenRounds() {
+        ReturnToPlayer();
+    }
+
+    private void AddPowerUp(int type) {
+        Log("Adding power up: " + PowerUp.GetPowerUpName(type));
+        ReturnToPlayer();
+        powerUpThree = powerUpTwo;
+        powerUpTwo = powerUpOne;
+        powerUpOne = type;
+        ApplyPowerUpEffects();
+        if (Networking.LocalPlayer.playerId == playerId) {
+            LocalPlayerLogic.GetLocalPlayerLogic().ShowEquippedUI(type, powerUpOne, powerUpTwo, powerUpThree);
+        }
+    }
+
+    private void ApplyPowerUpEffects() {
+        ResetPowerUpEffects();
+        ApplyPowerUp(powerUpOne);
+        ApplyPowerUp(powerUpTwo);
+        ApplyPowerUp(powerUpThree);
+    }
+
+    private void ApplyPowerUp(int type) {
+        if (type == -1) {
+            return;
+        }
+        Log("Applying power up: " + PowerUp.GetPowerUpName(type));
+        if (type == 0) {
+            // Embiggen
+            transform.localScale = new Vector3(
+                transform.localScale.x + 1,
+                transform.localScale.y + 1,
+                transform.localScale.z + 1
+            );
+        }
+    }
+
+    private void ResetPowerUpEffects() {
+        // Reset all effects of power ups
+        transform.localScale = new Vector3(1, 1, 1);
+    }
+
+    private void UpdateOwnership() {
+        if (playerId == Networking.LocalPlayer.playerId && !Networking.IsOwner(gameObject)) {
+            Log("Claiming network ownership of shuriken");
+            Networking.SetOwner(Networking.LocalPlayer, gameObject);
+            ReturnToPlayer();
+        }
+        GetComponent<Renderer>().material.color = Shared.ShurikenColors()[playerId % Shared.Colors().Length];
+    }
+
+    private Vector3 GetSpawnOffset() {
+        int numOfEmbiggens = 0;
+        if (powerUpOne == 0) {
+            numOfEmbiggens++;
+        }
+        if (powerUpTwo == 0) {
+            numOfEmbiggens++;
+        }
+        if (powerUpThree == 0) {
+            numOfEmbiggens++;
+        }
+        return new Vector3(0, 0.5f, 1f + 0.5f * numOfEmbiggens);
+    }
+
+    private void PutInFrontOfPlayer() {
+        if (!HasPlayer()) {
+            LogError("Owner is not set");
+            return;
+        }
+        // Place the shuriken in front of the player
+        transform.position = Player.GetPosition() + Player.GetRotation() * GetSpawnOffset();
     }
 }

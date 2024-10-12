@@ -1,4 +1,8 @@
 {
+	"GameLogic.StartGame": {
+		"methodName": "StartGame",
+		"parameters": null
+	},
 	"PlayerCollider.OnHit": {
 		"methodName": "__0_OnHit",
 		"parameters": [

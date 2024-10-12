@@ -40,7 +40,6 @@ public class LocalPlayerLogic : UdonSharpBehaviour {
     /** Udon Overrides **/
 
     void Start() {
-        
     }
 
     void Update() {

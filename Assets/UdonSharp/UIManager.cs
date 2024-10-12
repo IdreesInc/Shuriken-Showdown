@@ -45,6 +45,14 @@ public class UIManager : UdonSharpBehaviour {
         return GameObject.Find("UI Manager").GetComponent<UIManager>();
     }
 
+    /** Udon Overrides **/
+    
+    void Update() {
+        UpdateUI();
+    }
+
+    /** Custom Methods **/
+
     public void ShowMessageUI(
         string topText = "", 
         string highlightText = "", 
@@ -164,9 +172,5 @@ public class UIManager : UdonSharpBehaviour {
 
             visibleUIObject.GetComponent<CanvasGroup>().alpha = alpha;
         }
-    }
-
-    void Update() {
-        UpdateUI();
     }
 }
