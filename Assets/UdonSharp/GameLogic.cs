@@ -25,7 +25,7 @@ public class GameLogic : NetworkInterface {
     /// The delay between a power up being collected and the next one spawning
     /// </summary>
     private const float POWER_UP_DELAY = 5000;
-    private const int MAX_SCORE = 1;
+    private const int MAX_SCORE = 10;
 
     /** Synced Variables **/
 
@@ -322,7 +322,7 @@ public class GameLogic : NetworkInterface {
                 shuriken.SendMethodNetworked(nameof(Shuriken.OnRoundStart), SyncTarget.All);
             }
         }
-        
+
         // Send an event to each player collider
         foreach (Transform child in playerCollidersParent.transform) {
             if (child.gameObject.activeSelf && child.gameObject.GetComponent<PlayerCollider>() != null) {

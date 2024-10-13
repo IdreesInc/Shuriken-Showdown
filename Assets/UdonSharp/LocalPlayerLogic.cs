@@ -44,18 +44,7 @@ public class LocalPlayerLogic : UdonSharpBehaviour {
 
     void Update() {
         /** Logic for all players **/
-        foreach (Transform child in shurikensParent.transform) {
-            if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null) {
-                Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
-                if (shuriken.GetPlayerNumber() != -1) {
-                    playerScores[shuriken.GetPlayerNumber()] = shuriken.GetScore();
-                    if (Networking.GetOwner(child.gameObject) != null) {
-                        // Check needed for Unity emulator, otherwise unnecessary
-                        playerNames[shuriken.GetPlayerNumber()] = Networking.GetOwner(child.gameObject).displayName;                        
-                    }
-                }
-            }
-        }
+        UpdatePlayerScores();
     }
 
     /** Custom Methods **/
@@ -110,17 +99,46 @@ public class LocalPlayerLogic : UdonSharpBehaviour {
     }
 
     public void ShowScoreUI() {
+        UpdatePlayerScores();
         UIManager.Get().ShowScoreUI(playerScores, playerNames, 3000);
     }
 
     public void ShowGameOverUI(int winnerNumber, string winnerName) {
+        bool won = Networking.LocalPlayer.playerId == winnerNumber;
+        string[] losingMessages = {
+            "It wasn't even close...",
+            "Better luck next time",
+            "I bet they cheated",
+            "That was a fluke",
+        };
+        string[] winningMessages = {
+            "It wasn't even close...",
+            "What did they expect?",
+            "Easy peasy",
+        };
+        string message = won ? winningMessages[Random.Range(0, winningMessages.Length)] : losingMessages[Random.Range(0, losingMessages.Length)];
         UIManager.Get().ShowMessageUI("WINNER",
             winnerName,
-            "It wasn't even close",
+            message,
             null,
             true,
             Shared.Colors()[(winnerNumber - 1) % Shared.Colors().Length],
-            3000);
+            5000);
+    }
+
+    private void UpdatePlayerScores() {
+        foreach (Transform child in shurikensParent.transform) {
+            if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null) {
+                Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
+                if (shuriken.GetPlayerNumber() != -1) {
+                    playerScores[shuriken.GetPlayerNumber()] = shuriken.GetScore();
+                    if (Networking.GetOwner(child.gameObject) != null) {
+                        // Check needed for Unity emulator, otherwise unnecessary
+                        playerNames[shuriken.GetPlayerNumber()] = Networking.GetOwner(child.gameObject).displayName;                        
+                    }
+                }
+            }
+        }
     }
 
     public int GetAlivePlayerCount() {
