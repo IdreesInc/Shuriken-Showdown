@@ -14,6 +14,15 @@ public class MainMenu : UdonSharpBehaviour {
 
     /** Udon Overrides */
 
+    private void Log(string message) {
+        Debug.Log("[MainMenu]: " + message);
+    }
+
+    private void LogError(string message) {
+        Debug.Log("[MainMenu]: " + message);
+    }
+
+
     void Start() {
         // OnDeserialization();
     }
@@ -22,6 +31,11 @@ public class MainMenu : UdonSharpBehaviour {
         // TODO: Only update when necessary
         UpdateGameMaster();
         UpdatePlayerIcons();
+    }
+
+    public void OnStartGamePressed() {
+        Log("Start Game Pressed");
+        GameLogic.Get().SendMethodNetworked(nameof(GameLogic.StartGame), SyncTarget.All);
     }
 
     /** Custom Methods */
