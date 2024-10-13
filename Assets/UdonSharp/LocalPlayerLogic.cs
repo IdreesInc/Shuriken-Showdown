@@ -89,8 +89,8 @@ public class LocalPlayerLogic : UdonSharpBehaviour {
     }
 
     public void ShowHitUI(int playerNumber, string senderName, string verb) {
-        int numRemaining = GetAlivePlayerCount();
-        if (numRemaining <= 1) {
+        int numRemaining = GetAlivePlayerCount() - 1;
+        if (numRemaining <= 0) {
             // Round is over, ignore this UI to wait for round update from instance owner
             return;
         }
@@ -111,6 +111,16 @@ public class LocalPlayerLogic : UdonSharpBehaviour {
 
     public void ShowScoreUI() {
         UIManager.Get().ShowScoreUI(playerScores, playerNames, 3000);
+    }
+
+    public void ShowGameOverUI(int winnerNumber, string winnerName) {
+        UIManager.Get().ShowMessageUI("WINNER",
+            winnerName,
+            "It wasn't even close",
+            null,
+            true,
+            Shared.Colors()[(winnerNumber - 1) % Shared.Colors().Length],
+            3000);
     }
 
     public int GetAlivePlayerCount() {

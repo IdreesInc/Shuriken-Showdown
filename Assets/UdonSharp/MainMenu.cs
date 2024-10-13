@@ -47,9 +47,8 @@ public class MainMenu : UdonSharpBehaviour {
 
     private void UpdatePlayerIcons() {
         GameLogic gameLogic = GameLogic.Get();
-        bool[] activePlayers = gameLogic.GetActivePlayers();
         for (int i = 0; i < playerIcons.Length; i++) {
-            if (activePlayers[i]) {
+            if (gameLogic.IsPlayerActive(i + 1)) {
                 playerIcons[i].GetComponent<Image>().color = Shared.Colors()[i];
                 playerIcons[i].transform.Find("Player Icon Text").GetComponent<TextMeshProUGUI>().text = "P" + (i + 1);
             } else {

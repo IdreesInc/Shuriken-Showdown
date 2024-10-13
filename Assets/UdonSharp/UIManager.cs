@@ -167,7 +167,7 @@ public class UIManager : UdonSharpBehaviour {
             VRCPlayerApi.TrackingData headData = localPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
 
             // Calculate position in front of the player's camera
-            Vector3 newPosition = headData.position + headData.rotation * Vector3.forward * 1.25f;
+            Vector3 newPosition = headData.position + headData.rotation * Vector3.forward * 1.1f;
 
             // Set the target object's position and rotation
             visibleUIObject.transform.SetPositionAndRotation(newPosition, headData.rotation);

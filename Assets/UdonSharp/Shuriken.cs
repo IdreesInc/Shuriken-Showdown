@@ -19,9 +19,14 @@ public class Shuriken : NetworkInterface {
 
     [UdonSynced] private int playerId = -1;
     [UdonSynced] private int playerNumber = -1;
+
+    /// <summary>
+    /// Whether we are in-game, which determines whether the shuriken can be used
+    /// and if it can collide with anything
+    /// </summary>
+    [UdonSynced] private bool inGame = false;
     [UdonSynced] private bool isHeld = false;
     [UdonSynced] private bool hasBeenThrown = false;
-
     [UdonSynced] private int powerUpOne = -1;
     [UdonSynced] private int powerUpTwo = -1;
     [UdonSynced] private int powerUpThree = -1;
@@ -56,7 +61,21 @@ public class Shuriken : NetworkInterface {
         Log("Shuriken has been spawned.");
     }
 
+    public override void OnDeserialization() {
+        // Log("Deserializing shuriken with owner id " + playerId);
+        ApplyPowerUpEffects();
+        UpdateOwnership();
+    }
+
     void FixedUpdate() {
+        if (Networking.IsOwner(gameObject) && !inGame) {
+            // Disable the ability to pick up the shuriken
+            GetComponent<Rigidbody>().detectCollisions = false;
+        } else {
+            // Enable the ability to pick up the shuriken
+            GetComponent<Rigidbody>().detectCollisions = true;
+        }
+
         GetComponent<Rigidbody>().useGravity = false;
         float velocity = GetComponent<Rigidbody>().velocity.magnitude;
         if (!isHeld) {
@@ -136,7 +155,10 @@ public class Shuriken : NetworkInterface {
             Log("Not the owner, skipping collision");
             return;
         }
-
+        if (!inGame) {
+            Log("Shuriken is disabled, ignoring collision");
+            return;
+        }
         if (collision.gameObject.GetComponent<Shuriken>() != null) {
             // Collided with another shuriken
             Log("Shuriken has collided with another shuriken");
@@ -149,10 +171,13 @@ public class Shuriken : NetworkInterface {
 
     private void OnTriggerEnter(Collider collider) {
         if (!Networking.IsOwner(gameObject)) {
-            Log("Not the owner, skipping collision");
+            Log("Not the owner, skipping trigger");
             return;
         }
-        
+        if (!inGame) {
+            Log("Shuriken is disabled, ignoring trigger");
+            return;
+        }
         if (collider.gameObject.GetComponent<PlayerCollider>() != null) {
             PlayerCollider playerCollider = collider.gameObject.GetComponent<PlayerCollider>();
             if (!HasPlayer() || playerCollider.GetPlayer() != playerId) {
@@ -188,8 +213,25 @@ public class Shuriken : NetworkInterface {
     }
 
     [NetworkedMethod]
-    public void OnRoundOver() {
+    public void OnRoundStart() {
+        inGame = true;
+    }
+
+    [NetworkedMethod]
+    public void OnRoundEnd() {
         ResetShurikenBetweenRounds();
+        inGame = false;
+    }
+
+    [NetworkedMethod]
+    public void OnGameEnd() {
+        ResetShurikenBetweenRounds();
+        powerUpOne = -1;
+        powerUpTwo = -1;
+        powerUpThree = -1;
+        score = 0;
+        inGame = false;
+        ResetPowerUpEffects();
     }
 
     /** Custom Methods **/
@@ -235,12 +277,6 @@ public class Shuriken : NetworkInterface {
 
     public int GetScore() {
         return score;
-    }
-
-    public override void OnDeserialization() {
-        // Log("Deserializing shuriken with owner id " + playerId);
-        ApplyPowerUpEffects();
-        UpdateOwnership();
     }
 
     private string GetPlayerName() {

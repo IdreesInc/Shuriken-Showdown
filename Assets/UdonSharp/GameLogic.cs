@@ -20,15 +20,17 @@ public class GameLogic : NetworkInterface {
     public VRC.SDK3.Components.VRCObjectPool powerUpPool;
     public GameObject shurikensParent;
     public GameObject playerCollidersParent;
+
     /// <summary>
     /// The delay between a power up being collected and the next one spawning
     /// </summary>
     private const float POWER_UP_DELAY = 5000;
+    private const int MAX_SCORE = 1;
 
     /** Synced Variables **/
 
     /// <summary>
-    /// The current number of players
+    /// The current number of players. Note that the array starts at 0 but the player number will be the index + 1
     /// </summary>
     [UdonSynced] private bool[] _activePlayers = {false, false, false, false, false, false, false, false};
     /// <summary>
@@ -102,9 +104,9 @@ public class GameLogic : NetworkInterface {
             return;
         }
 
-        int availablePlayerSlot = Array.IndexOf(_activePlayers, false);
+        int availablePlayerSlot = Array.IndexOf(_activePlayers, false) + 1;
 
-        if (availablePlayerSlot == -1) {
+        if (availablePlayerSlot == 0) {
             // TODO: Create guest player
             LogError("Max players reached, not adding components for " + player.playerId);
             return;
@@ -141,7 +143,12 @@ public class GameLogic : NetworkInterface {
             return;
         }
         if (GetAlivePlayerCount() <= 1 && GetPlayerCount() > 1) {
-            EndRound();
+            Shuriken winner = GetWinnerShuriken();
+            if (winner == null) {
+                EndRound();
+            } else {
+                EndGame(winner.GetPlayerNumber(), Networking.GetOwner(winner.gameObject).displayName);
+            }
         }
         if (nextRoundTime != 0 && Time.time * 1000 >= nextRoundTime) {
             StartNextRound();
@@ -206,8 +213,15 @@ public class GameLogic : NetworkInterface {
         }
     }
 
-    public bool[] GetActivePlayers() {
+    private bool[] GetActivePlayers() {
         return _activePlayers;
+    }
+
+    public bool IsPlayerActive(int playerNumber) {
+        if (playerNumber < 1 || playerNumber > _activePlayers.Length) {
+            LogError("Invalid player number: " + playerNumber);
+        }
+        return _activePlayers[playerNumber - 1];
     }
 
     private void SetActivePlayers(bool[] activePlayers) {
@@ -216,7 +230,7 @@ public class GameLogic : NetworkInterface {
     }
 
     private void SetPlayerActive(int playerNumber, bool active) {
-        _activePlayers[playerNumber] = active;
+        _activePlayers[playerNumber - 1] = active;
         RequestSerialization();
     }
 
@@ -242,23 +256,56 @@ public class GameLogic : NetworkInterface {
         return count;
     }
 
+    private Shuriken GetWinnerShuriken() {
+        foreach (Transform child in shurikensParent.transform) {
+            if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null) {
+                Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
+                if (shuriken.GetScore() >= MAX_SCORE) {
+                    return shuriken;
+                }
+            }
+        }
+        return null;
+    }
+
     private void EndRound() {
         nextRoundTime = 0;
         // Send an event to each shuriken
         foreach (Transform child in shurikensParent.transform) {
             if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null) {
                 Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
-                shuriken.SendMethodNetworked(nameof(Shuriken.OnRoundOver), SyncTarget.All);
+                shuriken.SendMethodNetworked(nameof(Shuriken.OnRoundEnd), SyncTarget.All);
             }
         }
         // Send an event to each player collider
         foreach (Transform child in playerCollidersParent.transform) {
             if (child.gameObject.activeSelf && child.gameObject.GetComponent<PlayerCollider>() != null) {
                 PlayerCollider playerCollider = child.gameObject.GetComponent<PlayerCollider>();
-                playerCollider.SendMethodNetworked(nameof(PlayerCollider.OnRoundOver), SyncTarget.All);
+                playerCollider.SendMethodNetworked(nameof(PlayerCollider.OnRoundEnd), SyncTarget.All);
             }
         }
         nextRoundTime = (Time.time + 3) * 1000;
+    }
+
+    private void EndGame(int winnerNumber, string winnerName) {
+        // Send an event to each shuriken
+        foreach (Transform child in shurikensParent.transform) {
+            if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null) {
+                Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
+                shuriken.SendMethodNetworked(nameof(Shuriken.OnGameEnd), SyncTarget.All);
+            }
+        }
+
+        ChangeLevel(Level.LOBBY);
+
+        // Send an event to each player collider
+        foreach (Transform child in playerCollidersParent.transform) {
+            if (child.gameObject.activeSelf && child.gameObject.GetComponent<PlayerCollider>() != null) {
+                PlayerCollider playerCollider = child.gameObject.GetComponent<PlayerCollider>();
+                playerCollider.SendMethodNetworked(nameof(PlayerCollider.OnGameEnd), SyncTarget.All, winnerNumber, winnerName);
+            }
+        }
+        nextRoundTime = 0;
     }
 
     private void StartNextRound() {
@@ -268,7 +315,15 @@ public class GameLogic : NetworkInterface {
         } else {
             ChangeLevel(Level.LOBBY);
         }
-
+        // Send an event to each shuriken
+        foreach (Transform child in shurikensParent.transform) {
+            if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null) {
+                Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
+                shuriken.SendMethodNetworked(nameof(Shuriken.OnRoundStart), SyncTarget.All);
+            }
+        }
+        
+        // Send an event to each player collider
         foreach (Transform child in playerCollidersParent.transform) {
             if (child.gameObject.activeSelf && child.gameObject.GetComponent<PlayerCollider>() != null) {
                 PlayerCollider playerCollider = child.gameObject.GetComponent<PlayerCollider>();

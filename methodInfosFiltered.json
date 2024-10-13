@@ -3,21 +3,28 @@
 		"methodName": "StartGame",
 		"parameters": null
 	},
+	"PlayerCollider.OnRoundStart": {
+		"methodName": "__0_OnRoundStart",
+		"parameters": [
+			"__0_level__param"
+		]
+	},
+	"PlayerCollider.OnRoundEnd": {
+		"methodName": "OnRoundEnd",
+		"parameters": null
+	},
+	"PlayerCollider.OnGameEnd": {
+		"methodName": "__0_OnGameEnd",
+		"parameters": [
+			"__0_winnerNumber__param",
+			"__0_winnerName__param"
+		]
+	},
 	"PlayerCollider.OnHit": {
 		"methodName": "__0_OnHit",
 		"parameters": [
 			"__0_playerName__param",
 			"__0_playerNumber__param"
-		]
-	},
-	"PlayerCollider.OnRoundOver": {
-		"methodName": "OnRoundOver",
-		"parameters": null
-	},
-	"PlayerCollider.OnRoundStart": {
-		"methodName": "__0_OnRoundStart",
-		"parameters": [
-			"__0_level__param"
 		]
 	},
 	"Shuriken.ActivatePowerUp": {
@@ -26,8 +33,16 @@
 			"__0_type__param"
 		]
 	},
-	"Shuriken.OnRoundOver": {
-		"methodName": "OnRoundOver",
+	"Shuriken.OnRoundStart": {
+		"methodName": "OnRoundStart",
+		"parameters": null
+	},
+	"Shuriken.OnRoundEnd": {
+		"methodName": "OnRoundEnd",
+		"parameters": null
+	},
+	"Shuriken.OnGameEnd": {
+		"methodName": "OnGameEnd",
 		"parameters": null
 	}
 }
