@@ -5,7 +5,8 @@ using UnityEngine;
 public enum Level {
     NONE,
     LOBBY,
-    ISLAND_ONE
+    ISLAND_ONE,
+    FOUNDATIONS
 }
 
 /// <summary>
@@ -18,6 +19,7 @@ public class LevelManager : UdonSharpBehaviour {
     public GameObject sharedTerrain;
     public GameObject lobby;
     public GameObject islandOne;
+    public GameObject foundations;
 
     private Level loadedLevel = Level.NONE;
 
@@ -39,10 +41,20 @@ public class LevelManager : UdonSharpBehaviour {
                 return lobby;
             case Level.ISLAND_ONE:
                 return islandOne;
+            case Level.FOUNDATIONS:
+                return foundations;
             default:
                 LogError("Unknown level: " + level);
                 return null;
         }
+    }
+
+    public static Level GetRandomLevel(Level currentLevel) {
+        Level randomLevel;
+        do {
+            randomLevel = (Level) Random.Range(1, 4);
+        } while (randomLevel == Level.LOBBY || randomLevel == currentLevel);
+        return randomLevel;
     }
 
     public void TransitionToLevel(Level level) {

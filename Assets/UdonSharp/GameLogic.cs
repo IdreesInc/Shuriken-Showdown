@@ -310,11 +310,7 @@ public class GameLogic : NetworkInterface {
 
     private void StartNextRound() {
         nextRoundTime = 0;
-        if (GetCurrentLevel() == Level.LOBBY) {
-            ChangeLevel(Level.ISLAND_ONE);
-        } else {
-            ChangeLevel(Level.LOBBY);
-        }
+        ChangeLevel(LevelManager.GetRandomLevel(GetCurrentLevel()));
         // Send an event to each shuriken
         foreach (Transform child in shurikensParent.transform) {
             if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null) {

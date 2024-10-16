@@ -1,62 +1,4 @@
 {
-	"UdonSharp.Examples.Utilities.MasterToggleObject.Start()": {
-		"methodName": "_start",
-		"parameters": null
-	},
-	"UdonSharp.Examples.Utilities.MasterToggleObject.OnOwnershipRequest(VRC.SDKBase.VRCPlayerApi, VRC.SDKBase.VRCPlayerApi)": {
-		"methodName": "_onOwnershipRequest",
-		"parameters": [
-			"onOwnershipRequestRequester",
-			"onOwnershipRequestNewOwner"
-		]
-	},
-	"UdonSharp.Examples.Utilities.MasterToggleObject.OnDeserialization()": {
-		"methodName": "_onDeserialization",
-		"parameters": null
-	},
-	"UdonSharp.Examples.Utilities.MasterToggleObject.Interact()": {
-		"methodName": "_interact",
-		"parameters": null
-	},
-	"ScoreBoard.Log(string)": {
-		"methodName": "__0_Log",
-		"parameters": [
-			"__0_message__param"
-		]
-	},
-	"ScoreBoard.LogError(string)": {
-		"methodName": "__0_LogError",
-		"parameters": [
-			"__1_message__param"
-		]
-	},
-	"ScoreBoard.Start()": {
-		"methodName": "_start",
-		"parameters": null
-	},
-	"ScoreBoard.UpdateScores(int[], string[])": {
-		"methodName": "__0_UpdateScores",
-		"parameters": [
-			"__0_scores__param",
-			"__0_names__param"
-		]
-	},
-	"ScoreBoard.UpdateScore(int, string, int)": {
-		"methodName": "__0_UpdateScore",
-		"parameters": [
-			"__0_playerNumber__param",
-			"__0_name__param",
-			"__0_score__param"
-		]
-	},
-	"UdonSharp.Examples.Utilities.BoneFollower.Start()": {
-		"methodName": "_start",
-		"parameters": null
-	},
-	"UdonSharp.Examples.Utilities.BoneFollower.Update()": {
-		"methodName": "_update",
-		"parameters": null
-	},
 	"UdonSharp.Examples.Utilities.GlobalToggleObject.Start()": {
 		"methodName": "_start",
 		"parameters": null
@@ -69,14 +11,36 @@
 		"methodName": "_interact",
 		"parameters": null
 	},
-	"UdonSharp.Examples.Utilities.WorldAudioSettings.OnPlayerJoined(VRC.SDKBase.VRCPlayerApi)": {
-		"methodName": "_onPlayerJoined",
+	"Miner28.UdonUtils.Network.NetworkInterface.SendMethodNetworked(string, SyncTarget, params VRC.SDK3.Data.DataToken[])": {
+		"methodName": "__0_SendMethodNetworked",
 		"parameters": [
-			"onPlayerJoinedPlayer"
+			"__0_methodName__param",
+			"__0_target__param",
+			"__0_paramTokens__param"
 		]
 	},
-	"ButtonTest.Interact()": {
-		"methodName": "_interact",
+	"Miner28.UdonUtils.Network.NetworkInterface.SendMethodNetworked(string, VRC.SDKBase.VRCPlayerApi, params VRC.SDK3.Data.DataToken[])": {
+		"methodName": "__1_SendMethodNetworked",
+		"parameters": [
+			"__1_methodName__param",
+			"__1_target__param",
+			"__1_paramTokens__param"
+		]
+	},
+	"Miner28.UdonUtils.Network.NetworkInterface.SendMethodNetworked(string, SyncChannel, params VRC.SDK3.Data.DataToken[])": {
+		"methodName": "__2_SendMethodNetworked",
+		"parameters": [
+			"__2_methodName__param",
+			"__0_channel__param",
+			"__2_paramTokens__param"
+		]
+	},
+	"Miner28.UdonUtils.Network.NetworkInterface.SetupInterface()": {
+		"methodName": "SetupInterface",
+		"parameters": null
+	},
+	"Miner28.UdonUtils.Network.NetworkInterface.OnCallerAssigned()": {
+		"methodName": "OnCallerAssigned",
 		"parameters": null
 	},
 	"UIManager.Log(string)": {
@@ -134,6 +98,223 @@
 		"methodName": "UpdateUI",
 		"parameters": null
 	},
+	"Miner28.UdonUtils.Network.NetworkedEventCaller.SendData(uint, uint, uint, VRC.SDK3.Data.DataToken[])": {
+		"methodName": "__0_SendData",
+		"parameters": [
+			"__0_method__param",
+			"__0_scriptTarget__param",
+			"__0_target__param",
+			"__0_data__param"
+		]
+	},
+	"Miner28.UdonUtils.Network.NetworkedEventCaller.ReceiveData(int)": {
+		"methodName": "__0_ReceiveData",
+		"parameters": [
+			"__0_startIndex__param"
+		]
+	},
+	"Miner28.UdonUtils.Network.NetworkedEventCaller.SetupCaller()": {
+		"methodName": "SetupCaller",
+		"parameters": null
+	},
+	"Miner28.UdonUtils.Network.NetworkedEventCaller.OnEnable()": {
+		"methodName": "_onEnable",
+		"parameters": null
+	},
+	"Miner28.UdonUtils.Network.NetworkedEventCaller.OnPreSerialization()": {
+		"methodName": "_onPreSerialization",
+		"parameters": null
+	},
+	"Miner28.UdonUtils.Network.NetworkedEventCaller.OnPostSerialization(VRC.Udon.Common.SerializationResult)": {
+		"methodName": "_onPostSerialization",
+		"parameters": [
+			"onPostSerializationResult"
+		]
+	},
+	"Miner28.UdonUtils.Network.NetworkedEventCaller.OnDeserialization(VRC.Udon.Common.DeserializationResult)": {
+		"methodName": "_onDeserialization",
+		"parameters": [
+			"onDeserializationResult"
+		]
+	},
+	"Miner28.UdonUtils.Network.NetworkedEventCaller.HandleDeserialization(VRC.SDKBase.VRCPlayerApi, byte[])": {
+		"methodName": "__0_HandleDeserialization",
+		"parameters": [
+			"__0_sender__param",
+			"__0_dataBuffer__param"
+		]
+	},
+	"Miner28.UdonUtils.Network.NetworkedEventCaller.SendUdonMethod(Miner28.UdonUtils.Network.NetworkInterface, int, VRC.SDKBase.VRCPlayerApi)": {
+		"methodName": "__0_SendUdonMethod",
+		"parameters": [
+			"__1_target__param",
+			"__0_methodTarget__param",
+			"__1_sender__param"
+		]
+	},
+	"Miner28.UdonUtils.Network.NetworkedEventCaller._PrepareSend(uint, string, uint, VRC.SDK3.Data.DataToken[])": {
+		"methodName": "__0__PrepareSend",
+		"parameters": [
+			"__0_intTarget__param",
+			"__1_method__param",
+			"__1_scriptTarget__param",
+			"__1_data__param"
+		]
+	},
+	"Miner28.UdonUtils.Network.NetworkedEventCaller._SendQueue()": {
+		"methodName": "_SendQueue",
+		"parameters": null
+	},
+	"Miner28.UdonUtils.Network.NetworkedEventCaller.SetUdonVariable(string, VRC.SDK3.Data.DataToken)": {
+		"methodName": "__0_SetUdonVariable",
+		"parameters": [
+			"__0_variable__param",
+			"__0_token__param"
+		]
+	},
+	"Miner28.UdonUtils.Network.NetworkedEventCaller.Log(object)": {
+		"methodName": "__0_Log",
+		"parameters": [
+			"__0_log__param"
+		]
+	},
+	"Miner28.UdonUtils.Network.NetworkedEventCaller.LogWarning(object)": {
+		"methodName": "__0_LogWarning",
+		"parameters": [
+			"__1_log__param"
+		]
+	},
+	"Miner28.UdonUtils.Network.NetworkedEventCaller.LogError(object)": {
+		"methodName": "__0_LogError",
+		"parameters": [
+			"__2_log__param"
+		]
+	},
+	"ScoreBoard.Log(string)": {
+		"methodName": "__0_Log",
+		"parameters": [
+			"__0_message__param"
+		]
+	},
+	"ScoreBoard.LogError(string)": {
+		"methodName": "__0_LogError",
+		"parameters": [
+			"__1_message__param"
+		]
+	},
+	"ScoreBoard.Start()": {
+		"methodName": "_start",
+		"parameters": null
+	},
+	"ScoreBoard.UpdateScores(int[], string[])": {
+		"methodName": "__0_UpdateScores",
+		"parameters": [
+			"__0_scores__param",
+			"__0_names__param"
+		]
+	},
+	"ScoreBoard.UpdateScore(int, string, int)": {
+		"methodName": "__0_UpdateScore",
+		"parameters": [
+			"__0_playerNumber__param",
+			"__0_name__param",
+			"__0_score__param"
+		]
+	},
+	"Miner28.UdonUtils.Network.NetworkManager.OnEnable()": {
+		"methodName": "_onEnable",
+		"parameters": null
+	},
+	"Miner28.UdonUtils.Network.NetworkManager.OnPlayerJoined(VRC.SDKBase.VRCPlayerApi)": {
+		"methodName": "_onPlayerJoined",
+		"parameters": [
+			"onPlayerJoinedPlayer"
+		]
+	},
+	"Miner28.UdonUtils.Network.NetworkManager.OnPlayerLeft(VRC.SDKBase.VRCPlayerApi)": {
+		"methodName": "_onPlayerLeft",
+		"parameters": [
+			"onPlayerLeftPlayer"
+		]
+	},
+	"Miner28.UdonUtils.Network.NetworkManager.OnDeserialization()": {
+		"methodName": "_onDeserialization",
+		"parameters": null
+	},
+	"Miner28.UdonUtils.Network.NetworkManager._Cleanup()": {
+		"methodName": "_Cleanup",
+		"parameters": null
+	},
+	"Miner28.UdonUtils.Network.NetworkManager.ToggleNetworking(bool, bool)": {
+		"methodName": "__0_ToggleNetworking",
+		"parameters": [
+			"__0_state__param",
+			"__0_voidEvents__param"
+		]
+	},
+	"Miner28.UdonUtils.Network.NetworkManager.HandlePaused(VRC.SDKBase.VRCPlayerApi, byte[])": {
+		"methodName": "__0_HandlePaused",
+		"parameters": [
+			"__0_sender__param",
+			"__0_data__param"
+		]
+	},
+	"Miner28.UdonUtils.Network.NetworkManager._HandleNetworkResumed()": {
+		"methodName": "_HandleNetworkResumed",
+		"parameters": null
+	},
+	"Miner28.UdonUtils.Network.NetworkManager.Log(object)": {
+		"methodName": "__0_Log",
+		"parameters": [
+			"__0_log__param"
+		]
+	},
+	"Miner28.UdonUtils.Network.NetworkManager.Log(string)": {
+		"methodName": "__1_Log",
+		"parameters": [
+			"__1_log__param"
+		]
+	},
+	"Miner28.UdonUtils.Network.NetworkManager.OnCallerAssigned()": {
+		"methodName": "OnCallerAssigned",
+		"parameters": null
+	},
+	"ButtonTest.Interact()": {
+		"methodName": "_interact",
+		"parameters": null
+	},
+	"MainMenu.Log(string)": {
+		"methodName": "__0_Log",
+		"parameters": [
+			"__0_message__param"
+		]
+	},
+	"MainMenu.LogError(string)": {
+		"methodName": "__0_LogError",
+		"parameters": [
+			"__1_message__param"
+		]
+	},
+	"MainMenu.Start()": {
+		"methodName": "_start",
+		"parameters": null
+	},
+	"MainMenu.Update()": {
+		"methodName": "_update",
+		"parameters": null
+	},
+	"MainMenu.OnStartGamePressed()": {
+		"methodName": "OnStartGamePressed",
+		"parameters": null
+	},
+	"MainMenu.UpdateGameMaster()": {
+		"methodName": "UpdateGameMaster",
+		"parameters": null
+	},
+	"MainMenu.UpdatePlayerIcons()": {
+		"methodName": "UpdatePlayerIcons",
+		"parameters": null
+	},
 	"LevelManager.Log(string)": {
 		"methodName": "__0_Log",
 		"parameters": [
@@ -154,6 +335,12 @@
 		"methodName": "__0_GetLevelObject",
 		"parameters": [
 			"__0_level__param"
+		]
+	},
+	"LevelManager.GetRandomLevel(Level)": {
+		"methodName": "__0_GetRandomLevel",
+		"parameters": [
+			"__0_currentLevel__param"
 		]
 	},
 	"LevelManager.TransitionToLevel(Level)": {
@@ -190,238 +377,6 @@
 		"methodName": "__0_GetBackgroundMusic",
 		"parameters": [
 			"__5_level__param"
-		]
-	},
-	"LocalPlayerLogic.Log(string)": {
-		"methodName": "__0_Log",
-		"parameters": [
-			"__0_message__param"
-		]
-	},
-	"LocalPlayerLogic.LogError(string)": {
-		"methodName": "__0_LogError",
-		"parameters": [
-			"__1_message__param"
-		]
-	},
-	"LocalPlayerLogic.Get()": {
-		"methodName": "Get",
-		"parameters": null
-	},
-	"LocalPlayerLogic.Start()": {
-		"methodName": "_start",
-		"parameters": null
-	},
-	"LocalPlayerLogic.Update()": {
-		"methodName": "_update",
-		"parameters": null
-	},
-	"LocalPlayerLogic.ShowEquippedUI(int, int, int, int)": {
-		"methodName": "__0_ShowEquippedUI",
-		"parameters": [
-			"__0_powerUpType__param",
-			"__0_powerUpOne__param",
-			"__0_powerUpTwo__param",
-			"__0_powerUpThree__param"
-		]
-	},
-	"LocalPlayerLogic.ShowHitUI(int, string, string)": {
-		"methodName": "__0_ShowHitUI",
-		"parameters": [
-			"__0_playerNumber__param",
-			"__0_senderName__param",
-			"__0_verb__param"
-		]
-	},
-	"LocalPlayerLogic.ShowScoreUI()": {
-		"methodName": "ShowScoreUI",
-		"parameters": null
-	},
-	"LocalPlayerLogic.ShowGameOverUI(int, string)": {
-		"methodName": "__0_ShowGameOverUI",
-		"parameters": [
-			"__0_winnerNumber__param",
-			"__0_winnerName__param"
-		]
-	},
-	"LocalPlayerLogic.UpdatePlayerScores()": {
-		"methodName": "UpdatePlayerScores",
-		"parameters": null
-	},
-	"LocalPlayerLogic.GetAlivePlayerCount()": {
-		"methodName": "GetAlivePlayerCount",
-		"parameters": null
-	},
-	"Miner28.UdonUtils.Network.NetworkInterface.SendMethodNetworked(string, SyncTarget, params VRC.SDK3.Data.DataToken[])": {
-		"methodName": "__0_SendMethodNetworked",
-		"parameters": [
-			"__0_methodName__param",
-			"__0_target__param",
-			"__0_paramTokens__param"
-		]
-	},
-	"Miner28.UdonUtils.Network.NetworkInterface.SendMethodNetworked(string, VRC.SDKBase.VRCPlayerApi, params VRC.SDK3.Data.DataToken[])": {
-		"methodName": "__1_SendMethodNetworked",
-		"parameters": [
-			"__1_methodName__param",
-			"__1_target__param",
-			"__1_paramTokens__param"
-		]
-	},
-	"Miner28.UdonUtils.Network.NetworkInterface.SendMethodNetworked(string, SyncChannel, params VRC.SDK3.Data.DataToken[])": {
-		"methodName": "__2_SendMethodNetworked",
-		"parameters": [
-			"__2_methodName__param",
-			"__0_channel__param",
-			"__2_paramTokens__param"
-		]
-	},
-	"Miner28.UdonUtils.Network.NetworkInterface.SetupInterface()": {
-		"methodName": "SetupInterface",
-		"parameters": null
-	},
-	"Miner28.UdonUtils.Network.NetworkInterface.OnCallerAssigned()": {
-		"methodName": "OnCallerAssigned",
-		"parameters": null
-	},
-	"UdonSharp.Examples.Utilities.TrackingDataFollower.Start()": {
-		"methodName": "_start",
-		"parameters": null
-	},
-	"UdonSharp.Examples.Utilities.TrackingDataFollower.LateUpdate()": {
-		"methodName": "_lateUpdate",
-		"parameters": null
-	},
-	"Invisible.Start()": {
-		"methodName": "_start",
-		"parameters": null
-	},
-	"Miner28.UdonUtils.Network.NetworkedEventCaller.SetupCaller()": {
-		"methodName": "SetupCaller",
-		"parameters": null
-	},
-	"Miner28.UdonUtils.Network.NetworkedEventCaller.OnEnable()": {
-		"methodName": "_onEnable",
-		"parameters": null
-	},
-	"Miner28.UdonUtils.Network.NetworkedEventCaller.OnPreSerialization()": {
-		"methodName": "_onPreSerialization",
-		"parameters": null
-	},
-	"Miner28.UdonUtils.Network.NetworkedEventCaller.OnPostSerialization(VRC.Udon.Common.SerializationResult)": {
-		"methodName": "_onPostSerialization",
-		"parameters": [
-			"onPostSerializationResult"
-		]
-	},
-	"Miner28.UdonUtils.Network.NetworkedEventCaller.OnDeserialization(VRC.Udon.Common.DeserializationResult)": {
-		"methodName": "_onDeserialization",
-		"parameters": [
-			"onDeserializationResult"
-		]
-	},
-	"Miner28.UdonUtils.Network.NetworkedEventCaller.HandleDeserialization(VRC.SDKBase.VRCPlayerApi, byte[])": {
-		"methodName": "__0_HandleDeserialization",
-		"parameters": [
-			"__0_sender__param",
-			"__0_dataBuffer__param"
-		]
-	},
-	"Miner28.UdonUtils.Network.NetworkedEventCaller.SendUdonMethod(Miner28.UdonUtils.Network.NetworkInterface, int, VRC.SDKBase.VRCPlayerApi)": {
-		"methodName": "__0_SendUdonMethod",
-		"parameters": [
-			"__0_target__param",
-			"__0_methodTarget__param",
-			"__1_sender__param"
-		]
-	},
-	"Miner28.UdonUtils.Network.NetworkedEventCaller._PrepareSend(uint, string, uint, VRC.SDK3.Data.DataToken[])": {
-		"methodName": "__0__PrepareSend",
-		"parameters": [
-			"__0_intTarget__param",
-			"__0_method__param",
-			"__0_scriptTarget__param",
-			"__0_data__param"
-		]
-	},
-	"Miner28.UdonUtils.Network.NetworkedEventCaller._SendQueue()": {
-		"methodName": "_SendQueue",
-		"parameters": null
-	},
-	"Miner28.UdonUtils.Network.NetworkedEventCaller.SetUdonVariable(string, VRC.SDK3.Data.DataToken)": {
-		"methodName": "__0_SetUdonVariable",
-		"parameters": [
-			"__0_variable__param",
-			"__0_token__param"
-		]
-	},
-	"Miner28.UdonUtils.Network.NetworkedEventCaller.Log(object)": {
-		"methodName": "__0_Log",
-		"parameters": [
-			"__0_log__param"
-		]
-	},
-	"Miner28.UdonUtils.Network.NetworkedEventCaller.LogWarning(object)": {
-		"methodName": "__0_LogWarning",
-		"parameters": [
-			"__1_log__param"
-		]
-	},
-	"Miner28.UdonUtils.Network.NetworkedEventCaller.LogError(object)": {
-		"methodName": "__0_LogError",
-		"parameters": [
-			"__2_log__param"
-		]
-	},
-	"Miner28.UdonUtils.Network.NetworkedEventCaller.ReceiveData(int)": {
-		"methodName": "__0_ReceiveData",
-		"parameters": [
-			"__0_startIndex__param"
-		]
-	},
-	"Miner28.UdonUtils.Network.NetworkedEventCaller.SendData(uint, uint, uint, VRC.SDK3.Data.DataToken[])": {
-		"methodName": "__0_SendData",
-		"parameters": [
-			"__1_method__param",
-			"__1_scriptTarget__param",
-			"__1_target__param",
-			"__1_data__param"
-		]
-	},
-	"StartButton.Log(string)": {
-		"methodName": "__0_Log",
-		"parameters": [
-			"__0_message__param"
-		]
-	},
-	"StartButton.LogError(string)": {
-		"methodName": "__0_LogError",
-		"parameters": [
-			"__1_message__param"
-		]
-	},
-	"StartButton.Start()": {
-		"methodName": "_start",
-		"parameters": null
-	},
-	"StartButton.OnTriggerEnter(UnityEngine.Collider)": {
-		"methodName": "_onTriggerEnter",
-		"parameters": [
-			"onTriggerEnterOther"
-		]
-	},
-	"UdonSharp.Examples.Utilities.InteractToggle.Interact()": {
-		"methodName": "_interact",
-		"parameters": null
-	},
-	"UdonSharp.Examples.Utilities.PlayerModSetter.Start()": {
-		"methodName": "_start",
-		"parameters": null
-	},
-	"InnerCollider.OnCollisionEnter(UnityEngine.Collision)": {
-		"methodName": "_onCollisionEnter",
-		"parameters": [
-			"onCollisionEnterOther"
 		]
 	},
 	"GameLogic.Log(string)": {
@@ -540,96 +495,6 @@
 	},
 	"GameLogic.SpawnPowerUp()": {
 		"methodName": "SpawnPowerUp",
-		"parameters": null
-	},
-	"Miner28.UdonUtils.Network.NetworkManager.OnEnable()": {
-		"methodName": "_onEnable",
-		"parameters": null
-	},
-	"Miner28.UdonUtils.Network.NetworkManager.OnPlayerJoined(VRC.SDKBase.VRCPlayerApi)": {
-		"methodName": "_onPlayerJoined",
-		"parameters": [
-			"onPlayerJoinedPlayer"
-		]
-	},
-	"Miner28.UdonUtils.Network.NetworkManager.OnPlayerLeft(VRC.SDKBase.VRCPlayerApi)": {
-		"methodName": "_onPlayerLeft",
-		"parameters": [
-			"onPlayerLeftPlayer"
-		]
-	},
-	"Miner28.UdonUtils.Network.NetworkManager.OnDeserialization()": {
-		"methodName": "_onDeserialization",
-		"parameters": null
-	},
-	"Miner28.UdonUtils.Network.NetworkManager._Cleanup()": {
-		"methodName": "_Cleanup",
-		"parameters": null
-	},
-	"Miner28.UdonUtils.Network.NetworkManager.ToggleNetworking(bool, bool)": {
-		"methodName": "__0_ToggleNetworking",
-		"parameters": [
-			"__0_state__param",
-			"__0_voidEvents__param"
-		]
-	},
-	"Miner28.UdonUtils.Network.NetworkManager.HandlePaused(VRC.SDKBase.VRCPlayerApi, byte[])": {
-		"methodName": "__0_HandlePaused",
-		"parameters": [
-			"__0_sender__param",
-			"__0_data__param"
-		]
-	},
-	"Miner28.UdonUtils.Network.NetworkManager._HandleNetworkResumed()": {
-		"methodName": "_HandleNetworkResumed",
-		"parameters": null
-	},
-	"Miner28.UdonUtils.Network.NetworkManager.Log(object)": {
-		"methodName": "__0_Log",
-		"parameters": [
-			"__0_log__param"
-		]
-	},
-	"Miner28.UdonUtils.Network.NetworkManager.Log(string)": {
-		"methodName": "__1_Log",
-		"parameters": [
-			"__1_log__param"
-		]
-	},
-	"Miner28.UdonUtils.Network.NetworkManager.OnCallerAssigned()": {
-		"methodName": "OnCallerAssigned",
-		"parameters": null
-	},
-	"MainMenu.Log(string)": {
-		"methodName": "__0_Log",
-		"parameters": [
-			"__0_message__param"
-		]
-	},
-	"MainMenu.LogError(string)": {
-		"methodName": "__0_LogError",
-		"parameters": [
-			"__1_message__param"
-		]
-	},
-	"MainMenu.Start()": {
-		"methodName": "_start",
-		"parameters": null
-	},
-	"MainMenu.Update()": {
-		"methodName": "_update",
-		"parameters": null
-	},
-	"MainMenu.OnStartGamePressed()": {
-		"methodName": "OnStartGamePressed",
-		"parameters": null
-	},
-	"MainMenu.UpdateGameMaster()": {
-		"methodName": "UpdateGameMaster",
-		"parameters": null
-	},
-	"MainMenu.UpdatePlayerIcons()": {
-		"methodName": "UpdatePlayerIcons",
 		"parameters": null
 	},
 	"PlayerCollider.Player.get": {
@@ -911,5 +776,146 @@
 	"Shuriken.PutInFrontOfPlayer()": {
 		"methodName": "PutInFrontOfPlayer",
 		"parameters": null
+	},
+	"LocalPlayerLogic.Log(string)": {
+		"methodName": "__0_Log",
+		"parameters": [
+			"__0_message__param"
+		]
+	},
+	"LocalPlayerLogic.LogError(string)": {
+		"methodName": "__0_LogError",
+		"parameters": [
+			"__1_message__param"
+		]
+	},
+	"LocalPlayerLogic.Get()": {
+		"methodName": "Get",
+		"parameters": null
+	},
+	"LocalPlayerLogic.Start()": {
+		"methodName": "_start",
+		"parameters": null
+	},
+	"LocalPlayerLogic.Update()": {
+		"methodName": "_update",
+		"parameters": null
+	},
+	"LocalPlayerLogic.ShowEquippedUI(int, int, int, int)": {
+		"methodName": "__0_ShowEquippedUI",
+		"parameters": [
+			"__0_powerUpType__param",
+			"__0_powerUpOne__param",
+			"__0_powerUpTwo__param",
+			"__0_powerUpThree__param"
+		]
+	},
+	"LocalPlayerLogic.ShowHitUI(int, string, string)": {
+		"methodName": "__0_ShowHitUI",
+		"parameters": [
+			"__0_playerNumber__param",
+			"__0_senderName__param",
+			"__0_verb__param"
+		]
+	},
+	"LocalPlayerLogic.ShowScoreUI()": {
+		"methodName": "ShowScoreUI",
+		"parameters": null
+	},
+	"LocalPlayerLogic.ShowGameOverUI(int, string)": {
+		"methodName": "__0_ShowGameOverUI",
+		"parameters": [
+			"__0_winnerNumber__param",
+			"__0_winnerName__param"
+		]
+	},
+	"LocalPlayerLogic.UpdatePlayerScores()": {
+		"methodName": "UpdatePlayerScores",
+		"parameters": null
+	},
+	"LocalPlayerLogic.GetAlivePlayerCount()": {
+		"methodName": "GetAlivePlayerCount",
+		"parameters": null
+	},
+	"UdonSharp.Examples.Utilities.PlayerModSetter.Start()": {
+		"methodName": "_start",
+		"parameters": null
+	},
+	"UdonSharp.Examples.Utilities.MasterToggleObject.Start()": {
+		"methodName": "_start",
+		"parameters": null
+	},
+	"UdonSharp.Examples.Utilities.MasterToggleObject.OnOwnershipRequest(VRC.SDKBase.VRCPlayerApi, VRC.SDKBase.VRCPlayerApi)": {
+		"methodName": "_onOwnershipRequest",
+		"parameters": [
+			"onOwnershipRequestRequester",
+			"onOwnershipRequestNewOwner"
+		]
+	},
+	"UdonSharp.Examples.Utilities.MasterToggleObject.OnDeserialization()": {
+		"methodName": "_onDeserialization",
+		"parameters": null
+	},
+	"UdonSharp.Examples.Utilities.MasterToggleObject.Interact()": {
+		"methodName": "_interact",
+		"parameters": null
+	},
+	"UdonSharp.Examples.Utilities.InteractToggle.Interact()": {
+		"methodName": "_interact",
+		"parameters": null
+	},
+	"UdonSharp.Examples.Utilities.BoneFollower.Start()": {
+		"methodName": "_start",
+		"parameters": null
+	},
+	"UdonSharp.Examples.Utilities.BoneFollower.Update()": {
+		"methodName": "_update",
+		"parameters": null
+	},
+	"Invisible.Start()": {
+		"methodName": "_start",
+		"parameters": null
+	},
+	"InnerCollider.OnCollisionEnter(UnityEngine.Collision)": {
+		"methodName": "_onCollisionEnter",
+		"parameters": [
+			"onCollisionEnterOther"
+		]
+	},
+	"UdonSharp.Examples.Utilities.TrackingDataFollower.Start()": {
+		"methodName": "_start",
+		"parameters": null
+	},
+	"UdonSharp.Examples.Utilities.TrackingDataFollower.LateUpdate()": {
+		"methodName": "_lateUpdate",
+		"parameters": null
+	},
+	"StartButton.Log(string)": {
+		"methodName": "__0_Log",
+		"parameters": [
+			"__0_message__param"
+		]
+	},
+	"StartButton.LogError(string)": {
+		"methodName": "__0_LogError",
+		"parameters": [
+			"__1_message__param"
+		]
+	},
+	"StartButton.Start()": {
+		"methodName": "_start",
+		"parameters": null
+	},
+	"StartButton.OnTriggerEnter(UnityEngine.Collider)": {
+		"methodName": "_onTriggerEnter",
+		"parameters": [
+			"onTriggerEnterOther"
+		]
+	},
+	"UdonSharp.Examples.Utilities.WorldAudioSettings.OnPlayerJoined(VRC.SDKBase.VRCPlayerApi)": {
+		"methodName": "_onPlayerJoined",
+		"parameters": [
+			"onPlayerJoinedPlayer"
+		]
 	}
 }
