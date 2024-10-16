@@ -15,6 +15,8 @@ public class PowerUp : NetworkInterface {
         // Can't make this static due to UdonSharp limitations, using getter instead
         string[] POWER_UP_NAMES = {
             "Embiggen",
+            "Amphetamines",
+            "Moon Shoes",
         };
         if (type < 0 || type >= POWER_UP_NAMES.Length) {
             return "Unknown";
@@ -25,6 +27,8 @@ public class PowerUp : NetworkInterface {
     public static string GetPowerUpSubtitle(int type) {
         string[] POWER_UP_SUBTITLES = {
             "Go big or go home",
+            "Gotta go fast",
+            "Reach for the stars",
         };
         if (type < 0 || type >= POWER_UP_SUBTITLES.Length) {
             return "Unknown";
@@ -34,7 +38,7 @@ public class PowerUp : NetworkInterface {
 
     public static int GetNumberOfPowerUps() {
         // Stupid necessity due to UdonSharp not allowing for static fields
-        return 1;
+        return 3;
     }
 
     private void Log(string message) {

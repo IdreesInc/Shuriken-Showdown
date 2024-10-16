@@ -901,7 +901,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: IdreesHassanGuy
+  m_text: CompanyInc
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7d57e09c622adf64fb6c39a343198ebb, type: 2}
   m_sharedMaterial: {fileID: -5598554437734593870, guid: 7d57e09c622adf64fb6c39a343198ebb,

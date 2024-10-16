@@ -15,7 +15,13 @@ public class Shuriken : NetworkInterface {
     private const float MAX_DISTANCE = 75;
     private const float MAX_GROUND_DISTANCE = 5;
     private const float THROW_FORCE = 5;
+    private const float DEFAULT_WALK_SPEED = 3f;
+    private const float DEFAULT_RUN_SPEED = 5f;
+    private const float DEFAULT_JUMP_FORCE = 3.5f;
     private readonly Vector3 GRAVITY_FORCE = new Vector3(0, -9.81f / 3, 0);
+    private const float EMBIGGEN_MOD = 1f;
+    private const float AMPHETAMINES_MOD = 3.5f;
+    private const float MOON_SHOES_MOD = 2.75f;
 
     [UdonSynced] private int playerId = -1;
     [UdonSynced] private int playerNumber = -1;
@@ -313,20 +319,40 @@ public class Shuriken : NetworkInterface {
         if (type == -1) {
             return;
         }
+        VRCPlayerApi player = Player;
+        if (player == null) {
+            LogError("Player is null while attempting to apply power up");
+            return;
+        }
         Log("Applying power up: " + PowerUp.GetPowerUpName(type));
         if (type == 0) {
             // Embiggen
             transform.localScale = new Vector3(
-                transform.localScale.x + 1,
-                transform.localScale.y + 1,
-                transform.localScale.z + 1
+                transform.localScale.x + EMBIGGEN_MOD,
+                transform.localScale.y + EMBIGGEN_MOD,
+                transform.localScale.z + EMBIGGEN_MOD
             );
+        } else if (type == 1) {
+            // Amphetamines
+            player.SetWalkSpeed(player.GetWalkSpeed() + AMPHETAMINES_MOD);
+            player.SetRunSpeed(player.GetRunSpeed() + AMPHETAMINES_MOD);
+        } else if (type == 2) {
+            // Moon Shoes
+            player.SetJumpImpulse(player.GetJumpImpulse() + MOON_SHOES_MOD);
         }
     }
 
     private void ResetPowerUpEffects() {
         // Reset all effects of power ups
         transform.localScale = new Vector3(1, 1, 1);
+        VRCPlayerApi player = Player;
+        if (player == null) {
+            LogError("Player is null while attempting to reset power up effects");
+        } else {
+            player.SetWalkSpeed(DEFAULT_WALK_SPEED);
+            player.SetRunSpeed(DEFAULT_RUN_SPEED);
+            player.SetJumpImpulse(DEFAULT_JUMP_FORCE);
+        }
     }
 
     private void UpdateOwnership() {
