@@ -22,6 +22,7 @@ public class LevelManager : UdonSharpBehaviour {
     public GameObject foundations;
 
     private Level loadedLevel = Level.NONE;
+    private readonly Level[] levels = {Level.LOBBY, Level.ISLAND_ONE, Level.FOUNDATIONS};
 
     private void Log(string message) {
         Debug.Log("[LevelManager]: " + message);
@@ -68,9 +69,16 @@ public class LevelManager : UdonSharpBehaviour {
         }
 
         loadedLevel = level;
-        
+
+        GameObject levelObject = GetLevelObject(level);
+        levelObject.SetActive(true);
+        foreach (Level otherLevel in levels) {
+            if (otherLevel != level) {
+                GetLevelObject(otherLevel).SetActive(false);
+            }
+        }
         Vector3 terrainPos = sharedTerrain.transform.position;
-        Vector3 levelPos = GetLevelObject(level).transform.position;
+        Vector3 levelPos = levelObject.transform.position;
         // Move the shared terrain to the new level's terrain position
         sharedTerrain.transform.position = new Vector3(levelPos.x, terrainPos.y, levelPos.z);
         
