@@ -5,7 +5,7 @@ using UnityEngine;
 public enum Level {
     NONE,
     LOBBY,
-    ISLAND_ONE,
+    RUINS,
     FOUNDATIONS
 }
 
@@ -16,11 +16,11 @@ public enum Level {
 public class LevelManager : UdonSharpBehaviour {
     public GameObject sharedTerrain;
     public GameObject lobby;
-    public GameObject islandOne;
+    public GameObject ruins;
     public GameObject foundations;
 
     private Level loadedLevel = Level.NONE;
-    private readonly Level[] levels = {Level.LOBBY, Level.ISLAND_ONE, Level.FOUNDATIONS};
+    private readonly Level[] levels = {Level.LOBBY, Level.RUINS, Level.FOUNDATIONS};
 
     private void Log(string message) {
         Debug.Log("[LevelManager]: " + message);
@@ -38,8 +38,8 @@ public class LevelManager : UdonSharpBehaviour {
         switch (level) {
             case Level.LOBBY:
                 return lobby;
-            case Level.ISLAND_ONE:
-                return islandOne;
+            case Level.RUINS:
+                return ruins;
             case Level.FOUNDATIONS:
                 return foundations;
             default:
