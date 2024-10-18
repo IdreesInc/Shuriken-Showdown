@@ -42,6 +42,9 @@ public class MainMenu : UdonSharpBehaviour {
 
     private void UpdateGameMaster() {
         VRCPlayerApi gameMaster = Networking.GetOwner(gameObject);
+        if (gameMaster == null) {
+            return;
+        }
         gameMasterText.GetComponent<TextMeshProUGUI>().text = "Game Master: " + gameMaster.displayName;
     }
 

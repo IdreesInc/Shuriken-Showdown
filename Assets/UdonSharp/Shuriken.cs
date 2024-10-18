@@ -74,7 +74,7 @@ public class Shuriken : NetworkInterface {
     }
 
     void FixedUpdate() {
-        if (Networking.IsOwner(gameObject) && !inGame) {
+        if (!inGame) {
             // Disable the ability to pick up the shuriken
             GetComponent<Rigidbody>().detectCollisions = false;
         } else {
@@ -184,7 +184,7 @@ public class Shuriken : NetworkInterface {
             Log("Shuriken is disabled, ignoring trigger");
             return;
         }
-        if (collider.gameObject.GetComponent<PlayerCollider>() != null) {
+        if (collider.gameObject.GetComponent<PlayerCollider>() != null && (isHeld || hasBeenThrown)) {
             PlayerCollider playerCollider = collider.gameObject.GetComponent<PlayerCollider>();
             if (!HasPlayer() || playerCollider.GetPlayer() != playerId) {
                 Log(playerId + "'s shuriken has hit " + playerCollider.GetPlayer());
@@ -215,22 +215,34 @@ public class Shuriken : NetworkInterface {
     /// </summary>
     [NetworkedMethod]
     public void ActivatePowerUp(int type) {
+        if (!Networking.IsOwner(gameObject)) {
+            return;
+        }
         AddPowerUp(type);
     }
 
     [NetworkedMethod]
     public void OnRoundStart() {
+        if (!Networking.IsOwner(gameObject)) {
+            return;
+        }
         inGame = true;
     }
 
     [NetworkedMethod]
     public void OnRoundEnd() {
+        if (!Networking.IsOwner(gameObject)) {
+            return;
+        }
         ResetShurikenBetweenRounds();
         inGame = false;
     }
 
     [NetworkedMethod]
     public void OnGameEnd() {
+        if (!Networking.IsOwner(gameObject)) {
+            return;
+        }
         ResetShurikenBetweenRounds();
         powerUpOne = -1;
         powerUpTwo = -1;
@@ -255,7 +267,7 @@ public class Shuriken : NetworkInterface {
 
     public void ReturnToPlayer() {
         if (!HasPlayer()) {
-            LogError("Owner is not set");
+            LogError("Unable to return to player, player is not set");
             return;
         } else if (Networking.LocalPlayer.playerId != playerId) {
             // Log("Won't return as shuriken is not owned by " + Networking.LocalPlayer.playerId);
@@ -334,24 +346,30 @@ public class Shuriken : NetworkInterface {
             );
         } else if (type == 1) {
             // Amphetamines
-            player.SetWalkSpeed(player.GetWalkSpeed() + AMPHETAMINES_MOD);
-            player.SetRunSpeed(player.GetRunSpeed() + AMPHETAMINES_MOD);
+            if (Networking.IsOwner(gameObject)) {
+                player.SetWalkSpeed(player.GetWalkSpeed() + AMPHETAMINES_MOD);
+                player.SetRunSpeed(player.GetRunSpeed() + AMPHETAMINES_MOD);
+            }
         } else if (type == 2) {
             // Moon Shoes
-            player.SetJumpImpulse(player.GetJumpImpulse() + MOON_SHOES_MOD);
+            if (Networking.IsOwner(gameObject)) {
+                player.SetJumpImpulse(player.GetJumpImpulse() + MOON_SHOES_MOD);
+            }
         }
     }
 
     private void ResetPowerUpEffects() {
         // Reset all effects of power ups
         transform.localScale = new Vector3(1, 1, 1);
-        VRCPlayerApi player = Player;
-        if (player == null) {
-            LogError("Player is null while attempting to reset power up effects");
-        } else {
-            player.SetWalkSpeed(DEFAULT_WALK_SPEED);
-            player.SetRunSpeed(DEFAULT_RUN_SPEED);
-            player.SetJumpImpulse(DEFAULT_JUMP_FORCE);
+        if (Networking.IsOwner(gameObject)) {
+            VRCPlayerApi player = Player;
+            if (player == null) {
+                LogError("Player is null while attempting to reset power up effects");
+            } else {
+                player.SetWalkSpeed(DEFAULT_WALK_SPEED);
+                player.SetRunSpeed(DEFAULT_RUN_SPEED);
+                player.SetJumpImpulse(DEFAULT_JUMP_FORCE);
+            }
         }
     }
 
@@ -384,7 +402,7 @@ public class Shuriken : NetworkInterface {
 
     private void PutInFrontOfPlayer() {
         if (!HasPlayer()) {
-            LogError("Owner is not set");
+            LogError("Unable to place in front of player, player is not set");
             return;
         }
         // Place the shuriken in front of the player
