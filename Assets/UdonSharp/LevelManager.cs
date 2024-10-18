@@ -14,8 +14,6 @@ public enum Level {
 /// </summary>
 [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class LevelManager : UdonSharpBehaviour {
-
-    public GameObject vrcWorldObject;
     public GameObject sharedTerrain;
     public GameObject lobby;
     public GameObject islandOne;
@@ -82,19 +80,25 @@ public class LevelManager : UdonSharpBehaviour {
         // Move the shared terrain to the new level's terrain position
         sharedTerrain.transform.position = new Vector3(levelPos.x, terrainPos.y, levelPos.z);
         
-        SetPlayerSpawnPoint(GetSpawnPosition(loadedLevel));
         // Play the new background music
         GetBackgroundMusic(loadedLevel).Play();
     }
 
-    public Vector3 GetSpawnPosition(Level level) {
-        Transform spawnMarkerTrans = GetLevelObject(level).transform.Find("Spawn Marker");
-        if (spawnMarkerTrans == null) {
-            LogError("Spawn marker not found");
+    public Vector3 GetSpawnPosition(Level level, int playerNumber) {
+        Transform spawnMarkerParent = GetLevelObject(level).transform.Find("Spawn Markers");
+        if (spawnMarkerParent == null) {
+            LogError("Spawn markers not found for level: " + level);
             return Vector3.zero;
         }
-        GameObject spawnMarker = spawnMarkerTrans.gameObject;
-        return spawnMarker.transform.position;
+        int spawnIndex = 0;
+        if (playerNumber != -1) {
+            spawnIndex = (playerNumber - 1) % spawnMarkerParent.childCount;
+        } else {
+            LogError("Player number is -1 while trying to get spawn position");
+        }
+        Log("Player " + playerNumber + " spawning at index " + spawnIndex + " out of " + spawnMarkerParent.childCount + " for level " + level);
+        Transform spawnMarker = spawnMarkerParent.GetChild(spawnIndex);
+        return spawnMarker.position;
     }
 
     public Vector3 GetDeathPosition(Level level) {
@@ -114,14 +118,10 @@ public class LevelManager : UdonSharpBehaviour {
             return new Vector3[0];
         }
         Vector3[] powerUpSpawnPoints = new Vector3[powerUpMarkerParent.childCount];
-        for (int i = 0; i < powerUpMarkerParent.transform.childCount; i++) {
-            powerUpSpawnPoints[i] = powerUpMarkerParent.transform.GetChild(i).position;
+        for (int i = 0; i < powerUpMarkerParent.childCount; i++) {
+            powerUpSpawnPoints[i] = powerUpMarkerParent.GetChild(i).position;
         }
         return powerUpSpawnPoints;
-    }
-
-    public void SetPlayerSpawnPoint(Vector3 position) {
-        vrcWorldObject.transform.position = position;
     }
 
     private AudioSource GetBackgroundMusic(Level level) {

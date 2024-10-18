@@ -10,6 +10,7 @@ using VRC.Udon;
 [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class LocalPlayerLogic : UdonSharpBehaviour {
 
+    public GameObject vrcWorld;
     public GameObject shurikensParent;
     public GameObject playerCollidersParent; 
 
@@ -149,5 +150,9 @@ public class LocalPlayerLogic : UdonSharpBehaviour {
             }
         }
         return count;
+    }
+
+    public void SetWorldSpawn(Vector3 position) {
+        vrcWorld.transform.position = position;
     }
 }

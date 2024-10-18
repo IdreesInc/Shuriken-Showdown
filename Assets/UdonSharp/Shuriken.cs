@@ -254,31 +254,26 @@ public class Shuriken : NetworkInterface {
 
     /** Custom Methods **/
 
+    /// <summary>
+    /// Set the player ID of the shuriken and update the ownership
+    /// </summary>
     public void SetPlayerId(int playerId) {
+        if (!Networking.IsOwner(gameObject)) {
+            LogError("Attempted to set player id without ownership");
+            return;
+        }
         Log("Setting owner id to " + playerId);
         this.playerId = playerId;
         UpdateOwnership();
     }
 
     public void SetPlayerNumber(int playerNumber) {
-        Log("Setting player number to " + playerNumber);
-        this.playerNumber = playerNumber;
-    }
-
-    public void ReturnToPlayer() {
-        if (!HasPlayer()) {
-            LogError("Unable to return to player, player is not set");
-            return;
-        } else if (Networking.LocalPlayer.playerId != playerId) {
-            // Log("Won't return as shuriken is not owned by " + Networking.LocalPlayer.playerId);
+        if (!Networking.IsOwner(gameObject)) {
+            LogError("Attempted to set player number without ownership");
             return;
         }
-        Log("Returning shuriken to " + playerId);
-        // Place the shuriken in front of the player
-        PutInFrontOfPlayer();
-        GetComponent<Rigidbody>().velocity = Vector3.zero;
-        GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
-        hasBeenThrown = false;
+        Log("Setting player number to " + playerNumber);
+        this.playerNumber = playerNumber;
     }
 
     public bool HasPlayer() {
@@ -295,6 +290,22 @@ public class Shuriken : NetworkInterface {
 
     public int GetScore() {
         return score;
+    }
+
+    private void ReturnToPlayer() {
+        if (!HasPlayer()) {
+            LogError("Unable to return to player, player is not set");
+            return;
+        } else if (Networking.LocalPlayer.playerId != playerId) {
+            // Log("Won't return as shuriken is not owned by " + Networking.LocalPlayer.playerId);
+            return;
+        }
+        Log("Returning shuriken to " + playerId);
+        // Place the shuriken in front of the player
+        PutInFrontOfPlayer();
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
+        GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+        hasBeenThrown = false;
     }
 
     private string GetPlayerName() {

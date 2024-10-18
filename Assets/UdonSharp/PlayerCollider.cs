@@ -7,6 +7,7 @@ using Miner28.UdonUtils.Network;
 public class PlayerCollider : NetworkInterface {
     private readonly Vector3 offset = new Vector3(0, 1, 0);
     [UdonSynced] private int playerId = -1;
+    [UdonSynced] private int playerNumber = -1;
     [UdonSynced] private bool isAlive = true;
 
     private Vector3 deathPoint = new Vector3(0, 0, 0);
@@ -98,6 +99,10 @@ public class PlayerCollider : NetworkInterface {
     /** Custom Methods **/
 
     public void SetPlayerId(int playerId) {
+        if (!Networking.IsOwner(gameObject)) {
+            LogError("Attempted to set player id without ownership");
+            return;
+        }
         this.playerId = playerId;
         if (Player == null) {
             LogError("Player Collider: Attempted to follow a null player with id: " + playerId);
@@ -108,11 +113,13 @@ public class PlayerCollider : NetworkInterface {
         UpdateOwnership();
     }
 
-    public void UpdateOwnership() {
-        if (playerId == Networking.LocalPlayer.playerId && !Networking.IsOwner(gameObject)) {
-            Log("Claiming network ownership of collider");
-            Networking.SetOwner(Networking.LocalPlayer, gameObject);
+    public void SetPlayerNumber(int playerNumber) {
+        if (!Networking.IsOwner(gameObject)) {
+            LogError("Attempted to set player number without ownership");
+            return;
         }
+        Log("Setting player number to " + playerNumber);
+        this.playerNumber = playerNumber;
     }
 
     public string GetPlayerName() {
@@ -130,14 +137,23 @@ public class PlayerCollider : NetworkInterface {
         return isAlive;
     }
 
-    public void GoToLevelSpawn(Level level) {
+    private void GoToLevelSpawn(Level level) {
         LevelManager manager = LevelManager.Get();
         // Get spawn point
-        Vector3 spawnPoint = manager.GetSpawnPosition(level);
+        Vector3 spawnPoint = manager.GetSpawnPosition(level, playerNumber);
+        // Update world spawn
+        LocalPlayerLogic.Get().SetWorldSpawn(spawnPoint);
         // Teleport player to spawn point
         Player.TeleportTo(spawnPoint, Player.GetRotation());
         // Update death point
         UpdateDeathPoint(Level.LOBBY);
+    }
+
+    private void UpdateOwnership() {
+        if (playerId == Networking.LocalPlayer.playerId && !Networking.IsOwner(gameObject)) {
+            Log("Claiming network ownership of collider");
+            Networking.SetOwner(Networking.LocalPlayer, gameObject);
+        }
     }
 
     private void UpdateDeathPoint(Level level) {

@@ -114,7 +114,7 @@ public class GameLogic : NetworkInterface {
 
         SetPlayerActive(availablePlayerSlot, true);
 
-        // Assign a shuriken to the player
+        // Create a shuriken for the player
         GameObject shuriken = shurikenPool.TryToSpawn();
         if (shuriken == null) {
             LogError("No available shurikens");
@@ -122,12 +122,11 @@ public class GameLogic : NetworkInterface {
         }
         shuriken.SetActive(true);
         Shuriken shurikenComponent = shuriken.GetComponent<Shuriken>();
-        shurikenComponent.SetPlayerId(player.playerId);
         shurikenComponent.SetPlayerNumber(availablePlayerSlot);
-        shurikenComponent.ReturnToPlayer();
+        // Assign ownership of the shuriken to the player
+        shurikenComponent.SetPlayerId(player.playerId);
 
-
-        // Assign a player collider to the player
+        // Create a player collider for the player
         GameObject playerCollider = playerColliderPool.TryToSpawn();
         if (playerCollider == null) {
             LogError("No available player colliders");
@@ -135,6 +134,8 @@ public class GameLogic : NetworkInterface {
         }
         playerCollider.SetActive(true);
         PlayerCollider playerColliderComponent = playerCollider.GetComponent<PlayerCollider>();
+        playerColliderComponent.SetPlayerNumber(availablePlayerSlot);
+        // Assign ownership of the player collider to the player
         playerColliderComponent.SetPlayerId(player.playerId);
     }
 
