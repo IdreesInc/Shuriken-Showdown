@@ -124,9 +124,15 @@ public class Shuriken : NetworkInterface {
             // Set collision layer to Walkthrough
             // TODO: Determine if this has any adverse effects
             gameObject.layer = 17;
-            // Spin that baby
-            transform.Rotate(Vector3.up, ROTATION_SPEED / 2 * Time.deltaTime);
-            transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
+            if (inGame) {
+                 // Spin that baby
+                transform.Rotate(Vector3.up, ROTATION_SPEED / 2 * Time.deltaTime);
+                transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
+            } else {
+                // Set rotation to player's rotation
+                Vector3 playerRotation = Player.GetRotation().eulerAngles;
+                transform.rotation = Quaternion.Euler(0, playerRotation.y, 0);
+            }
         } else {
             // Set collision layer to Pickup
             gameObject.layer = 13;
@@ -240,6 +246,14 @@ public class Shuriken : NetworkInterface {
         if (!Networking.IsOwner(gameObject)) {
             return;
         }
+    }
+
+    [NetworkedMethod]
+    public void OnFightingStart() {
+        if (!Networking.IsOwner(gameObject)) {
+            return;
+        }
+        Log("Fighting has started, enabling shuriken");
         inGame = true;
     }
 

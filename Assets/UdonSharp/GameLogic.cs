@@ -25,7 +25,14 @@ public class GameLogic : NetworkInterface {
     /// The delay between a power up being collected and the next one spawning
     /// </summary>
     private const float POWER_UP_DELAY = 5000;
+    /// <summary>
+    /// The maximum score a player can achieve before the game ends
+    /// </summary>
     private const int MAX_SCORE = 10;
+    /// <summary>
+    /// The delay between the start of a round and the start of the fighting
+    /// </summary>
+    private const float FIGHTING_DELAY = 3000;
 
     /** Synced Variables **/
 
@@ -37,6 +44,10 @@ public class GameLogic : NetworkInterface {
     /// The time at which the next round will start
     /// </summary>
     [UdonSynced] private float nextRoundTime = 0;
+    /// <summary>
+    /// The time at which the fighting will start
+    /// </summary>
+    [UdonSynced] private float fightingStartTime = 0;
     /// <summary>
     /// The time at which the next power up will spawn
     /// </summary>
@@ -153,6 +164,16 @@ public class GameLogic : NetworkInterface {
         }
         if (nextRoundTime != 0 && Time.time * 1000 >= nextRoundTime) {
             StartNextRound();
+        }
+        if (fightingStartTime != 0 && Time.time * 1000 >= fightingStartTime) {
+            fightingStartTime = 0;
+            // Send an event to each shuriken
+            foreach (Transform child in shurikensParent.transform) {
+                if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null) {
+                    Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
+                    shuriken.SendMethodNetworked(nameof(Shuriken.OnFightingStart), SyncTarget.All);
+                }
+            }
         }
         if (nextPowerUpTime != 0 && Time.time * 1000 >= nextPowerUpTime) {
             nextPowerUpTime = 0;
@@ -311,6 +332,7 @@ public class GameLogic : NetworkInterface {
 
     private void StartNextRound() {
         nextRoundTime = 0;
+        fightingStartTime = (Time.time * 1000) + FIGHTING_DELAY;
         ChangeLevel(LevelManager.GetRandomLevel(GetCurrentLevel()));
         // Send an event to each shuriken
         foreach (Transform child in shurikensParent.transform) {

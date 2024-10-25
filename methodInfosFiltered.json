@@ -37,6 +37,10 @@
 		"methodName": "OnRoundStart",
 		"parameters": null
 	},
+	"Shuriken.OnFightingStart": {
+		"methodName": "OnFightingStart",
+		"parameters": null
+	},
 	"Shuriken.OnRoundEnd": {
 		"methodName": "OnRoundEnd",
 		"parameters": null
