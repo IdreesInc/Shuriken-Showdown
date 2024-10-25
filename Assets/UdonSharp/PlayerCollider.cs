@@ -21,10 +21,6 @@ public class PlayerCollider : NetworkInterface {
         }
     }
 
-    public int GetPlayerId() {
-        return playerId;
-}
-
     private void Log(string message) {
         Debug.Log("[PlayerCollider - " + playerId + "]: " + message);
     }
@@ -129,7 +125,7 @@ public class PlayerCollider : NetworkInterface {
         return Player.displayName;
     }
 
-    public int GetPlayer() {
+    public int GetPlayerId() {
         return playerId;
     }
 

@@ -73,6 +73,13 @@ public class Shuriken : NetworkInterface {
         UpdateOwnership();
     }
 
+    void Update() {
+        // Update the trail graphics (applies to all clients)
+        if (GetComponent<TrailRenderer>() != null) {
+            GetComponent<TrailRenderer>().emitting = hasBeenThrown;
+        }
+    }
+
     void FixedUpdate() {
         if (!inGame) {
             // Disable the ability to pick up the shuriken
@@ -186,8 +193,8 @@ public class Shuriken : NetworkInterface {
         }
         if (collider.gameObject.GetComponent<PlayerCollider>() != null && (isHeld || hasBeenThrown)) {
             PlayerCollider playerCollider = collider.gameObject.GetComponent<PlayerCollider>();
-            if (!HasPlayer() || playerCollider.GetPlayer() != playerId) {
-                Log(playerId + "'s shuriken has hit " + playerCollider.GetPlayer());
+            if (!HasPlayer() || playerCollider.GetPlayerId() != playerId) {
+                Log(playerId + "'s shuriken has hit " + playerCollider.GetPlayerId());
                 if (playerCollider.IsAlive()) {
                     // Notify the player
                     playerCollider.SendMethodNetworked(nameof(PlayerCollider.OnHit), SyncTarget.All, GetPlayerName(), playerNumber);
@@ -390,10 +397,13 @@ public class Shuriken : NetworkInterface {
             Networking.SetOwner(Networking.LocalPlayer, gameObject);
             ReturnToPlayer();
         }
-        if (playerId == -1) {
-            GetComponent<Renderer>().material.color = Color.grey;
-        } else {
-            GetComponent<Renderer>().material.color = Shared.Colors()[(playerId - 1) % Shared.Colors().Length];
+        Color color = Color.grey;
+        if (playerId != -1) {
+            color = Shared.Colors()[(playerId - 1) % Shared.Colors().Length];
+        }
+        GetComponent<Renderer>().material.color = color;
+        if (GetComponent<TrailRenderer>() != null) {
+            GetComponent<TrailRenderer>().endColor = color;
         }
     }
 
