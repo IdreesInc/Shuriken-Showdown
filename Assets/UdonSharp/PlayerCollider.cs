@@ -137,6 +137,10 @@ public class PlayerCollider : NetworkInterface {
         return playerId;
     }
 
+    public int GetPlayerNumber() {
+        return playerNumber;
+    }
+
     public bool IsAlive() {
         return isAlive;
     }

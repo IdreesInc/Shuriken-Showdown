@@ -206,6 +206,11 @@ public class Shuriken : NetworkInterface {
                     }
                     // Increase the score
                     score++;
+                    // Get player name (if available)
+                    string playerName = playerCollider.Player != null ? playerCollider.Player.displayName : "[Unnamed Player]";
+                    // Show UI
+                    LocalPlayerLogic playerLogic = LocalPlayerLogic.Get();
+                    playerLogic.ShowKillUI(playerCollider.GetPlayerNumber(), playerName);
                 } else {
                     Log("Player is already dead, ignoring");
                 }

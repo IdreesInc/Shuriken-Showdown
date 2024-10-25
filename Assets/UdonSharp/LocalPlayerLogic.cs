@@ -74,7 +74,7 @@ public class LocalPlayerLogic : UdonSharpBehaviour {
             currentlyEquipped,
             false,
             Shared.Colors()[powerUpType % Shared.Colors().Length],
-            1200
+            1300
         );
     }
 
@@ -97,6 +97,27 @@ public class LocalPlayerLogic : UdonSharpBehaviour {
             true,
             Shared.Colors()[(playerNumber - 1) % Shared.Colors().Length],
             1500);
+    }
+
+    public void ShowKillUI(int playerNumber, string playerName) {
+        int numRemaining = GetAlivePlayerCount() - 1;
+        if (numRemaining <= 0) {
+            // Round is over, ignore this UI to wait for round update from instance owner
+            return;
+        }
+        string remaining = "Players Remaining";
+        if (numRemaining < 1) {
+            remaining = "No " + remaining;
+        } else {
+            remaining = numRemaining + " " + remaining;
+        }
+        UIManager.Get().ShowMessageUI("you sliced".ToUpper(),
+            playerName,
+            remaining,
+            null,
+            true,
+            Shared.Colors()[(playerNumber - 1) % Shared.Colors().Length],
+            1300);
     }
 
     public void ShowScoreUI() {
