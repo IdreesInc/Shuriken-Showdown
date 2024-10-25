@@ -195,9 +195,11 @@ public class Shuriken : NetworkInterface {
             PlayerCollider playerCollider = collider.gameObject.GetComponent<PlayerCollider>();
             if (!HasPlayer() || playerCollider.GetPlayerId() != playerId) {
                 Log(playerId + "'s shuriken has hit " + playerCollider.GetPlayerId());
-                if (playerCollider.IsAlive()) {
+                if (playerCollider.IsAlive() && !playerCollider.hasBeenHitLocally) {
                     // Notify the player
                     playerCollider.SendMethodNetworked(nameof(PlayerCollider.OnHit), SyncTarget.All, GetPlayerName(), playerNumber);
+                    // Cache the hit locally
+                    playerCollider.hasBeenHitLocally = true;
                     // Play hit sound
                     if (audioSource != null) {
                         audioSource.Play();

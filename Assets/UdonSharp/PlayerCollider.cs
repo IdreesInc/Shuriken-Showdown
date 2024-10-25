@@ -10,6 +10,11 @@ public class PlayerCollider : NetworkInterface {
     [UdonSynced] private int playerNumber = -1;
     [UdonSynced] private bool isAlive = true;
 
+    /// <summary>
+    /// Used locally by non-owners to prevent repeated hits before isAlive is updated
+    /// </summary>
+    public bool hasBeenHitLocally = false;
+
     private Vector3 deathPoint = new Vector3(0, 0, 0);
 
     public VRCPlayerApi Player {
@@ -48,6 +53,7 @@ public class PlayerCollider : NetworkInterface {
     [NetworkedMethod]
     public void OnRoundStart(int level) {
         isAlive = true;
+        hasBeenHitLocally = false;
         if (!Networking.IsOwner(gameObject)) {
             return;
         }
@@ -58,6 +64,7 @@ public class PlayerCollider : NetworkInterface {
     [NetworkedMethod]
     public void OnRoundEnd() {
         isAlive = true;
+        hasBeenHitLocally = false;
         if (!Networking.IsOwner(gameObject)) {
             return;
         }
@@ -68,6 +75,7 @@ public class PlayerCollider : NetworkInterface {
     [NetworkedMethod]
     public void OnGameEnd(int winnerNumber, string winnerName) {
         isAlive = true;
+        hasBeenHitLocally = false;
         if (!Networking.IsOwner(gameObject)) {
             return;
         }
