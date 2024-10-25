@@ -142,7 +142,7 @@ public class PlayerCollider : NetworkInterface {
         // Teleport player to spawn point
         Player.TeleportTo(spawnPoint, Player.GetRotation());
         // Update death point
-        UpdateDeathPoint(Level.LOBBY);
+        UpdateDeathPoint();
     }
 
     private void UpdateOwnership() {
@@ -152,8 +152,8 @@ public class PlayerCollider : NetworkInterface {
         }
     }
 
-    private void UpdateDeathPoint(Level level) {
+    private void UpdateDeathPoint() {
         LevelManager manager = LevelManager.Get();
-        deathPoint = manager.GetDeathPosition(level);
+        deathPoint = manager.GetDeathPosition();
     }
 }

@@ -15,6 +15,7 @@ public enum Level {
 [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class LevelManager : UdonSharpBehaviour {
     public GameObject sharedTerrain;
+    public GameObject afterlife;
     public GameObject lobby;
     public GameObject ruins;
     public GameObject foundations;
@@ -101,14 +102,15 @@ public class LevelManager : UdonSharpBehaviour {
         return spawnMarker.position;
     }
 
-    public Vector3 GetDeathPosition(Level level) {
-        Transform deathMarkerTrans = GetLevelObject(level).transform.Find("Death Marker");
+    public Vector3 GetDeathPosition() {
+        Transform deathMarkerTrans = afterlife.transform.Find("Death Marker");
         if (deathMarkerTrans == null) {
             LogError("Death marker not found");
             return Vector3.zero;
         }
         GameObject deathMarker = deathMarkerTrans.gameObject;
-        return deathMarker.transform.position;
+        Vector3 position = deathMarker.transform.position;
+        return position;
     }
 
     public Vector3[] GetPowerUpSpawnPoints(Level level) {
