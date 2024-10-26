@@ -11,7 +11,7 @@ public class Shuriken : NetworkInterface {
 
     public AudioSource audioSource;
     
-    private const float ROTATION_SPEED = 360f * 2;
+    private const float ROTATION_SPEED = 360f * 0.5f;
     private const float MAX_DISTANCE = 75;
     private const float MAX_GROUND_DISTANCE = 5;
     private const float THROW_FORCE = 5;
@@ -30,7 +30,7 @@ public class Shuriken : NetworkInterface {
     /// Whether we are in-game, which determines whether the shuriken can be used
     /// and if it can collide with anything
     /// </summary>
-    [UdonSynced] private bool inGame = false;
+    [UdonSynced] private bool inGame = true;
     [UdonSynced] private bool isHeld = false;
     [UdonSynced] private bool hasBeenThrown = false;
     [UdonSynced] private int powerUpOne = -1;
@@ -94,7 +94,6 @@ public class Shuriken : NetworkInterface {
         if (!isHeld) {
             if (velocity > 0.3f) {
                 transform.Rotate(Vector3.up, ROTATION_SPEED * Time.deltaTime);
-                transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
             } else if (HasPlayer() && Networking.IsOwner(gameObject)) {
                 if (velocity < 0.01f && hasBeenThrown && Vector3.Distance(transform.position, Player.GetPosition()) > MAX_GROUND_DISTANCE) {
                     // Shuriken at rest after being thrown
@@ -115,7 +114,15 @@ public class Shuriken : NetworkInterface {
             }
         }
         if (hasBeenThrown) {
-            GetComponent<Rigidbody>().AddForce(GRAVITY_FORCE, ForceMode.Acceleration);
+            Rigidbody rb = GetComponent<Rigidbody>();
+            rb.AddForce(GRAVITY_FORCE, ForceMode.Acceleration);
+            if (velocity > 0.3f) {
+                // Add force so that shuriken acts like a frisbee
+                // Get the dot product of the transform's up and the world down vector
+                Vector3 directionVector = Vector3.ProjectOnPlane(Vector3.down, transform.up).normalized;
+                directionVector.y *= 0.25f;
+                rb.AddForce(directionVector * 15f, ForceMode.Acceleration);
+            }
         }
         if (!hasBeenThrown && !isHeld) {
             // Freeze the shuriken in place
@@ -167,6 +174,10 @@ public class Shuriken : NetworkInterface {
             Log("Velocity: " + GetComponent<Rigidbody>().velocity.magnitude + ", throwing shuriken");
             GetComponent<Rigidbody>().AddForce(Player.GetRotation() * Vector3.forward * THROW_FORCE, ForceMode.Impulse);
         }
+        if (Player != null && !Player.IsUserInVR()) {
+            // Non-VR player, fix shuriken rotation
+            transform.rotation = Quaternion.Euler(0, Player.GetRotation().eulerAngles.y, 0);
+        }
     }
 
     private void OnCollisionEnter(Collision collision) {
@@ -178,6 +189,7 @@ public class Shuriken : NetworkInterface {
             Log("Shuriken is disabled, ignoring collision");
             return;
         }
+
         if (collision.gameObject.GetComponent<Shuriken>() != null) {
             // Collided with another shuriken
             Log("Shuriken has collided with another shuriken");
@@ -197,6 +209,7 @@ public class Shuriken : NetworkInterface {
             Log("Shuriken is disabled, ignoring trigger");
             return;
         }
+
         if (collider.gameObject.GetComponent<PlayerCollider>() != null && (isHeld || hasBeenThrown)) {
             PlayerCollider playerCollider = collider.gameObject.GetComponent<PlayerCollider>();
             if (!HasPlayer() || playerCollider.GetPlayerId() != playerId) {
