@@ -33,6 +33,7 @@ public class Shuriken : NetworkInterface {
     [UdonSynced] private bool inGame = true;
     [UdonSynced] private bool isHeld = false;
     [UdonSynced] private bool hasBeenThrown = false;
+    [UdonSynced] private bool hasFirstContact = false;
     [UdonSynced] private int powerUpOne = -1;
     [UdonSynced] private int powerUpTwo = -1;
     [UdonSynced] private int powerUpThree = -1;
@@ -116,7 +117,7 @@ public class Shuriken : NetworkInterface {
         if (hasBeenThrown) {
             Rigidbody rb = GetComponent<Rigidbody>();
             rb.AddForce(GRAVITY_FORCE, ForceMode.Acceleration);
-            if (velocity > 0.3f) {
+            if (velocity > 0.3f && !hasFirstContact) {
                 // Add force so that shuriken acts like a frisbee
                 // Get the dot product of the transform's up and the world down vector
                 Vector3 directionVector = Vector3.ProjectOnPlane(Vector3.down, transform.up).normalized;
@@ -152,6 +153,8 @@ public class Shuriken : NetworkInterface {
             return;
         }
         isHeld = true;
+        hasBeenThrown = false;
+        hasFirstContact = false;
         // Disable collision with anything
         GetComponent<Rigidbody>().detectCollisions = false;
         if (Networking.LocalPlayer.playerId != playerId) {
@@ -167,6 +170,7 @@ public class Shuriken : NetworkInterface {
         }
         isHeld = false;
         hasBeenThrown = true;
+        hasFirstContact = false;
         // Enable collision with anything
         GetComponent<Rigidbody>().detectCollisions = true;
         // Throw the shuriken if the initial velocity is high enough
@@ -192,6 +196,8 @@ public class Shuriken : NetworkInterface {
             Log("Shuriken is disabled, ignoring collision");
             return;
         }
+
+        hasFirstContact = true;
 
         if (collision.gameObject.GetComponent<Shuriken>() != null) {
             // Collided with another shuriken
@@ -350,6 +356,7 @@ public class Shuriken : NetworkInterface {
         GetComponent<Rigidbody>().velocity = Vector3.zero;
         GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
         hasBeenThrown = false;
+        hasFirstContact = false;
     }
 
     private string GetPlayerName() {
