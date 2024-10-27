@@ -181,6 +181,9 @@ public class Shuriken : NetworkInterface {
     }
 
     private void OnCollisionEnter(Collision collision) {
+        // Clone the particle test, place copies at random points around the collision point, and play them
+        Effects.Get().SpawnExplosion(collision.contacts[0].point, 2);
+
         if (!Networking.IsOwner(gameObject)) {
             Log("Not the owner, skipping collision");
             return;
