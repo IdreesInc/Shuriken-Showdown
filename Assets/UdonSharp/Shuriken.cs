@@ -11,7 +11,8 @@ public class Shuriken : NetworkInterface {
 
     public AudioSource audioSource;
     
-    private const float ROTATION_SPEED = 360f * 0.5f;
+    private const float ROTATION_SPEED = 360f * 3;
+    private const float IDLE_ROTATION_SPEED = 90f;
     private const float MAX_DISTANCE = 75;
     private const float MAX_GROUND_DISTANCE = 5;
     private const float THROW_FORCE = 5;
@@ -38,6 +39,7 @@ public class Shuriken : NetworkInterface {
     [UdonSynced] private int powerUpTwo = -1;
     [UdonSynced] private int powerUpThree = -1;
     [UdonSynced] private int score = 0;
+    [UdonSynced] private Quaternion rotationOnThrow = Quaternion.identity;
 
     private VRCPlayerApi Player {
         get {
@@ -90,11 +92,20 @@ public class Shuriken : NetworkInterface {
             GetComponent<Rigidbody>().detectCollisions = true;
         }
 
+        Rigidbody rb = GetComponent<Rigidbody>();
+
         GetComponent<Rigidbody>().useGravity = false;
         float velocity = GetComponent<Rigidbody>().velocity.magnitude;
         if (!isHeld) {
             if (velocity > 0.3f) {
-                transform.Rotate(Vector3.up, ROTATION_SPEED * Time.deltaTime);
+                if (!hasFirstContact) {
+                    transform.rotation = rotationOnThrow;
+                    transform.Rotate(Vector3.up, ROTATION_SPEED * Time.deltaTime);
+                    rotationOnThrow = transform.rotation;
+                } else {
+                    transform.Rotate(Vector3.up, ROTATION_SPEED * Time.deltaTime);
+                    transform.rotation = Quaternion.Euler(0, transform.eulerAngles.y, 0);
+                }
             } else if (HasPlayer() && Networking.IsOwner(gameObject)) {
                 if (velocity < 0.01f && hasBeenThrown && Vector3.Distance(transform.position, Player.GetPosition()) > MAX_GROUND_DISTANCE) {
                     // Shuriken at rest after being thrown
@@ -114,17 +125,11 @@ public class Shuriken : NetworkInterface {
                 ReturnToPlayer();
             }
         }
+
         if (hasBeenThrown) {
-            Rigidbody rb = GetComponent<Rigidbody>();
             rb.AddForce(GRAVITY_FORCE, ForceMode.Acceleration);
-            if (velocity > 0.3f && !hasFirstContact) {
-                // Add force so that shuriken acts like a frisbee
-                // Get the dot product of the transform's up and the world down vector
-                Vector3 directionVector = Vector3.ProjectOnPlane(Vector3.down, transform.up).normalized;
-                directionVector.y *= 0.25f;
-                rb.AddForce(directionVector * 15f, ForceMode.Acceleration);
-            }
         }
+
         if (!hasBeenThrown && !isHeld) {
             // Freeze the shuriken in place
             GetComponent<Rigidbody>().velocity = Vector3.zero;
@@ -133,8 +138,8 @@ public class Shuriken : NetworkInterface {
             // TODO: Determine if this has any adverse effects
             gameObject.layer = 17;
             if (inGame) {
-                 // Spin that baby
-                transform.Rotate(Vector3.up, ROTATION_SPEED / 2 * Time.deltaTime);
+                // Spin that baby
+                transform.Rotate(Vector3.up, IDLE_ROTATION_SPEED * Time.deltaTime);
                 transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
             } else {
                 // Set rotation to player's rotation
@@ -182,11 +187,36 @@ public class Shuriken : NetworkInterface {
             // Non-VR player, fix shuriken rotation
             transform.rotation = Quaternion.Euler(0, Player.GetRotation().eulerAngles.y, 0);
         }
+        rotationOnThrow = transform.rotation;
+    }
+
+    private void CheckForLocalExplosionCollision(Vector3 position, int level) {
+        Vector3 playerPosition = Player.GetPosition();
+        float range = 0;
+        if (level == 1) {
+            range = 3.75f;
+        } else if (level == 2) {
+            range = 4.5f;
+        } else if (level >= 3) {
+            range = 5.25f;
+        }
+        // Determine if the local player is within the explosion radius
+        if (Vector3.Distance(playerPosition, position) <= range) {
+            Log("Local player has been hit by explosion");
+        } else {
+            Log("Distance: " + Vector3.Distance(playerPosition, position));
+        }
     }
 
     private void OnCollisionEnter(Collision collision) {
-        // Clone the particle test, place copies at random points around the collision point, and play them
-        Effects.Get().SpawnExplosion(collision.contacts[0].point, 2);
+        if (hasBeenThrown) {
+            // Create explosions locally
+            int explosionLevel = GetPowerUpLevel(3);
+            if (explosionLevel > 0) {
+                Effects.Get().SpawnExplosion(collision.contacts[0].point, explosionLevel + 1);
+                CheckForLocalExplosionCollision(collision.contacts[0].point, explosionLevel + 1);
+            }
+        }
 
         if (!Networking.IsOwner(gameObject)) {
             Log("Not the owner, skipping collision");
@@ -452,17 +482,22 @@ public class Shuriken : NetworkInterface {
     }
 
     private Vector3 GetSpawnOffset() {
-        int numOfEmbiggens = 0;
-        if (powerUpOne == 0) {
-            numOfEmbiggens++;
-        }
-        if (powerUpTwo == 0) {
-            numOfEmbiggens++;
-        }
-        if (powerUpThree == 0) {
-            numOfEmbiggens++;
-        }
+        int numOfEmbiggens = GetPowerUpLevel(0);
         return new Vector3(0, 0.5f, 1f + 0.5f * numOfEmbiggens);
+    }
+
+    private int GetPowerUpLevel(int type) {
+        int level = 0;
+        if (powerUpOne == type) {
+            level++;
+        }
+        if (powerUpTwo == type) {
+            level++;
+        }
+        if (powerUpThree == type) {
+            level++;
+        }
+        return level;
     }
 
     private void PutInFrontOfPlayer() {

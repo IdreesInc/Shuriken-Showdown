@@ -17,6 +17,7 @@ public class PowerUp : NetworkInterface {
             "Embiggen",
             "Amphetamines",
             "Moon Shoes",
+            "Badaboom"
         };
         if (type < 0 || type >= POWER_UP_NAMES.Length) {
             return "Unknown";
@@ -29,6 +30,7 @@ public class PowerUp : NetworkInterface {
             "Go big or go home",
             "Gotta go fast",
             "Reach for the stars",
+            "Hearing protection recommended"
         };
         if (type < 0 || type >= POWER_UP_SUBTITLES.Length) {
             return "Unknown";
@@ -38,7 +40,7 @@ public class PowerUp : NetworkInterface {
 
     public static int GetNumberOfPowerUps() {
         // Stupid necessity due to UdonSharp not allowing for static fields
-        return 3;
+        return 4;
     }
 
     private void Log(string message) {
@@ -60,6 +62,7 @@ public class PowerUp : NetworkInterface {
 
     public void SetRandomPowerUpType() {
         int randomPowerUpType = Random.Range(0, GetNumberOfPowerUps());
+        randomPowerUpType = 3; // For testing
         SetPowerUpType(randomPowerUpType);
     }
 
