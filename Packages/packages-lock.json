@@ -1,5 +1,11 @@
 {
   "dependencies": {
+    "com.anatawa12.apple-silicon-harmony": {
+      "version": "file:com.anatawa12.apple-silicon-harmony",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.miner28.networked-event-caller": {
       "version": "file:com.miner28.networked-event-caller",
       "depth": 0,
