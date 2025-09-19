@@ -62,7 +62,6 @@ public class PowerUp : NetworkInterface {
 
     public void SetRandomPowerUpType() {
         int randomPowerUpType = Random.Range(0, GetNumberOfPowerUps());
-        randomPowerUpType = 3; // For testing
         SetPowerUpType(randomPowerUpType);
     }
 
