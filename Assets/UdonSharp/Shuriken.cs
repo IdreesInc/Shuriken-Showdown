@@ -4,6 +4,7 @@ using VRC.SDKBase;
 using VRC.Udon;
 using VRC.Udon.Common.Interfaces;
 using System;
+using VRC.SDK3.UdonNetworkCalling;
 
 [UdonBehaviourSyncMode(BehaviourSyncMode.Continuous)]
 public class Shuriken : UdonSharpBehaviour {
@@ -285,6 +286,7 @@ public class Shuriken : UdonSharpBehaviour {
     /// <summary>
     /// Triggered over the network by PowerUp when it detects a collision with this shuriken
     /// </summary>
+    [NetworkCallable]
     public void ActivatePowerUp(int type) {
         if (!Networking.IsOwner(gameObject)) {
             return;
@@ -292,30 +294,42 @@ public class Shuriken : UdonSharpBehaviour {
         AddPowerUp(type);
     }
 
-    public void OnRoundStart() {
-        if (!Networking.IsOwner(gameObject)) {
+    [NetworkCallable]
+    public void OnRoundStart()
+    {
+        if (!Networking.IsOwner(gameObject))
+        {
             return;
         }
     }
 
-    public void OnFightingStart() {
-        if (!Networking.IsOwner(gameObject)) {
+    [NetworkCallable]
+    public void OnFightingStart()
+    {
+        if (!Networking.IsOwner(gameObject))
+        {
             return;
         }
         Log("Fighting has started, enabling shuriken");
         inGame = true;
     }
 
-    public void OnRoundEnd() {
-        if (!Networking.IsOwner(gameObject)) {
+    [NetworkCallable]
+    public void OnRoundEnd()
+    {
+        if (!Networking.IsOwner(gameObject))
+        {
             return;
         }
         ResetShurikenBetweenRounds();
         inGame = false;
     }
 
-    public void OnGameEnd() {
-        if (!Networking.IsOwner(gameObject)) {
+    [NetworkCallable]
+    public void OnGameEnd()
+    {
+        if (!Networking.IsOwner(gameObject))
+        {
             return;
         }
         ResetShurikenBetweenRounds();

@@ -16,5 +16,8 @@ MonoBehaviour:
   serializedProgramBytesString: 
   serializedSignature: 
   programUnityEngineObjects: []
-  networkCallingEntrypointMetadata: []
+  networkCallingEntrypointMetadata:
+  - _maxEventsPerSecond: 5
+    _name: StartGame
+    _parameters: []
   serializationDataFormat: 0

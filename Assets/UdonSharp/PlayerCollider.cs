@@ -1,5 +1,6 @@
 ﻿using UdonSharp;
 using UnityEngine;
+using VRC.SDK3.UdonNetworkCalling;
 using VRC.SDKBase;
 
 [UdonBehaviourSyncMode(BehaviourSyncMode.Continuous)]
@@ -49,30 +50,39 @@ public class PlayerCollider : UdonSharpBehaviour {
 
     /** Event Handlers **/
 
-    public void OnRoundStart(int level) {
+    [NetworkCallable]
+    public void OnRoundStart(int level)
+    {
         isAlive = true;
         hasBeenHitLocally = false;
-        if (!Networking.IsOwner(gameObject)) {
+        if (!Networking.IsOwner(gameObject))
+        {
             return;
         }
         Log("Next round, resetting player collider");
-        GoToLevelSpawn((Level) level);
+        GoToLevelSpawn((Level)level);
     }
 
-    public void OnRoundEnd() {
+    [NetworkCallable]
+    public void OnRoundEnd()
+    {
         isAlive = true;
         hasBeenHitLocally = false;
-        if (!Networking.IsOwner(gameObject)) {
+        if (!Networking.IsOwner(gameObject))
+        {
             return;
         }
         Log("Round over, resetting player collider");
         LocalPlayerLogic.Get().ShowScoreUI();
     }
 
-    public void OnGameEnd(int winnerNumber, string winnerName) {
+    [NetworkCallable]
+    public void OnGameEnd(int winnerNumber, string winnerName)
+    {
         isAlive = true;
         hasBeenHitLocally = false;
-        if (!Networking.IsOwner(gameObject)) {
+        if (!Networking.IsOwner(gameObject))
+        {
             return;
         }
         Log("Game over, resetting player collider");
@@ -80,16 +90,20 @@ public class PlayerCollider : UdonSharpBehaviour {
         GoToLevelSpawn(Level.LOBBY);
     }
 
-    public void OnHit(string playerName, int playerNumber) {
+    [NetworkCallable]
+    public void OnHit(string playerName, int playerNumber)
+    {
         isAlive = false;
-        if (!Networking.IsOwner(gameObject)) {
+        if (!Networking.IsOwner(gameObject))
+        {
             Log("Not the owner, skipping collision");
             return;
         }
         Log("Player hit by " + playerName);
         LocalPlayerLogic playerLogic = LocalPlayerLogic.Get();
         playerLogic.ShowHitUI(playerNumber, playerName, "sliced");
-        if (playerLogic.GetAlivePlayerCount() > 1) {
+        if (playerLogic.GetAlivePlayerCount() > 1)
+        {
             // Only teleport player if this isn't the end of the round
             Player.TeleportTo(deathPoint, Player.GetRotation());
         }

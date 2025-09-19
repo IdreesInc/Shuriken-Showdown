@@ -7,6 +7,7 @@ using VRC.SDKBase;
 using VRC.Udon;
 using VRC.Udon.Common.Interfaces;
 using System;
+using VRC.SDK3.UdonNetworkCalling;
 
 /// <summary>
 /// Game server logic that is only executed by the instance owner (who also owns this object)
@@ -194,6 +195,7 @@ public class GameLogic : UdonSharpBehaviour {
     /// <summary>`
     /// Triggered over the network when the game is started
     /// </summary>
+    [NetworkCallable]
     public void StartGame() {
         if (!Networking.IsOwner(gameObject)) {
             return;
