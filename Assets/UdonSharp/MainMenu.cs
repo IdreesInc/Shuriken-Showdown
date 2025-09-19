@@ -5,6 +5,7 @@ using VRC.SDKBase;
 using VRC.Udon;
 using TMPro;
 using UnityEngine.UI;
+using VRC.Udon.Common.Interfaces;
 
 [UdonBehaviourSyncMode(BehaviourSyncMode.Continuous)]
 public class MainMenu : UdonSharpBehaviour {
@@ -33,9 +34,11 @@ public class MainMenu : UdonSharpBehaviour {
         UpdatePlayerIcons();
     }
 
-    public void OnStartGamePressed() {
+    public void OnStartGamePressed()
+    {
         Log("Start Game Pressed");
-        GameLogic.Get().SendMethodNetworked(nameof(GameLogic.StartGame), SyncTarget.All);
+        // GameLogic.Get().SendMethodNetworked(nameof(GameLogic.StartGame), SyncTarget.All);
+        SendCustomNetworkEvent(NetworkEventTarget.All, nameof(GameLogic.StartGame));
     }
 
     /** Custom Methods */

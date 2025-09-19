@@ -6,14 +6,13 @@ using UnityEngine;
 using VRC.SDKBase;
 using VRC.Udon;
 using VRC.Udon.Common.Interfaces;
-using Miner28.UdonUtils.Network;
 using System;
 
 /// <summary>
 /// Game server logic that is only executed by the instance owner (who also owns this object)
 /// </summary>
 [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
-public class GameLogic : NetworkInterface {
+public class GameLogic : UdonSharpBehaviour {
 
     public VRC.SDK3.Components.VRCObjectPool shurikenPool;
     public VRC.SDK3.Components.VRCObjectPool playerColliderPool;
@@ -169,9 +168,11 @@ public class GameLogic : NetworkInterface {
             fightingStartTime = 0;
             // Send an event to each shuriken
             foreach (Transform child in shurikensParent.transform) {
-                if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null) {
+                if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null)
+                {
                     Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
-                    shuriken.SendMethodNetworked(nameof(Shuriken.OnFightingStart), SyncTarget.All);
+                    // shuriken.SendMethodNetworked(nameof(Shuriken.OnFightingStart), SyncTarget.All);
+                    SendCustomNetworkEvent(NetworkEventTarget.All, nameof(shuriken.OnFightingStart));
                 }
             }
         }
@@ -193,7 +194,6 @@ public class GameLogic : NetworkInterface {
     /// <summary>`
     /// Triggered over the network when the game is started
     /// </summary>
-    [NetworkedMethod]
     public void StartGame() {
         if (!Networking.IsOwner(gameObject)) {
             return;
@@ -294,16 +294,20 @@ public class GameLogic : NetworkInterface {
         nextRoundTime = 0;
         // Send an event to each shuriken
         foreach (Transform child in shurikensParent.transform) {
-            if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null) {
+            if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null)
+            {
                 Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
-                shuriken.SendMethodNetworked(nameof(Shuriken.OnRoundEnd), SyncTarget.All);
+                // shuriken.SendMethodNetworked(nameof(Shuriken.OnRoundEnd), SyncTarget.All);
+                SendCustomNetworkEvent(NetworkEventTarget.All, nameof(shuriken.OnRoundEnd));
             }
         }
         // Send an event to each player collider
         foreach (Transform child in playerCollidersParent.transform) {
-            if (child.gameObject.activeSelf && child.gameObject.GetComponent<PlayerCollider>() != null) {
+            if (child.gameObject.activeSelf && child.gameObject.GetComponent<PlayerCollider>() != null)
+            {
                 PlayerCollider playerCollider = child.gameObject.GetComponent<PlayerCollider>();
-                playerCollider.SendMethodNetworked(nameof(PlayerCollider.OnRoundEnd), SyncTarget.All);
+                // playerCollider.SendMethodNetworked(nameof(PlayerCollider.OnRoundEnd), SyncTarget.All);
+                SendCustomNetworkEvent(NetworkEventTarget.All, nameof(playerCollider.OnRoundEnd));
             }
         }
         nextRoundTime = (Time.time + 3) * 1000;
@@ -312,9 +316,11 @@ public class GameLogic : NetworkInterface {
     private void EndGame(int winnerNumber, string winnerName) {
         // Send an event to each shuriken
         foreach (Transform child in shurikensParent.transform) {
-            if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null) {
+            if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null)
+            {
                 Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
-                shuriken.SendMethodNetworked(nameof(Shuriken.OnGameEnd), SyncTarget.All);
+                // shuriken.SendMethodNetworked(nameof(Shuriken.OnGameEnd), SyncTarget.All);
+                SendCustomNetworkEvent(NetworkEventTarget.All, nameof(shuriken.OnGameEnd));
             }
         }
 
@@ -324,7 +330,8 @@ public class GameLogic : NetworkInterface {
         foreach (Transform child in playerCollidersParent.transform) {
             if (child.gameObject.activeSelf && child.gameObject.GetComponent<PlayerCollider>() != null) {
                 PlayerCollider playerCollider = child.gameObject.GetComponent<PlayerCollider>();
-                playerCollider.SendMethodNetworked(nameof(PlayerCollider.OnGameEnd), SyncTarget.All, winnerNumber, winnerName);
+                // playerCollider.SendMethodNetworked(nameof(PlayerCollider.OnGameEnd), SyncTarget.All, winnerNumber, winnerName);
+                SendCustomNetworkEvent(NetworkEventTarget.All, nameof(playerCollider.OnGameEnd), winnerNumber, winnerName);
             }
         }
         nextRoundTime = 0;
@@ -336,9 +343,11 @@ public class GameLogic : NetworkInterface {
         ChangeLevel(LevelManager.GetRandomLevel(GetCurrentLevel()));
         // Send an event to each shuriken
         foreach (Transform child in shurikensParent.transform) {
-            if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null) {
+            if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null)
+            {
                 Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
-                shuriken.SendMethodNetworked(nameof(Shuriken.OnRoundStart), SyncTarget.All);
+                // shuriken.SendMethodNetworked(nameof(Shuriken.OnRoundStart), SyncTarget.All);
+                SendCustomNetworkEvent(NetworkEventTarget.All, nameof(shuriken.OnRoundStart));
             }
         }
 
@@ -347,7 +356,8 @@ public class GameLogic : NetworkInterface {
             if (child.gameObject.activeSelf && child.gameObject.GetComponent<PlayerCollider>() != null) {
                 PlayerCollider playerCollider = child.gameObject.GetComponent<PlayerCollider>();
                 Log("Sending start round for player collider " + child.gameObject.name);
-                playerCollider.SendMethodNetworked(nameof(PlayerCollider.OnRoundStart), SyncTarget.All, GetCurrentLevelInt());
+                // playerCollider.SendMethodNetworked(nameof(PlayerCollider.OnRoundStart), SyncTarget.All, GetCurrentLevelInt());
+                SendCustomNetworkEvent(NetworkEventTarget.All, nameof(playerCollider.OnRoundStart), GetCurrentLevelInt());
             }
         }
     }

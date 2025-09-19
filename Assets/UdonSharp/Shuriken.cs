@@ -3,11 +3,10 @@ using UnityEngine;
 using VRC.SDKBase;
 using VRC.Udon;
 using VRC.Udon.Common.Interfaces;
-using Miner28.UdonUtils.Network;
 using System;
 
 [UdonBehaviourSyncMode(BehaviourSyncMode.Continuous)]
-public class Shuriken : NetworkInterface {
+public class Shuriken : UdonSharpBehaviour {
 
     public AudioSource audioSource;
     
@@ -255,7 +254,8 @@ public class Shuriken : NetworkInterface {
                 Log(playerId + "'s shuriken has hit " + playerCollider.GetPlayerId());
                 if (playerCollider.IsAlive() && !playerCollider.hasBeenHitLocally) {
                     // Notify the player
-                    playerCollider.SendMethodNetworked(nameof(PlayerCollider.OnHit), SyncTarget.All, GetPlayerName(), playerNumber);
+                    // playerCollider.SendMethodNetworked(nameof(PlayerCollider.OnHit), SyncTarget.All, GetPlayerName(), playerNumber);
+                    SendCustomNetworkEvent(NetworkEventTarget.All, nameof(playerCollider.OnHit), GetPlayerName(), playerNumber);
                     // Cache the hit locally
                     playerCollider.hasBeenHitLocally = true;
                     // Play hit sound
@@ -285,7 +285,6 @@ public class Shuriken : NetworkInterface {
     /// <summary>
     /// Triggered over the network by PowerUp when it detects a collision with this shuriken
     /// </summary>
-    [NetworkedMethod]
     public void ActivatePowerUp(int type) {
         if (!Networking.IsOwner(gameObject)) {
             return;
@@ -293,14 +292,12 @@ public class Shuriken : NetworkInterface {
         AddPowerUp(type);
     }
 
-    [NetworkedMethod]
     public void OnRoundStart() {
         if (!Networking.IsOwner(gameObject)) {
             return;
         }
     }
 
-    [NetworkedMethod]
     public void OnFightingStart() {
         if (!Networking.IsOwner(gameObject)) {
             return;
@@ -309,7 +306,6 @@ public class Shuriken : NetworkInterface {
         inGame = true;
     }
 
-    [NetworkedMethod]
     public void OnRoundEnd() {
         if (!Networking.IsOwner(gameObject)) {
             return;
@@ -318,7 +314,6 @@ public class Shuriken : NetworkInterface {
         inGame = false;
     }
 
-    [NetworkedMethod]
     public void OnGameEnd() {
         if (!Networking.IsOwner(gameObject)) {
             return;

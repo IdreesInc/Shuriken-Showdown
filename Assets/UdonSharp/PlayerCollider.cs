@@ -1,10 +1,9 @@
 ﻿using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
-using Miner28.UdonUtils.Network;
 
 [UdonBehaviourSyncMode(BehaviourSyncMode.Continuous)]
-public class PlayerCollider : NetworkInterface {
+public class PlayerCollider : UdonSharpBehaviour {
     private readonly Vector3 offset = new Vector3(0, 1, 0);
     [UdonSynced] private int playerId = -1;
     [UdonSynced] private int playerNumber = -1;
@@ -50,7 +49,6 @@ public class PlayerCollider : NetworkInterface {
 
     /** Event Handlers **/
 
-    [NetworkedMethod]
     public void OnRoundStart(int level) {
         isAlive = true;
         hasBeenHitLocally = false;
@@ -61,7 +59,6 @@ public class PlayerCollider : NetworkInterface {
         GoToLevelSpawn((Level) level);
     }
 
-    [NetworkedMethod]
     public void OnRoundEnd() {
         isAlive = true;
         hasBeenHitLocally = false;
@@ -72,7 +69,6 @@ public class PlayerCollider : NetworkInterface {
         LocalPlayerLogic.Get().ShowScoreUI();
     }
 
-    [NetworkedMethod]
     public void OnGameEnd(int winnerNumber, string winnerName) {
         isAlive = true;
         hasBeenHitLocally = false;
@@ -84,7 +80,6 @@ public class PlayerCollider : NetworkInterface {
         GoToLevelSpawn(Level.LOBBY);
     }
 
-    [NetworkedMethod]
     public void OnHit(string playerName, int playerNumber) {
         isAlive = false;
         if (!Networking.IsOwner(gameObject)) {

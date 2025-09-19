@@ -4,10 +4,9 @@ using UnityEngine;
 using VRC.SDKBase;
 using VRC.Udon;
 using VRC.Udon.Common.Interfaces;
-using Miner28.UdonUtils.Network;
 
 [UdonBehaviourSyncMode(BehaviourSyncMode.Continuous)]
-public class PowerUp : NetworkInterface {
+public class PowerUp : UdonSharpBehaviour {
 
     [UdonSynced] private int powerUpType = 0;
 
@@ -83,7 +82,8 @@ public class PowerUp : NetworkInterface {
         if (collider.gameObject.GetComponent<Shuriken>() != null) {
             Shuriken shuriken = collider.gameObject.GetComponent<Shuriken>();
             Log("Power up has collided with a shuriken owned by " + shuriken.GetPlayerId());
-            shuriken.SendMethodNetworked(nameof(Shuriken.ActivatePowerUp), SyncTarget.All, powerUpType);
+            // shuriken.SendMethodNetworked(nameof(Shuriken.ActivatePowerUp), SyncTarget.All, powerUpType);
+            SendCustomNetworkEvent(NetworkEventTarget.All, nameof(shuriken.ActivatePowerUp), powerUpType);
             GameLogic.Get().OnPowerUpCollected(gameObject);
         }
     }
