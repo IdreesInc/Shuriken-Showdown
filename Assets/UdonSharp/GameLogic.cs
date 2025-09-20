@@ -181,6 +181,15 @@ public class GameLogic : UdonSharpBehaviour
         }
     }
 
+    public override void OnDeserialization()
+    {
+        // Notify all shurikens of any changes on the client side
+        foreach (Shuriken child in Shurikens())
+        {
+            child.OnGameLogicChange();
+        }
+    }
+
     /** Event Handlers **/
 
     /// <summary>`
@@ -209,6 +218,9 @@ public class GameLogic : UdonSharpBehaviour
         }
         powerUpPool.Return(powerUp);
         nextPowerUpTime = (Time.time * 1000) + POWER_UP_DELAY;
+
+        // Commit the changes
+        CommitChanges();
     }
 
     [NetworkCallable]
@@ -222,6 +234,8 @@ public class GameLogic : UdonSharpBehaviour
         Log("Player " + thrower.displayName + " hit player " + VRCPlayerApi.GetPlayerById(hitPlayerId).displayName);
 
         int hitPlayerSlot = GetPlayerSlot(hitPlayerId);
+        int throwerSlot = GetPlayerSlot(thrower.playerId);
+
         if (hitPlayerSlot <= 0)
         {
             LogError("Hit player with id " + hitPlayerId + " not found in any slot");
@@ -232,21 +246,18 @@ public class GameLogic : UdonSharpBehaviour
             LogError("Hit player in slot " + hitPlayerSlot + " is already dead");
             return;
         }
-
-        // Increase the thrower's score
-        int throwerSlot = GetPlayerSlot(thrower.playerId);
-        if (throwerSlot >= 0)
-        {
-            playerScores[throwerSlot]++;
-        }
-        else
-        {
+        if (throwerSlot < 0) {
             LogError("Thrower with id " + thrower.playerId + " not found in any slot");
             return;
         }
 
-        // Kill the hit player
+
+        // Update player values
+        playerScores[throwerSlot]++;
         playerAlive[hitPlayerSlot] = false;
+
+        // Commit the changes
+        CommitChanges();
 
         // Notify the hit player that they have been hit
         PlayerCollider[] playerColliders = PlayerColliders();
@@ -331,6 +342,17 @@ public class GameLogic : UdonSharpBehaviour
         return playerScores;
     }
 
+    private void CommitChanges()
+    {
+        // Commit the changes
+        RequestSerialization();
+        // If we are the owner, call OnDeserialization manually (since it won't be called otherwise)
+        if (Networking.IsOwner(gameObject))
+        {
+            OnDeserialization();
+        }
+    }
+
     private int GetPlayerCount()
     {
         int count = 0;
@@ -356,18 +378,9 @@ public class GameLogic : UdonSharpBehaviour
         playerAlive[availablePlayerSlot] = true;
         playerScores[availablePlayerSlot] = 0;
         Log("Added player " + playerId + " to slot " + availablePlayerSlot);
-        // Update the shuriken for the player
-        GameObject[] playerObjects = player.GetPlayerObjects();
-        foreach (GameObject playerObject in playerObjects)
-        {
-            Shuriken shuriken = playerObject.GetComponent<Shuriken>();
-            if (shuriken != null)
-            {
-                shuriken.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(Shuriken.OnPlayerSlotAssigned));
-                break;
-            }
-        }
-        RequestSerialization();
+
+        // Commit the changes
+        CommitChanges();
         return availablePlayerSlot;
     }
 
@@ -398,12 +411,17 @@ public class GameLogic : UdonSharpBehaviour
 
     private void EndRound()
     {
-        nextRoundTime = 0;
+        nextRoundTime = (Time.time + 3) * 1000;
+
         // Reset alive statuses
         for (int i = 0; i < playerAlive.Length; i++)
         {
             playerAlive[i] = true;
         }
+
+        // Commit the changes
+        CommitChanges();
+
         // Send an event to each shuriken
         foreach (Shuriken child in Shurikens())
         {
@@ -420,11 +438,16 @@ public class GameLogic : UdonSharpBehaviour
                 child.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(PlayerCollider.OnRoundEnd));
             }
         }
-        nextRoundTime = (Time.time + 3) * 1000;
     }
 
     private void EndGame(int winnerSlot, string winnerName)
     {
+        ChangeLevel(Level.LOBBY);
+        nextRoundTime = 0;
+
+        // Commit the changes
+        CommitChanges();
+
         // Send an event to each shuriken
         foreach (Shuriken child in Shurikens())
         {
@@ -433,8 +456,6 @@ public class GameLogic : UdonSharpBehaviour
                 child.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(Shuriken.OnGameEnd));
             }
         }
-        ChangeLevel(Level.LOBBY);
-
         // Send an event to each player collider
         foreach (PlayerCollider child in PlayerColliders())
         {
@@ -443,7 +464,6 @@ public class GameLogic : UdonSharpBehaviour
                 child.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(PlayerCollider.OnGameEnd), winnerSlot, winnerName);
             }
         }
-        nextRoundTime = 0;
     }
 
     private void StartNextRound()
@@ -451,6 +471,10 @@ public class GameLogic : UdonSharpBehaviour
         nextRoundTime = 0;
         fightingStartTime = (Time.time * 1000) + FIGHTING_DELAY;
         ChangeLevel(LevelManager.GetRandomLevel(GetCurrentLevel()));
+
+        // Commit the changes
+        CommitChanges();
+
         // Send an event to each shuriken
         foreach (Shuriken child in Shurikens())
         {
@@ -459,7 +483,6 @@ public class GameLogic : UdonSharpBehaviour
                 child.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(Shuriken.OnRoundStart));
             }
         }
-
         // Send an event to each player collider
         foreach (PlayerCollider child in PlayerColliders())
         {
@@ -482,6 +505,9 @@ public class GameLogic : UdonSharpBehaviour
         nextPowerUpTime = (Time.time * 1000) + POWER_UP_DELAY;
         // Switch the level
         SetCurrentLevel(level);
+
+        // Commit the changes
+        CommitChanges();
     }
 
     private void SpawnPowerUp()

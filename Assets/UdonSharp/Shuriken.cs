@@ -359,11 +359,6 @@ public class Shuriken : UdonSharpBehaviour
         AddPowerUp(type);
     }
 
-    public void OnPlayerSlotAssigned()
-    {
-        UpdateColor();
-    }
-
     [NetworkCallable]
     public void OnRoundStart()
     {
@@ -408,6 +403,11 @@ public class Shuriken : UdonSharpBehaviour
         powerUpThree = -1;
         inGame = false;
         ResetPowerUpEffects();
+    }
+
+    public void OnGameLogicChange()
+    {
+        UpdateColor();
     }
 
     /** Custom Methods **/
