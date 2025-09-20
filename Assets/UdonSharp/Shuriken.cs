@@ -28,9 +28,6 @@ public class Shuriken : UdonSharpBehaviour
     private const float AMPHETAMINES_MOD = 3.5f;
     private const float MOON_SHOES_MOD = 2.75f;
 
-    // [UdonSynced] private int playerId = -1;
-    // [UdonSynced] private int playerNumber = -1;
-
     /// <summary>
     /// Whether we are in-game, which determines whether the shuriken can be used
     /// and if it can collide with anything

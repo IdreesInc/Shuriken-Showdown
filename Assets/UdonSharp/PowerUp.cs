@@ -98,7 +98,6 @@ public class PowerUp : UdonSharpBehaviour
         {
             Shuriken shuriken = collider.gameObject.GetComponent<Shuriken>();
             Log("Power up has collided with a shuriken owned by " + Networking.GetOwner(shuriken.gameObject).displayName);
-            // shuriken.SendMethodNetworked(nameof(Shuriken.ActivatePowerUp), SyncTarget.All, powerUpType);
             SendCustomNetworkEvent(NetworkEventTarget.All, nameof(shuriken.ActivatePowerUp), powerUpType);
             GameLogic.Get().OnPowerUpCollected(gameObject);
         }

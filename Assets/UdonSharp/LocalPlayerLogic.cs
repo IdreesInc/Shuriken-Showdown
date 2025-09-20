@@ -12,17 +12,12 @@ public class LocalPlayerLogic : UdonSharpBehaviour
 {
 
     public GameObject vrcWorld;
-    // public GameObject shurikensParent;
     public GameObject playerCollidersParent;
 
     /// <summary>
     /// Player names indexed by player number (not player ID)
     /// </summary>
     private readonly string[] playerNames = new string[Shared.MaxPlayers() + 1];
-    /// <summary>
-    /// Player scores indexed by player number (not player ID)
-    /// </summary>
-    // private readonly int[] playerScores = new int[Shared.MaxPlayers() + 1];
 
     private void Log(string message)
     {
@@ -40,18 +35,6 @@ public class LocalPlayerLogic : UdonSharpBehaviour
     public static LocalPlayerLogic Get()
     {
         return GameObject.Find("Local Player Logic").GetComponent<LocalPlayerLogic>();
-    }
-
-    /** Udon Overrides **/
-
-    void Start()
-    {
-    }
-
-    void Update()
-    {
-        /** Logic for all players **/
-        // UpdatePlayerScores();
     }
 
     /** Custom Methods **/
@@ -169,22 +152,6 @@ public class LocalPlayerLogic : UdonSharpBehaviour
             Shared.Colors()[(winnerSlot - 1) % Shared.Colors().Length],
             5000);
     }
-
-    // private void UpdatePlayerScores()
-    // {
-        // foreach (Transform child in shurikensParent.transform) {
-        //     if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null) {
-        //         Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
-        //         if (shuriken.GetPlayerNumber() != -1) {
-        //             playerScores[shuriken.GetPlayerNumber()] = shuriken.GetScore();
-        //             if (Networking.GetOwner(child.gameObject) != null) {
-        //                 // Check needed for Unity emulator, otherwise unnecessary
-        //                 playerNames[shuriken.GetPlayerNumber()] = Networking.GetOwner(child.gameObject).displayName;                        
-        //             }
-        //         }
-        //     }
-        // }
-    // }
 
     public void SetWorldSpawn(Vector3 position)
     {
