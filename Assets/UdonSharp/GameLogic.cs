@@ -8,6 +8,7 @@ using VRC.Udon;
 using VRC.Udon.Common.Interfaces;
 using System;
 using VRC.SDK3.UdonNetworkCalling;
+using VRC.SDK3.Components;
 
 /// <summary>
 /// Game server logic that is only executed by the instance owner (who also owns this object)
@@ -229,6 +230,55 @@ public class GameLogic : UdonSharpBehaviour
         nextPowerUpTime = (Time.time * 1000) + POWER_UP_DELAY;
     }
 
+    [NetworkCallable]
+    public void OnHit(int hitPlayerId)
+    {
+        if (!Networking.IsOwner(gameObject))
+        {
+            return;
+        }
+        VRCPlayerApi thrower = NetworkCalling.CallingPlayer;
+        Log("Player " + thrower.displayName + " hit player " + VRCPlayerApi.GetPlayerById(hitPlayerId).displayName);
+
+        int hitPlayerSlot = GetPlayerSlot(hitPlayerId);
+        if (hitPlayerSlot <= 0)
+        {
+            LogError("Hit player with id " + hitPlayerId + " not found in any slot");
+            return;
+        }
+        else if (!playerAlive[hitPlayerSlot])
+        {
+            LogError("Hit player in slot " + hitPlayerSlot + " is already dead");
+            return;
+        }
+
+        // Increase the thrower's score
+        int throwerSlot = GetPlayerSlot(thrower.playerId);
+        if (throwerSlot >= 0)
+        {
+            playerScores[throwerSlot]++;
+        }
+        else
+        {
+            LogError("Thrower with id " + thrower.playerId + " not found in any slot");
+            return;
+        }
+
+        // Kill the hit player
+        playerAlive[hitPlayerSlot] = false;
+
+        // Notify the hit player that they have been hit
+        PlayerCollider[] playerColliders = PlayerColliders();
+        foreach (PlayerCollider child in playerColliders)
+        {
+            if (Networking.GetOwner(child.gameObject).playerId == hitPlayerId)
+            {
+                child.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(PlayerCollider.OnHit), thrower.displayName, throwerSlot);
+                break;
+            }
+        }
+    }
+
     /** Getters/setters for synced variables **/
 
     private Level GetCurrentLevel()
@@ -344,18 +394,6 @@ public class GameLogic : UdonSharpBehaviour
         return playerObjectsParent.GetComponentsInChildren<PlayerCollider>();
     }
 
-    // private Shuriken GetWinnerShuriken() {
-    //     foreach (Transform child in shurikensParent.transform) {
-    //         if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null) {
-    //             Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
-    //             if (shuriken.GetScore() >= MAX_SCORE) {
-    //                 return shuriken;
-    //             }
-    //         }
-    //     }
-    //     return null;
-    // }
-
     /// <summary>
     /// Returns the winning player slot, or -1 if no winner
     /// </summary>
@@ -374,6 +412,11 @@ public class GameLogic : UdonSharpBehaviour
     private void EndRound()
     {
         nextRoundTime = 0;
+        // Reset alive statuses
+        for (int i = 0; i < playerAlive.Length; i++)
+        {
+            playerAlive[i] = true;
+        }
         // Send an event to each shuriken
         foreach (Shuriken child in Shurikens())
         {

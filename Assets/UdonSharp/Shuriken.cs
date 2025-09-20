@@ -318,9 +318,13 @@ public class Shuriken : UdonSharpBehaviour
                 Log(Player.playerId + "'s shuriken has hit " + opponentPlayer.displayName);
                 if (GameLogic.Get().IsPlayerAlive(opponentPlayer.playerId))
                 {
+                    // Notify the server
+                    int hitPlayerId = opponentPlayer.playerId;
+                    GameLogic.Get().SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(GameLogic.OnHit), hitPlayerId);
+
                     // Notify the player
-                    int playerSlot = GameLogic.Get().GetPlayerSlot(Player.playerId);
-                    playerCollider.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(playerCollider.OnHit), GetPlayerName(), playerSlot);
+                    // int playerSlot = GameLogic.Get().GetPlayerSlot(Player.playerId);
+                    // playerCollider.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(playerCollider.OnHit), GetPlayerName(), playerSlot);
 
                     // Play hit sound
                     if (audioSource != null)
