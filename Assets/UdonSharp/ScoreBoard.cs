@@ -46,18 +46,17 @@ public class ScoreBoard : UdonSharpBehaviour
 
     public void UpdateScores(int[] scores, string[] names)
     {
-        // Start iterating at one since there is no player 0
-        for (int i = 1; i < scores.Length; i++)
+        for (int i = 0; i < scores.Length; i++)
         {
             // Log("Updating score for player " + i + " to " + scores[i]);
             UpdateScore(i, names[i], scores[i]);
         }
     }
 
-    private void UpdateScore(int playerNumber, string name, int score)
+    private void UpdateScore(int playerSlot, string name, int score)
     {
         // Get the scoreLine for the player
-        GameObject scoreLine = scoreLines[playerNumber - 1];
+        GameObject scoreLine = scoreLines[playerSlot];
         GameObject scoreName = scoreLine.transform.Find("Score Name").gameObject;
         // Get the Text component of the scoreName
         scoreName.GetComponent<TextMeshProUGUI>().text = name;

@@ -334,7 +334,7 @@ public class GameLogic : UdonSharpBehaviour
         int count = 0;
         for (int i = 0; i < playerAlive.Length; i++)
         {
-            if (playerAlive[i])
+            if (playerSlots[i] != 0 && playerAlive[i])
             {
                 count++;
             }
