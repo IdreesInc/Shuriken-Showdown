@@ -26,12 +26,6 @@ public class MainMenu : UdonSharpBehaviour
         Debug.Log("[MainMenu]: " + message);
     }
 
-
-    void Start()
-    {
-        // OnDeserialization();
-    }
-
     void Update()
     {
         // TODO: Only update when necessary
@@ -42,8 +36,6 @@ public class MainMenu : UdonSharpBehaviour
     public void OnStartGamePressed()
     {
         Log("Start Game Pressed");
-        // GameLogic.Get().SendMethodNetworked(nameof(GameLogic.StartGame), SyncTarget.All);
-        // SendCustomNetworkEvent(NetworkEventTarget.All, nameof(GameLogic.StartGame));
         GameLogic.Get().SendCustomNetworkEvent(NetworkEventTarget.All, nameof(GameLogic.StartGame));
     }
 
@@ -64,13 +56,16 @@ public class MainMenu : UdonSharpBehaviour
         GameLogic gameLogic = GameLogic.Get();
         for (int i = 0; i < playerIcons.Length; i++)
         {
-            // if (gameLogic.IsPlayerActive(i + 1)) {
-            //     playerIcons[i].GetComponent<Image>().color = Shared.Colors()[i];
-            //     playerIcons[i].transform.Find("Player Icon Text").GetComponent<TextMeshProUGUI>().text = "P" + (i + 1);
-            // } else {
-            playerIcons[i].GetComponent<Image>().color = new Color(0, 0, 0, 0.1f);
-            playerIcons[i].transform.Find("Player Icon Text").GetComponent<TextMeshProUGUI>().text = "";
-            // }
+            if (gameLogic.IsPlayerSlotActive(i))
+            {
+                playerIcons[i].GetComponent<Image>().color = Shared.Colors()[i];
+                playerIcons[i].transform.Find("Player Icon Text").GetComponent<TextMeshProUGUI>().text = "P" + (i + 1);
+            }
+            else
+            {
+                playerIcons[i].GetComponent<Image>().color = new Color(0, 0, 0, 0.1f);
+                playerIcons[i].transform.Find("Player Icon Text").GetComponent<TextMeshProUGUI>().text = "";
+            }
         }
     }
 }

@@ -7,6 +7,8 @@ using System;
 using VRC.SDK3.UdonNetworkCalling;
 
 [UdonBehaviourSyncMode(BehaviourSyncMode.Continuous)]
+[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(TrailRenderer))]
 public class Shuriken : UdonSharpBehaviour
 {
 
@@ -75,6 +77,7 @@ public class Shuriken : UdonSharpBehaviour
     void Start()
     {
         Log("Shuriken has been spawned.");
+        UpdateColor();
     }
 
     public override void OnDeserialization()
@@ -423,11 +426,6 @@ public class Shuriken : UdonSharpBehaviour
 
     private void ReturnToPlayer()
     {
-        if (Networking.IsOwner(gameObject))
-        {
-            LogError("Attempted to return to player without ownership");
-            return;
-        }
         Log("Returning shuriken to " + Player.displayName);
         // Place the shuriken in front of the player
         PutInFrontOfPlayer();
@@ -552,6 +550,7 @@ public class Shuriken : UdonSharpBehaviour
 
     private void UpdateColor()
     {
+        Log("Updating shuriken color for player slot " + GameLogic.Get().GetPlayerSlot(Player.playerId));
         Color color = Color.grey;
         int playerSlot = GameLogic.Get().GetPlayerSlot(Player.playerId);
         if (playerSlot != -1)

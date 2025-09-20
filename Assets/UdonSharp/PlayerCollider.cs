@@ -119,7 +119,7 @@ public class PlayerCollider : UdonSharpBehaviour
         Log("Player hit by " + playerName);
         LocalPlayerLogic playerLogic = LocalPlayerLogic.Get();
         playerLogic.ShowHitUI(playerSlot, playerName, "sliced");
-        if (playerLogic.GetAlivePlayerCount() > 1)
+        if (GameLogic.Get().GetAlivePlayerCount() > 1)
         {
             Vector3 deathPoint = LevelManager.Get().GetDeathPosition();
             Player.TeleportTo(deathPoint, Player.GetRotation());

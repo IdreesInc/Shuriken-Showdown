@@ -22,7 +22,7 @@ public class LocalPlayerLogic : UdonSharpBehaviour
     /// <summary>
     /// Player scores indexed by player number (not player ID)
     /// </summary>
-    private readonly int[] playerScores = new int[Shared.MaxPlayers() + 1];
+    // private readonly int[] playerScores = new int[Shared.MaxPlayers() + 1];
 
     private void Log(string message)
     {
@@ -51,7 +51,7 @@ public class LocalPlayerLogic : UdonSharpBehaviour
     void Update()
     {
         /** Logic for all players **/
-        UpdatePlayerScores();
+        // UpdatePlayerScores();
     }
 
     /** Custom Methods **/
@@ -91,7 +91,7 @@ public class LocalPlayerLogic : UdonSharpBehaviour
 
     public void ShowHitUI(int playerNumber, string senderName, string verb)
     {
-        int numRemaining = GetAlivePlayerCount() - 1;
+        int numRemaining = GameLogic.Get().GetAlivePlayerCount() - 1;
         if (numRemaining <= 0)
         {
             // Round is over, ignore this UI to wait for round update from instance owner
@@ -117,7 +117,7 @@ public class LocalPlayerLogic : UdonSharpBehaviour
 
     public void ShowKillUI(int playerSlot, string playerName)
     {
-        int numRemaining = GetAlivePlayerCount() - 1;
+        int numRemaining = GameLogic.Get().GetAlivePlayerCount  () - 1;
         if (numRemaining <= 0)
         {
             // Round is over, ignore this UI to wait for round update from instance owner
@@ -143,8 +143,7 @@ public class LocalPlayerLogic : UdonSharpBehaviour
 
     public void ShowScoreUI()
     {
-        UpdatePlayerScores();
-        UIManager.Get().ShowScoreUI(playerScores, playerNames, 3000);
+        UIManager.Get().ShowScoreUI(GameLogic.Get().GetPlayerScores(), playerNames, 3000);
     }
 
     public void ShowGameOverUI(int winnerNumber, string winnerName)
@@ -171,8 +170,8 @@ public class LocalPlayerLogic : UdonSharpBehaviour
             5000);
     }
 
-    private void UpdatePlayerScores()
-    {
+    // private void UpdatePlayerScores()
+    // {
         // foreach (Transform child in shurikensParent.transform) {
         //     if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null) {
         //         Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
@@ -185,21 +184,7 @@ public class LocalPlayerLogic : UdonSharpBehaviour
         //         }
         //     }
         // }
-    }
-
-    public int GetAlivePlayerCount()
-    {
-        // int count = 0;
-        // foreach (Transform child in playerCollidersParent.transform) {
-        //     if (child.gameObject.activeSelf
-        //     && child.gameObject.GetComponent<PlayerCollider>() != null
-        //     && child.gameObject.GetComponent<PlayerCollider>().IsAlive())
-        //     {
-        //         count++;
-        //     }
-        // }
-        return 1;
-    }
+    // }
 
     public void SetWorldSpawn(Vector3 position)
     {

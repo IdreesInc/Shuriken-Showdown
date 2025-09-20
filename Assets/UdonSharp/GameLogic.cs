@@ -66,6 +66,10 @@ public class GameLogic : UdonSharpBehaviour
     /// Whether each player is alive or not, indexed by player slot
     /// </summary>
     [UdonSynced] private readonly bool[] playerAlive = new bool[MAX_PLAYERS];
+    /// <summary>
+    /// The scores of each player, indexed by player slot
+    /// </summary>
+    [UdonSynced] private readonly int[] playerScores = new int[MAX_PLAYERS];
 
     /// <summary>
     /// The current level (cast to an int for syncing)
@@ -306,19 +310,7 @@ public class GameLogic : UdonSharpBehaviour
         return playerAlive[playerSlot];
     }
 
-    private bool AddPlayer(int playerId)
-    {
-        int availablePlayerSlot = Array.IndexOf(playerSlots, 0);
-        if (availablePlayerSlot == -1)
-        {
-            return false;
-        }
-        playerSlots[availablePlayerSlot] = playerId;
-        playerAlive[availablePlayerSlot] = true;
-        return true;
-    }
-
-    private int GetAlivePlayerCount()
+    public int GetAlivePlayerCount()
     {
 
         int count = 0;
@@ -332,6 +324,20 @@ public class GameLogic : UdonSharpBehaviour
         return count;
     }
 
+    public bool IsPlayerSlotActive(int playerSlot)
+    {
+        if (playerSlot < 0 || playerSlot >= playerSlots.Length)
+        {
+            return false;
+        }
+        return playerSlots[playerSlot] != 0;
+    }
+
+    public int[] GetPlayerScores()
+    {
+        return playerScores;
+    }
+
     private int GetPlayerCount()
     {
         int count = 0;
@@ -343,6 +349,21 @@ public class GameLogic : UdonSharpBehaviour
             }
         }
         return count;
+    }
+
+    private bool AddPlayer(int playerId)
+    {
+        int availablePlayerSlot = Array.IndexOf(playerSlots, 0);
+        if (availablePlayerSlot == -1)
+        {
+            return false;
+        }
+        playerSlots[availablePlayerSlot] = playerId;
+        playerAlive[availablePlayerSlot] = true;
+        playerScores[availablePlayerSlot] = 0;
+        Log("Added player " + playerId + " to slot " + availablePlayerSlot);
+        RequestSerialization();
+        return true;
     }
 
     private Shuriken[] Shurikens()
