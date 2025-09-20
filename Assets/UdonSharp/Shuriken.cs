@@ -41,17 +41,12 @@ public class Shuriken : UdonSharpBehaviour
     [UdonSynced] private int powerUpOne = -1;
     [UdonSynced] private int powerUpTwo = -1;
     [UdonSynced] private int powerUpThree = -1;
-    [UdonSynced] private int score = 0;
     [UdonSynced] private Quaternion rotationOnThrow = Quaternion.identity;
 
     private VRCPlayerApi Player
     {
         get
         {
-            // if (playerId == -1) {
-            //     return null;
-            // }
-            // return VRCPlayerApi.GetPlayerById(playerId);
             return Networking.GetOwner(gameObject);
         }
     }
@@ -85,7 +80,6 @@ public class Shuriken : UdonSharpBehaviour
         // Log("Deserializing shuriken with owner id " + playerId);
         ApplyPowerUpEffects();
         UpdateColor();
-        // UpdateOwnership();
     }
 
     void Update()
@@ -204,10 +198,10 @@ public class Shuriken : UdonSharpBehaviour
         hasFirstContact = false;
         // Disable collision with anything
         GetComponent<Rigidbody>().detectCollisions = false;
-        // if (Networking.LocalPlayer.playerId != playerId) {
-        //     Log("Shuriken owned by " + playerId + " has been picked up by " + Networking.LocalPlayer.playerId);
-        //     ReturnToPlayer();
-        // }
+        if (!Networking.IsOwner(gameObject)) {
+            Log("Shuriken owned by " + Networking.GetOwner(gameObject).playerId + " has been picked up by " + Networking.LocalPlayer.playerId);
+            ReturnToPlayer();
+        }
     }
 
     public override void OnDrop()
@@ -325,18 +319,15 @@ public class Shuriken : UdonSharpBehaviour
                 if (GameLogic.Get().IsPlayerAlive(opponentPlayer.playerId))
                 {
                     // Notify the player
-                    // playerCollider.SendMethodNetworked(nameof(PlayerCollider.OnHit), SyncTarget.All, GetPlayerName(), playerNumber);
                     int playerSlot = GameLogic.Get().GetPlayerSlot(Player.playerId);
                     playerCollider.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(playerCollider.OnHit), GetPlayerName(), playerSlot);
-                    // Cache the hit locally
-                    // playerCollider.hasBeenHitLocally = true;
+
                     // Play hit sound
                     if (audioSource != null)
                     {
                         audioSource.Play();
                     }
-                    // Increase the score
-                    score++;
+
                     // Show UI
                     LocalPlayerLogic playerLogic = LocalPlayerLogic.Get();
                     playerLogic.ShowKillUI(GameLogic.Get().GetPlayerSlot(opponentPlayer.playerId), opponentPlayer.displayName);
@@ -412,17 +403,11 @@ public class Shuriken : UdonSharpBehaviour
         powerUpOne = -1;
         powerUpTwo = -1;
         powerUpThree = -1;
-        score = 0;
         inGame = false;
         ResetPowerUpEffects();
     }
 
     /** Custom Methods **/
-
-    public int GetScore()
-    {
-        return score;
-    }
 
     private void ReturnToPlayer()
     {
@@ -531,22 +516,6 @@ public class Shuriken : UdonSharpBehaviour
             }
         }
     }
-
-    // private void UpdateOwnership() {
-    //     if (playerId == Networking.LocalPlayer.playerId && !Networking.IsOwner(gameObject)) {
-    //         Log("Claiming network ownership of shuriken");
-    //         Networking.SetOwner(Networking.LocalPlayer, gameObject);
-    //         ReturnToPlayer();
-    //     }
-    //     Color color = Color.grey;
-    //     if (playerId != -1) {
-    //         color = Shared.Colors()[(playerId - 1) % Shared.Colors().Length];
-    //     }
-    //     GetComponent<Renderer>().material.color = color;
-    //     if (GetComponent<TrailRenderer>() != null) {
-    //         GetComponent<TrailRenderer>().endColor = color;
-    //     }
-    // }
 
     private void UpdateColor()
     {
