@@ -2,7 +2,8 @@
 using UdonSharp;
 using UnityEngine;
 
-public enum Level {
+public enum Level
+{
     NONE,
     LOBBY,
     RUINS,
@@ -13,7 +14,8 @@ public enum Level {
 /// Local UdonSharpBehaviour for switching between levels/terrains
 /// </summary>
 [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
-public class LevelManager : UdonSharpBehaviour {
+public class LevelManager : UdonSharpBehaviour
+{
     public GameObject sharedTerrain;
     public GameObject afterlife;
     public GameObject lobby;
@@ -21,22 +23,27 @@ public class LevelManager : UdonSharpBehaviour {
     public GameObject foundations;
 
     private Level loadedLevel = Level.NONE;
-    private readonly Level[] levels = {Level.LOBBY, Level.RUINS, Level.FOUNDATIONS};
+    private readonly Level[] levels = { Level.LOBBY, Level.RUINS, Level.FOUNDATIONS };
 
-    private void Log(string message) {
+    private void Log(string message)
+    {
         Debug.Log("[LevelManager]: " + message);
     }
 
-    private void LogError(string message) {
+    private void LogError(string message)
+    {
         Debug.LogError("[LevelManager]: " + message);
     }
-    
-    public static LevelManager Get() {
+
+    public static LevelManager Get()
+    {
         return GameObject.Find("Level Manager").GetComponent<LevelManager>();
     }
 
-    private GameObject GetLevelObject(Level level) {
-        switch (level) {
+    private GameObject GetLevelObject(Level level)
+    {
+        switch (level)
+        {
             case Level.LOBBY:
                 return lobby;
             case Level.RUINS:
@@ -49,20 +56,25 @@ public class LevelManager : UdonSharpBehaviour {
         }
     }
 
-    public static Level GetRandomLevel(Level currentLevel) {
+    public static Level GetRandomLevel(Level currentLevel)
+    {
         Level randomLevel;
-        do {
-            randomLevel = (Level) Random.Range(1, 4);
+        do
+        {
+            randomLevel = (Level)Random.Range(1, 4);
         } while (randomLevel == Level.LOBBY || randomLevel == currentLevel);
         return randomLevel;
     }
 
-    public void TransitionToLevel(Level level) {
-        if (loadedLevel == level) {
+    public void TransitionToLevel(Level level)
+    {
+        if (loadedLevel == level)
+        {
             return;
         }
         Log("Transitioning to level: " + level);
-        if (loadedLevel != Level.NONE) {
+        if (loadedLevel != Level.NONE)
+        {
             // Stop the current background music
             GetBackgroundMusic(loadedLevel).Stop();
         }
@@ -71,8 +83,10 @@ public class LevelManager : UdonSharpBehaviour {
 
         GameObject levelObject = GetLevelObject(level);
         levelObject.SetActive(true);
-        foreach (Level otherLevel in levels) {
-            if (otherLevel != level && otherLevel != Level.LOBBY) {
+        foreach (Level otherLevel in levels)
+        {
+            if (otherLevel != level && otherLevel != Level.LOBBY)
+            {
                 GetLevelObject(otherLevel).SetActive(false);
             }
         }
@@ -80,21 +94,26 @@ public class LevelManager : UdonSharpBehaviour {
         Vector3 levelPos = levelObject.transform.position;
         // Move the shared terrain to the new level's terrain position
         sharedTerrain.transform.position = new Vector3(levelPos.x, terrainPos.y, levelPos.z);
-        
+
         // Play the new background music
         GetBackgroundMusic(loadedLevel).Play();
     }
 
-    public Vector3 GetSpawnPosition(Level level, int playerSlot) {
+    public Vector3 GetSpawnPosition(Level level, int playerSlot)
+    {
         Transform spawnMarkerParent = GetLevelObject(level).transform.Find("Spawn Markers");
-        if (spawnMarkerParent == null) {
+        if (spawnMarkerParent == null)
+        {
             LogError("Spawn markers not found for level: " + level);
             return Vector3.zero;
         }
         int spawnIndex = 0;
-        if (playerSlot >= 0) {
+        if (playerSlot >= 0)
+        {
             spawnIndex = playerSlot % spawnMarkerParent.childCount;
-        } else {
+        }
+        else
+        {
             LogError("Player slot is not valid while trying to get spawn position: " + playerSlot);
         }
         Log("Player " + playerSlot + " spawning at index " + spawnIndex + " out of " + spawnMarkerParent.childCount + " for level " + level);
@@ -102,9 +121,11 @@ public class LevelManager : UdonSharpBehaviour {
         return spawnMarker.position;
     }
 
-    public Vector3 GetDeathPosition() {
+    public Vector3 GetDeathPosition()
+    {
         Transform deathMarkerTrans = afterlife.transform.Find("Death Marker");
-        if (deathMarkerTrans == null) {
+        if (deathMarkerTrans == null)
+        {
             LogError("Death marker not found");
             return Vector3.zero;
         }
@@ -113,20 +134,24 @@ public class LevelManager : UdonSharpBehaviour {
         return position;
     }
 
-    public Vector3[] GetPowerUpSpawnPoints(Level level) {
+    public Vector3[] GetPowerUpSpawnPoints(Level level)
+    {
         Transform powerUpMarkerParent = GetLevelObject(level).transform.Find("Power Up Markers");
-        if (powerUpMarkerParent == null) {
+        if (powerUpMarkerParent == null)
+        {
             LogError("Power up markers not found for level: " + level);
             return new Vector3[0];
         }
         Vector3[] powerUpSpawnPoints = new Vector3[powerUpMarkerParent.childCount];
-        for (int i = 0; i < powerUpMarkerParent.childCount; i++) {
+        for (int i = 0; i < powerUpMarkerParent.childCount; i++)
+        {
             powerUpSpawnPoints[i] = powerUpMarkerParent.GetChild(i).position;
         }
         return powerUpSpawnPoints;
     }
 
-    private AudioSource GetBackgroundMusic(Level level) {
+    private AudioSource GetBackgroundMusic(Level level)
+    {
         return GetLevelObject(level).transform.Find("Background Music").GetComponent<AudioSource>();
     }
 }

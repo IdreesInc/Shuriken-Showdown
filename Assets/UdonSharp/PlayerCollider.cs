@@ -4,7 +4,8 @@ using VRC.SDK3.UdonNetworkCalling;
 using VRC.SDKBase;
 
 [UdonBehaviourSyncMode(BehaviourSyncMode.Continuous)]
-public class PlayerCollider : UdonSharpBehaviour {
+public class PlayerCollider : UdonSharpBehaviour
+{
     private readonly Vector3 offset = new Vector3(0, 1, 0);
     // [UdonSynced] private int playerId = -1;
     // [UdonSynced] private int playerNumber = -1;
@@ -17,7 +18,8 @@ public class PlayerCollider : UdonSharpBehaviour {
 
     // private Vector3 deathPoint = new Vector3(0, 0, 0);
 
-    private VRCPlayerApi Player {
+    private VRCPlayerApi Player
+    {
         get
         {
             // if (playerId == -1) {
@@ -27,8 +29,9 @@ public class PlayerCollider : UdonSharpBehaviour {
             return Networking.GetOwner(gameObject);
         }
     }
-    
-    private int PlayerId {
+
+    private int PlayerId
+    {
         get
         {
             return Networking.GetOwner(gameObject).playerId;
@@ -40,19 +43,23 @@ public class PlayerCollider : UdonSharpBehaviour {
         Debug.Log("[PlayerCollider - " + PlayerId + "]: " + message);
     }
 
-    private void LogError(string message) {
+    private void LogError(string message)
+    {
         Debug.LogError("[PlayerCollider - " + PlayerId + "]: " + message);
     }
 
     /** Udon Overrides **/
 
-    void Update() {
-        if (Player != null) {
+    void Update()
+    {
+        if (Player != null)
+        {
             transform.position = Player.GetPosition() + offset;
         }
     }
 
-    public override void OnDeserialization() {
+    public override void OnDeserialization()
+    {
         // Log("Deserializing collider with owner id " + playerId);
         // Log("Is alive: " + isAlive);
         // UpdateOwnership();
@@ -145,8 +152,10 @@ public class PlayerCollider : UdonSharpBehaviour {
     //     this.playerNumber = playerNumber;
     // }
 
-    public string GetPlayerName() {
-        if (Player == null) {
+    public string GetPlayerName()
+    {
+        if (Player == null)
+        {
             return "[No player]";
         }
         return Player.displayName;
@@ -164,7 +173,8 @@ public class PlayerCollider : UdonSharpBehaviour {
     //     return isAlive;
     // }
 
-    private void GoToLevelSpawn(Level level) {
+    private void GoToLevelSpawn(Level level)
+    {
         Log("Teleporting to spawn of level " + level);
         LevelManager manager = LevelManager.Get();
         // Get spawn point

@@ -7,10 +7,11 @@ using System;
 using VRC.SDK3.UdonNetworkCalling;
 
 [UdonBehaviourSyncMode(BehaviourSyncMode.Continuous)]
-public class Shuriken : UdonSharpBehaviour {
+public class Shuriken : UdonSharpBehaviour
+{
 
     public AudioSource audioSource;
-    
+
     private const float ROTATION_SPEED = 360f * 3;
     private const float IDLE_ROTATION_SPEED = 90f;
     private const float MAX_DISTANCE = 75;
@@ -41,7 +42,8 @@ public class Shuriken : UdonSharpBehaviour {
     [UdonSynced] private int score = 0;
     [UdonSynced] private Quaternion rotationOnThrow = Quaternion.identity;
 
-    private VRCPlayerApi Player {
+    private VRCPlayerApi Player
+    {
         get
         {
             // if (playerId == -1) {
@@ -52,22 +54,26 @@ public class Shuriken : UdonSharpBehaviour {
         }
     }
 
-    private void Log(string message) {
+    private void Log(string message)
+    {
         Debug.Log("[Shuriken - Slot: " + LoggingName() + "]: " + message);
     }
 
-    private void LogError(string message) {
+    private void LogError(string message)
+    {
         Debug.LogError("[Shuriken - Slot: " + LoggingName() + "]: " + message);
     }
 
-    private string LoggingName() {
+    private string LoggingName()
+    {
         string name = Player.displayName == null || Player.displayName == "" ? "Unnamed Player" : Player.displayName;
         return "(" + name + " - Slot: " + GameLogic.Get().GetPlayerSlot(Player.playerId) + ")";
     }
 
     /** Udon Overrides **/
 
-    void Start() {
+    void Start()
+    {
         Log("Shuriken has been spawned.");
     }
 
@@ -79,18 +85,24 @@ public class Shuriken : UdonSharpBehaviour {
         // UpdateOwnership();
     }
 
-    void Update() {
+    void Update()
+    {
         // Update the trail graphics (applies to all clients)
-        if (GetComponent<TrailRenderer>() != null) {
+        if (GetComponent<TrailRenderer>() != null)
+        {
             GetComponent<TrailRenderer>().emitting = hasBeenThrown;
         }
     }
 
-    void FixedUpdate() {
-        if (!inGame) {
+    void FixedUpdate()
+    {
+        if (!inGame)
+        {
             // Disable the ability to pick up the shuriken
             GetComponent<Rigidbody>().detectCollisions = false;
-        } else {
+        }
+        else
+        {
             // Enable the ability to pick up the shuriken
             GetComponent<Rigidbody>().detectCollisions = true;
         }
@@ -99,17 +111,24 @@ public class Shuriken : UdonSharpBehaviour {
 
         GetComponent<Rigidbody>().useGravity = false;
         float velocity = GetComponent<Rigidbody>().velocity.magnitude;
-        if (!isHeld) {
-            if (velocity > 0.3f) {
-                if (!hasFirstContact) {
+        if (!isHeld)
+        {
+            if (velocity > 0.3f)
+            {
+                if (!hasFirstContact)
+                {
                     transform.rotation = rotationOnThrow;
                     transform.Rotate(Vector3.up, ROTATION_SPEED * Time.deltaTime);
                     rotationOnThrow = transform.rotation;
-                } else {
+                }
+                else
+                {
                     transform.Rotate(Vector3.up, ROTATION_SPEED * Time.deltaTime);
                     transform.rotation = Quaternion.Euler(0, transform.eulerAngles.y, 0);
                 }
-            } else if (Networking.IsOwner(gameObject)) {
+            }
+            else if (Networking.IsOwner(gameObject))
+            {
                 // TODO: Wtf is this nested if statement, clean it up
                 if (velocity < 0.01f && hasBeenThrown && Vector3.Distance(transform.position, Player.GetPosition()) > MAX_GROUND_DISTANCE)
                 {
@@ -124,44 +143,57 @@ public class Shuriken : UdonSharpBehaviour {
             }
         }
         // If the shuriken is too far from the owner, return it no matter what
-        if (Networking.IsOwner(gameObject)) {
-            if (Vector3.Distance(transform.position, Player.GetPosition()) > MAX_DISTANCE) {
+        if (Networking.IsOwner(gameObject))
+        {
+            if (Vector3.Distance(transform.position, Player.GetPosition()) > MAX_DISTANCE)
+            {
                 ReturnToPlayer();
-            } else if (transform.position.y < -1) {
+            }
+            else if (transform.position.y < -1)
+            {
                 // Shuriken fell below map
                 ReturnToPlayer();
             }
         }
 
-        if (hasBeenThrown) {
+        if (hasBeenThrown)
+        {
             rb.AddForce(GRAVITY_FORCE, ForceMode.Acceleration);
         }
 
-        if (!hasBeenThrown && !isHeld) {
+        if (!hasBeenThrown && !isHeld)
+        {
             // Freeze the shuriken in place
             GetComponent<Rigidbody>().velocity = Vector3.zero;
             PutInFrontOfPlayer();
             // Set collision layer to Walkthrough
             // TODO: Determine if this has any adverse effects
             gameObject.layer = 17;
-            if (inGame) {
+            if (inGame)
+            {
                 // Spin that baby
                 transform.Rotate(Vector3.up, IDLE_ROTATION_SPEED * Time.deltaTime);
                 transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
-            } else {
+            }
+            else
+            {
                 // Set rotation to player's rotation
                 Vector3 playerRotation = Player.GetRotation().eulerAngles;
                 transform.rotation = Quaternion.Euler(0, playerRotation.y, 0);
             }
-        } else {
+        }
+        else
+        {
             // Set collision layer to Pickup
             gameObject.layer = 13;
         }
     }
 
-    public override void OnPickup() {
+    public override void OnPickup()
+    {
         Log("Object has been gripped");
-        if (!Networking.IsOwner(gameObject)) {
+        if (!Networking.IsOwner(gameObject))
+        {
             return;
         }
         isHeld = true;
@@ -175,9 +207,11 @@ public class Shuriken : UdonSharpBehaviour {
         // }
     }
 
-    public override void OnDrop() {
+    public override void OnDrop()
+    {
         Log("Object has been released");
-        if (!Networking.IsOwner(gameObject)) {
+        if (!Networking.IsOwner(gameObject))
+        {
             return;
         }
         isHeld = false;
@@ -186,82 +220,107 @@ public class Shuriken : UdonSharpBehaviour {
         // Enable collision with anything
         GetComponent<Rigidbody>().detectCollisions = true;
         // Throw the shuriken if the initial velocity is high enough
-        if (GetComponent<Rigidbody>().velocity.magnitude > 1) {
+        if (GetComponent<Rigidbody>().velocity.magnitude > 1)
+        {
             Log("Velocity: " + GetComponent<Rigidbody>().velocity.magnitude + ", throwing shuriken");
             GetComponent<Rigidbody>().AddForce(Player.GetRotation() * Vector3.forward * THROW_FORCE, ForceMode.Impulse);
         }
-        if (Player != null && !Player.IsUserInVR()) {
+        if (Player != null && !Player.IsUserInVR())
+        {
             // Non-VR player, fix shuriken rotation
             transform.rotation = Quaternion.Euler(0, Player.GetRotation().eulerAngles.y, 0);
         }
         rotationOnThrow = transform.rotation;
     }
 
-    private void CheckForLocalExplosionCollision(Vector3 position, int level) {
+    private void CheckForLocalExplosionCollision(Vector3 position, int level)
+    {
         Vector3 playerPosition = Player.GetPosition();
         float range = 0;
-        if (level == 1) {
+        if (level == 1)
+        {
             range = 3.75f;
-        } else if (level == 2) {
+        }
+        else if (level == 2)
+        {
             range = 4.5f;
-        } else if (level >= 3) {
+        }
+        else if (level >= 3)
+        {
             range = 5.25f;
         }
         // Determine if the local player is within the explosion radius
-        if (Vector3.Distance(playerPosition, position) <= range) {
+        if (Vector3.Distance(playerPosition, position) <= range)
+        {
             Log("Local player has been hit by explosion");
-        } else {
+        }
+        else
+        {
             Log("Distance: " + Vector3.Distance(playerPosition, position));
         }
     }
 
-    private void OnCollisionEnter(Collision collision) {
-        if (hasBeenThrown) {
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (hasBeenThrown)
+        {
             // Create explosions locally
             int explosionLevel = GetPowerUpLevel(3);
-            if (explosionLevel > 0) {
+            if (explosionLevel > 0)
+            {
                 Effects.Get().SpawnExplosion(collision.contacts[0].point, explosionLevel + 1);
                 CheckForLocalExplosionCollision(collision.contacts[0].point, explosionLevel + 1);
             }
         }
 
-        if (!Networking.IsOwner(gameObject)) {
+        if (!Networking.IsOwner(gameObject))
+        {
             Log("Not the owner, skipping collision");
             return;
         }
-        if (!inGame) {
+        if (!inGame)
+        {
             Log("Shuriken is disabled, ignoring collision");
             return;
         }
 
         hasFirstContact = true;
 
-        if (collision.gameObject.GetComponent<Shuriken>() != null) {
+        if (collision.gameObject.GetComponent<Shuriken>() != null)
+        {
             // Collided with another shuriken
             Log("Shuriken has collided with another shuriken");
             // Return the shuriken to the owner
             ReturnToPlayer();
-        } else {
+        }
+        else
+        {
             Log("Shuriken has collided with " + collision.gameObject.name);
         }
     }
 
-    private void OnTriggerEnter(Collider collider) {
-        if (!Networking.IsOwner(gameObject)) {
+    private void OnTriggerEnter(Collider collider)
+    {
+        if (!Networking.IsOwner(gameObject))
+        {
             Log("Not the owner, skipping trigger");
             return;
         }
-        if (!inGame) {
+        if (!inGame)
+        {
             Log("Shuriken is disabled, ignoring trigger");
             return;
         }
 
-        if (collider.gameObject.GetComponent<PlayerCollider>() != null && (isHeld || hasBeenThrown)) {
+        if (collider.gameObject.GetComponent<PlayerCollider>() != null && (isHeld || hasBeenThrown))
+        {
             PlayerCollider playerCollider = collider.gameObject.GetComponent<PlayerCollider>();
             VRCPlayerApi opponentPlayer = Networking.GetOwner(collider.gameObject);
-            if (!Networking.IsOwner(collider.gameObject)) {
+            if (!Networking.IsOwner(collider.gameObject))
+            {
                 Log(Player.playerId + "'s shuriken has hit " + opponentPlayer.displayName);
-                if (GameLogic.Get().IsPlayerAlive(opponentPlayer.playerId)) {
+                if (GameLogic.Get().IsPlayerAlive(opponentPlayer.playerId))
+                {
                     // Notify the player
                     // playerCollider.SendMethodNetworked(nameof(PlayerCollider.OnHit), SyncTarget.All, GetPlayerName(), playerNumber);
                     int playerSlot = GameLogic.Get().GetPlayerSlot(Player.playerId);
@@ -278,13 +337,17 @@ public class Shuriken : UdonSharpBehaviour {
                     // Show UI
                     LocalPlayerLogic playerLogic = LocalPlayerLogic.Get();
                     playerLogic.ShowKillUI(GameLogic.Get().GetPlayerSlot(opponentPlayer.playerId), opponentPlayer.displayName);
-                } else {
+                }
+                else
+                {
                     Log("Player is already dead, ignoring");
                 }
                 // Return the shuriken to the owner
                 ReturnToPlayer();
             }
-        } else {
+        }
+        else
+        {
             Log("Shuriken has triggered with " + collider.gameObject.name);
         }
     }
@@ -295,8 +358,10 @@ public class Shuriken : UdonSharpBehaviour {
     /// Triggered over the network by PowerUp when it detects a collision with this shuriken
     /// </summary>
     [NetworkCallable]
-    public void ActivatePowerUp(int type) {
-        if (!Networking.IsOwner(gameObject)) {
+    public void ActivatePowerUp(int type)
+    {
+        if (!Networking.IsOwner(gameObject))
+        {
             return;
         }
         AddPowerUp(type);
@@ -351,12 +416,15 @@ public class Shuriken : UdonSharpBehaviour {
 
     /** Custom Methods **/
 
-    public int GetScore() {
+    public int GetScore()
+    {
         return score;
     }
 
-    private void ReturnToPlayer() {
-        if (Networking.IsOwner(gameObject)) {
+    private void ReturnToPlayer()
+    {
+        if (Networking.IsOwner(gameObject))
+        {
             LogError("Attempted to return to player without ownership");
             return;
         }
@@ -369,75 +437,96 @@ public class Shuriken : UdonSharpBehaviour {
         hasFirstContact = false;
     }
 
-    private string GetPlayerName() {
-        if (Player == null) {
+    private string GetPlayerName()
+    {
+        if (Player == null)
+        {
             return "[Unnamed Player]";
         }
         return Player.displayName;
     }
 
-    private void ResetShurikenBetweenRounds() {
+    private void ResetShurikenBetweenRounds()
+    {
         ReturnToPlayer();
     }
 
-    private void AddPowerUp(int type) {
+    private void AddPowerUp(int type)
+    {
         Log("Adding power up: " + PowerUp.GetPowerUpName(type));
         ReturnToPlayer();
         powerUpThree = powerUpTwo;
         powerUpTwo = powerUpOne;
         powerUpOne = type;
         ApplyPowerUpEffects();
-        if (Networking.IsOwner(gameObject)) {
+        if (Networking.IsOwner(gameObject))
+        {
             LocalPlayerLogic.Get().ShowEquippedUI(type, powerUpOne, powerUpTwo, powerUpThree);
         }
     }
 
-    private void ApplyPowerUpEffects() {
+    private void ApplyPowerUpEffects()
+    {
         ResetPowerUpEffects();
         ApplyPowerUp(powerUpOne);
         ApplyPowerUp(powerUpTwo);
         ApplyPowerUp(powerUpThree);
     }
 
-    private void ApplyPowerUp(int type) {
-        if (type == -1) {
+    private void ApplyPowerUp(int type)
+    {
+        if (type == -1)
+        {
             return;
         }
         VRCPlayerApi player = Player;
-        if (player == null) {
+        if (player == null)
+        {
             LogError("Player is null while attempting to apply power up");
             return;
         }
         Log("Applying power up: " + PowerUp.GetPowerUpName(type));
-        if (type == 0) {
+        if (type == 0)
+        {
             // Embiggen
             transform.localScale = new Vector3(
                 transform.localScale.x + EMBIGGEN_MOD,
                 transform.localScale.y + EMBIGGEN_MOD,
                 transform.localScale.z + EMBIGGEN_MOD
             );
-        } else if (type == 1) {
+        }
+        else if (type == 1)
+        {
             // Amphetamines
-            if (Networking.IsOwner(gameObject)) {
+            if (Networking.IsOwner(gameObject))
+            {
                 player.SetWalkSpeed(player.GetWalkSpeed() + AMPHETAMINES_MOD);
                 player.SetRunSpeed(player.GetRunSpeed() + AMPHETAMINES_MOD);
             }
-        } else if (type == 2) {
+        }
+        else if (type == 2)
+        {
             // Moon Shoes
-            if (Networking.IsOwner(gameObject)) {
+            if (Networking.IsOwner(gameObject))
+            {
                 player.SetJumpImpulse(player.GetJumpImpulse() + MOON_SHOES_MOD);
             }
         }
     }
 
-    private void ResetPowerUpEffects() {
+    private void ResetPowerUpEffects()
+    {
         // Reset all effects of power ups
         transform.localScale = new Vector3(1, 1, 1);
-        if (Networking.IsOwner(gameObject)) {
+        if (Networking.IsOwner(gameObject))
+        {
             VRCPlayerApi player = Player;
-            if (player == null) {
+            if (player == null)
+            {
                 LogError("Player is null while attempting to reset power up effects");
-            } else {
+            }
+            else
+            {
                 player.SetWalkSpeed(DEFAULT_WALK_SPEED);
                 player.SetRunSpeed(DEFAULT_RUN_SPEED);
                 player.SetJumpImpulse(DEFAULT_JUMP_FORCE);
@@ -465,11 +554,13 @@ public class Shuriken : UdonSharpBehaviour {
     {
         Color color = Color.grey;
         int playerSlot = GameLogic.Get().GetPlayerSlot(Player.playerId);
-        if (playerSlot != -1) {
+        if (playerSlot != -1)
+        {
             color = Shared.Colors()[playerSlot % Shared.Colors().Length];
         }
         GetComponent<Renderer>().material.color = color;
-        if (GetComponent<TrailRenderer>() != null) {
+        if (GetComponent<TrailRenderer>() != null)
+        {
             GetComponent<TrailRenderer>().endColor = color;
         }
     }
@@ -480,21 +571,26 @@ public class Shuriken : UdonSharpBehaviour {
         return new Vector3(0, 0.5f, 1f + 0.5f * numOfEmbiggens);
     }
 
-    private int GetPowerUpLevel(int type) {
+    private int GetPowerUpLevel(int type)
+    {
         int level = 0;
-        if (powerUpOne == type) {
+        if (powerUpOne == type)
+        {
             level++;
         }
-        if (powerUpTwo == type) {
+        if (powerUpTwo == type)
+        {
             level++;
         }
-        if (powerUpThree == type) {
+        if (powerUpThree == type)
+        {
             level++;
         }
         return level;
     }
 
-    private void PutInFrontOfPlayer() {
+    private void PutInFrontOfPlayer()
+    {
         // Place the shuriken in front of the player
         transform.position = Player.GetPosition() + Player.GetRotation() * GetSpawnOffset();
     }

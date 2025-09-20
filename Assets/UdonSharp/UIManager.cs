@@ -4,7 +4,8 @@ using UnityEngine;
 using VRC.SDKBase;
 using TMPro;
 
-enum UIType {
+enum UIType
+{
     NONE,
     SCORE_UI,
     MESSAGE_UI
@@ -14,7 +15,8 @@ enum UIType {
 /// Local UdonSharpBehaviour for managing the player's UI
 /// </summary>
 [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
-public class UIManager : UdonSharpBehaviour {
+public class UIManager : UdonSharpBehaviour
+{
 
     public GameObject messageUI;
     public ScoreBoard scoreBoard;
@@ -33,37 +35,42 @@ public class UIManager : UdonSharpBehaviour {
     /// </summary>
     private float timeToHideUI = 0;
 
-    private void Log(string message) {
+    private void Log(string message)
+    {
         Debug.Log("[UIManager]: " + message);
     }
 
-    private void LogError(string message) {
+    private void LogError(string message)
+    {
         Debug.LogError("[UIManager]: " + message);
     }
 
     /// <summary>
     /// Get the UIManager in the scene (there should only be one)
     /// </summary>
-    public static UIManager Get() {
+    public static UIManager Get()
+    {
         return GameObject.Find("UI Manager").GetComponent<UIManager>();
     }
 
     /** Udon Overrides **/
-    
-    void Update() {
+
+    void Update()
+    {
         UpdateUI();
     }
 
     /** Custom Methods **/
 
     public void ShowMessageUI(
-        string topText = "", 
-        string highlightText = "", 
-        string middleText = "", 
-        string bottomText = "", 
-        bool backgroundEnabled = true, 
+        string topText = "",
+        string highlightText = "",
+        string middleText = "",
+        string bottomText = "",
+        bool backgroundEnabled = true,
         Color highlightColor = new Color(),
-        float duration = 2000) {
+        float duration = 2000)
+    {
 
         SetMessageUI(topText, highlightText, middleText, bottomText, backgroundEnabled, highlightColor);
         timeToShowUI = Time.time * 1000 + UI_FADE_TIME;
@@ -72,7 +79,8 @@ public class UIManager : UdonSharpBehaviour {
         UpdateUI();
     }
 
-    public void ShowScoreUI(int[] playerScores, string[] playerNames, float duration = 2000) {
+    public void ShowScoreUI(int[] playerScores, string[] playerNames, float duration = 2000)
+    {
         timeToShowUI = Time.time * 1000 + UI_FADE_TIME;
         timeToHideUI = timeToShowUI + duration + UI_FADE_TIME;
         visibleUI = UIType.SCORE_UI;
@@ -81,12 +89,13 @@ public class UIManager : UdonSharpBehaviour {
     }
 
     private void SetMessageUI(
-        string topText = "", 
-        string highlightText = "", 
-        string middleText = "", 
-        string bottomText = "", 
-        bool backgroundEnabled = true, 
-        Color highlightColor = new Color()) {
+        string topText = "",
+        string highlightText = "",
+        string middleText = "",
+        string bottomText = "",
+        bool backgroundEnabled = true,
+        Color highlightColor = new Color())
+    {
 
         GameObject background = messageUI.transform.Find("Background").gameObject;
         GameObject topTextUI = messageUI.transform.Find("Top Text").gameObject;
@@ -95,22 +104,33 @@ public class UIManager : UdonSharpBehaviour {
         GameObject middleTextUI = messageUI.transform.Find("Middle Text").gameObject;
         GameObject bottomTextUI = messageUI.transform.Find("Bottom Text").gameObject;
 
-        if (background == null) {
+        if (background == null)
+        {
             LogError("Background is null");
             return;
-        } else if (topTextUI == null) {
+        }
+        else if (topTextUI == null)
+        {
             LogError("Top Text is null");
             return;
-        } else if (highlight == null) {
+        }
+        else if (highlight == null)
+        {
             LogError("Highlight is null");
             return;
-        } else if (highlightTextUI == null) {
+        }
+        else if (highlightTextUI == null)
+        {
             LogError("Highlight Text is null");
             return;
-        } else if (middleTextUI == null) {
+        }
+        else if (middleTextUI == null)
+        {
             LogError("Middle Text is null");
             return;
-        } else if (bottomTextUI == null) {
+        }
+        else if (bottomTextUI == null)
+        {
             LogError("Bottom Text is null");
             return;
         }
@@ -123,44 +143,59 @@ public class UIManager : UdonSharpBehaviour {
         highlight.GetComponent<UnityEngine.UI.Image>().color = highlightColor;
     }
 
-    private void UpdateUI() {
+    private void UpdateUI()
+    {
         GameObject visibleUIObject = null;
         float alpha = 1;
         float timeInMs = Time.time * 1000;
 
         // Fade in
-        if (timeToShowUI != 0 && timeInMs >= timeToShowUI - UI_FADE_TIME) {
-            if (timeInMs >= timeToShowUI) {
+        if (timeToShowUI != 0 && timeInMs >= timeToShowUI - UI_FADE_TIME)
+        {
+            if (timeInMs >= timeToShowUI)
+            {
                 timeToShowUI = 0;
                 alpha = 1;
-            } else {
+            }
+            else
+            {
                 alpha = 1 - (timeToShowUI - timeInMs) / UI_FADE_TIME;
             }
         }
 
         // Fade out
-        if (timeToHideUI != 0 && timeInMs >= timeToHideUI - UI_FADE_TIME) {
-            if (timeInMs >= timeToHideUI) {
+        if (timeToHideUI != 0 && timeInMs >= timeToHideUI - UI_FADE_TIME)
+        {
+            if (timeInMs >= timeToHideUI)
+            {
                 visibleUI = UIType.NONE;
                 timeToHideUI = 0;
                 alpha = 0;
-            } else {
+            }
+            else
+            {
                 alpha = (timeToHideUI - timeInMs) / UI_FADE_TIME;
             }
         }
-        
-        if (visibleUI == UIType.MESSAGE_UI) {
+
+        if (visibleUI == UIType.MESSAGE_UI)
+        {
             messageUI.SetActive(true);
             visibleUIObject = messageUI;
-        } else if (visibleUI == UIType.SCORE_UI) {
+        }
+        else if (visibleUI == UIType.SCORE_UI)
+        {
             scoreBoard.gameObject.SetActive(true);
             visibleUIObject = scoreBoard.gameObject;
-        } else {
+        }
+        else
+        {
             messageUI.SetActive(false);
             scoreBoard.gameObject.SetActive(false);
         }
 
-        if (visibleUIObject != null) {
+        if (visibleUIObject != null)
+        {
             // Put UI in front of player's camera
             VRCPlayerApi localPlayer = Networking.LocalPlayer;
             // Get the player's head tracking data (camera position and rotation)

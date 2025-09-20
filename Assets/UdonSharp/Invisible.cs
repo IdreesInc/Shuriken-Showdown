@@ -7,7 +7,8 @@ using VRC.Udon;
 [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class Invisible : UdonSharpBehaviour
 {
-    void Start() {
+    void Start()
+    {
         // Disable renderer
         gameObject.GetComponent<MeshRenderer>().enabled = false;
     }

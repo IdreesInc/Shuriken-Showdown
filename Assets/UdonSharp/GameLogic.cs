@@ -13,7 +13,8 @@ using VRC.SDK3.UdonNetworkCalling;
 /// Game server logic that is only executed by the instance owner (who also owns this object)
 /// </summary>
 [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
-public class GameLogic : UdonSharpBehaviour {
+public class GameLogic : UdonSharpBehaviour
+{
 
     // public VRC.SDK3.Components.VRCObjectPool shurikenPool;
     // public VRC.SDK3.Components.VRCObjectPool playerColliderPool;
@@ -70,29 +71,33 @@ public class GameLogic : UdonSharpBehaviour {
     /// The current level (cast to an int for syncing)
     /// TODO: Turn into one of those magic fields to convert between enum and int automatically
     /// </summary>
-    [UdonSynced] private int _currentLevel = (int) Level.LOBBY;
-    
+    [UdonSynced] private int _currentLevel = (int)Level.LOBBY;
+
     private void Log(string message)
     {
         Debug.Log("[GameLogic - " + Networking.LocalPlayer.playerId + "]: " + message);
     }
 
-    private void LogError(string message) {
+    private void LogError(string message)
+    {
         Debug.Log("[GameLogic - " + Networking.LocalPlayer.playerId + "]: " + message);
     }
 
     /// <summary>
     /// Get the GameLogic singleton
     /// </summary>
-    public static GameLogic Get() {
+    public static GameLogic Get()
+    {
         return GameObject.Find("Game Logic").GetComponent<GameLogic>();
     }
 
     /** Udon Overrides **/
 
-    void Start() {
+    void Start()
+    {
         Log("GameLogic initializing...");
-        if (!Networking.IsOwner(gameObject)) {
+        if (!Networking.IsOwner(gameObject))
+        {
             Log("Not the owner, skipping rest of initialization");
             return;
         }
@@ -130,10 +135,11 @@ public class GameLogic : UdonSharpBehaviour {
             LogError("Power Up Pool is not set");
             return;
         }
-        
+
 
         bool success = AddPlayer(player.playerId);
-        if (!success) {
+        if (!success)
+        {
             LogError("Max players reached, not adding player " + player.playerId);
             return;
         }
@@ -166,19 +172,23 @@ public class GameLogic : UdonSharpBehaviour {
         // Networking.SetOwner(player, playerCollider);
     }
 
-    void Update() {
-        if (!Networking.IsOwner(gameObject)) {
+    void Update()
+    {
+        if (!Networking.IsOwner(gameObject))
+        {
             return;
         }
-        if (GetAlivePlayerCount() <= 1 && GetPlayerCount() > 1) {
+        if (GetAlivePlayerCount() <= 1 && GetPlayerCount() > 1)
+        {
             // Shuriken winner = GetWinnerShuriken();
             // if (winner == null) {
-                EndRound();
+            EndRound();
             // } else {
             //     EndGame(winner.GetPlayerNumber(), Networking.GetOwner(winner.gameObject).displayName);
             // }
         }
-        if (nextRoundTime != 0 && Time.time * 1000 >= nextRoundTime) {
+        if (nextRoundTime != 0 && Time.time * 1000 >= nextRoundTime)
+        {
             StartNextRound();
         }
         if (fightingStartTime != 0 && Time.time * 1000 >= fightingStartTime)
@@ -202,13 +212,15 @@ public class GameLogic : UdonSharpBehaviour {
                 }
             }
         }
-        if (nextPowerUpTime != 0 && Time.time * 1000 >= nextPowerUpTime) {
+        if (nextPowerUpTime != 0 && Time.time * 1000 >= nextPowerUpTime)
+        {
             nextPowerUpTime = 0;
             SpawnPowerUp();
         }
     }
 
-    public override void OnDeserialization() {
+    public override void OnDeserialization()
+    {
         // Called on every player's client besides the owner by default
         // Owner must manually call this
         Log("Deserializing GameLogic");
@@ -221,8 +233,10 @@ public class GameLogic : UdonSharpBehaviour {
     /// Triggered over the network when the game is started
     /// </summary>
     [NetworkCallable]
-    public void StartGame() {
-        if (!Networking.IsOwner(gameObject)) {
+    public void StartGame()
+    {
+        if (!Networking.IsOwner(gameObject))
+        {
             return;
         }
         Log("Starting game");
@@ -232,8 +246,10 @@ public class GameLogic : UdonSharpBehaviour {
     /// <summary>
     /// Triggered locally by the instance owner when a power up is collected
     /// </summary>
-    public void OnPowerUpCollected(GameObject powerUp) {
-        if (!Networking.IsOwner(gameObject)) {
+    public void OnPowerUpCollected(GameObject powerUp)
+    {
+        if (!Networking.IsOwner(gameObject))
+        {
             LogError("OnPowerUpCollected called by non-owner");
             return;
         }
@@ -243,27 +259,31 @@ public class GameLogic : UdonSharpBehaviour {
 
     /** Getters/setters for synced variables **/
 
-    private Level GetCurrentLevel() {
-        return (Level) _currentLevel;
+    private Level GetCurrentLevel()
+    {
+        return (Level)_currentLevel;
     }
 
-    private int GetCurrentLevelInt() {
+    private int GetCurrentLevelInt()
+    {
         // Udon networking is so stupid
         return _currentLevel;
     }
 
-    private void SetCurrentLevel(Level level) {
+    private void SetCurrentLevel(Level level)
+    {
         Log("Setting current level to " + level);
-        _currentLevel = (int) level;
+        _currentLevel = (int)level;
         RequestSerialization();
-        if (Networking.IsOwner(gameObject)) {
+        if (Networking.IsOwner(gameObject))
+        {
             // Since the owner doesn't get OnDeserialization, we need to manually call it
             OnDeserialization();
         }
     }
 
     /** Custom methods **/
-    
+
     /// <summary>
     /// Get the player slot index for a given VRChat player ID, or -1 if not found
     /// </summary>
@@ -300,27 +320,33 @@ public class GameLogic : UdonSharpBehaviour {
 
     private int GetAlivePlayerCount()
     {
-        
+
         int count = 0;
-        for (int i = 0; i < playerAlive.Length; i++) {
-            if (playerAlive[i]) {
+        for (int i = 0; i < playerAlive.Length; i++)
+        {
+            if (playerAlive[i])
+            {
                 count++;
             }
         }
         return count;
     }
 
-    private int GetPlayerCount() {
+    private int GetPlayerCount()
+    {
         int count = 0;
-        for (int i = 0; i < playerSlots.Length; i++) {
-            if (playerSlots[i] != 0) {
+        for (int i = 0; i < playerSlots.Length; i++)
+        {
+            if (playerSlots[i] != 0)
+            {
                 count++;
             }
         }
         return count;
     }
-    
-    private Shuriken[] Shurikens() {
+
+    private Shuriken[] Shurikens()
+    {
         return playerObjectsParent.GetComponentsInChildren<Shuriken>();
     }
 
@@ -380,7 +406,8 @@ public class GameLogic : UdonSharpBehaviour {
         nextRoundTime = (Time.time + 3) * 1000;
     }
 
-    private void EndGame(int winnerNumber, string winnerName) {
+    private void EndGame(int winnerNumber, string winnerName)
+    {
         // Send an event to each shuriken
         // foreach (Transform child in shurikensParent.transform) {
         //     if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null)
@@ -461,9 +488,11 @@ public class GameLogic : UdonSharpBehaviour {
         }
     }
 
-    private void ChangeLevel(Level level) {
+    private void ChangeLevel(Level level)
+    {
         // Deactivate all power ups
-        foreach (GameObject child in powerUpPool.Pool) {
+        foreach (GameObject child in powerUpPool.Pool)
+        {
             powerUpPool.Return(child);
         }
         // Reset the power up timer
@@ -472,14 +501,17 @@ public class GameLogic : UdonSharpBehaviour {
         SetCurrentLevel(level);
     }
 
-    private void SpawnPowerUp() {
+    private void SpawnPowerUp()
+    {
         Vector3[] spawnPoints = LevelManager.Get().GetPowerUpSpawnPoints(GetCurrentLevel());
-        if (spawnPoints.Length == 0) {
+        if (spawnPoints.Length == 0)
+        {
             LogError("No power up spawn points");
             return;
         }
         GameObject powerUp = powerUpPool.TryToSpawn();
-        if (powerUp == null) {
+        if (powerUp == null)
+        {
             LogError("Game Logic: No available power ups");
             return;
         }
