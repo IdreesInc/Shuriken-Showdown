@@ -6,32 +6,42 @@ using VRC.SDKBase;
 [UdonBehaviourSyncMode(BehaviourSyncMode.Continuous)]
 public class PlayerCollider : UdonSharpBehaviour {
     private readonly Vector3 offset = new Vector3(0, 1, 0);
-    [UdonSynced] private int playerId = -1;
-    [UdonSynced] private int playerNumber = -1;
-    [UdonSynced] private bool isAlive = true;
+    // [UdonSynced] private int playerId = -1;
+    // [UdonSynced] private int playerNumber = -1;
+    // [UdonSynced] private bool isAlive = true;
 
     /// <summary>
     /// Used locally by non-owners to prevent repeated hits before isAlive is updated
     /// </summary>
-    public bool hasBeenHitLocally = false;
+    // public bool hasBeenHitLocally = false;
 
-    private Vector3 deathPoint = new Vector3(0, 0, 0);
+    // private Vector3 deathPoint = new Vector3(0, 0, 0);
 
-    public VRCPlayerApi Player {
-        get {
-            if (playerId == -1) {
-                return null;
-            }
-            return VRCPlayerApi.GetPlayerById(playerId);
+    private VRCPlayerApi Player {
+        get
+        {
+            // if (playerId == -1) {
+            //     return null;
+            // }
+            // return VRCPlayerApi.GetPlayerById(playerId);
+            return Networking.GetOwner(gameObject);
+        }
+    }
+    
+    private int PlayerId {
+        get
+        {
+            return Networking.GetOwner(gameObject).playerId;
         }
     }
 
-    private void Log(string message) {
-        Debug.Log("[PlayerCollider - " + playerId + "]: " + message);
+    private void Log(string message)
+    {
+        Debug.Log("[PlayerCollider - " + PlayerId + "]: " + message);
     }
 
     private void LogError(string message) {
-        Debug.LogError("[PlayerCollider - " + playerId + "]: " + message);
+        Debug.LogError("[PlayerCollider - " + PlayerId + "]: " + message);
     }
 
     /** Udon Overrides **/
@@ -45,7 +55,7 @@ public class PlayerCollider : UdonSharpBehaviour {
     public override void OnDeserialization() {
         // Log("Deserializing collider with owner id " + playerId);
         // Log("Is alive: " + isAlive);
-        UpdateOwnership();
+        // UpdateOwnership();
     }
 
     /** Event Handlers **/
@@ -53,8 +63,8 @@ public class PlayerCollider : UdonSharpBehaviour {
     [NetworkCallable]
     public void OnRoundStart(int level)
     {
-        isAlive = true;
-        hasBeenHitLocally = false;
+        // isAlive = true;
+        // hasBeenHitLocally = false;
         if (!Networking.IsOwner(gameObject))
         {
             return;
@@ -66,8 +76,8 @@ public class PlayerCollider : UdonSharpBehaviour {
     [NetworkCallable]
     public void OnRoundEnd()
     {
-        isAlive = true;
-        hasBeenHitLocally = false;
+        // isAlive = true;
+        // hasBeenHitLocally = false;
         if (!Networking.IsOwner(gameObject))
         {
             return;
@@ -79,8 +89,8 @@ public class PlayerCollider : UdonSharpBehaviour {
     [NetworkCallable]
     public void OnGameEnd(int winnerNumber, string winnerName)
     {
-        isAlive = true;
-        hasBeenHitLocally = false;
+        // isAlive = true;
+        // hasBeenHitLocally = false;
         if (!Networking.IsOwner(gameObject))
         {
             return;
@@ -91,9 +101,9 @@ public class PlayerCollider : UdonSharpBehaviour {
     }
 
     [NetworkCallable]
-    public void OnHit(string playerName, int playerNumber)
+    public void OnHit(string playerName, int playerSlot)
     {
-        isAlive = false;
+        // isAlive = false;
         if (!Networking.IsOwner(gameObject))
         {
             Log("Not the owner, skipping collision");
@@ -101,39 +111,39 @@ public class PlayerCollider : UdonSharpBehaviour {
         }
         Log("Player hit by " + playerName);
         LocalPlayerLogic playerLogic = LocalPlayerLogic.Get();
-        playerLogic.ShowHitUI(playerNumber, playerName, "sliced");
+        playerLogic.ShowHitUI(playerSlot, playerName, "sliced");
         if (playerLogic.GetAlivePlayerCount() > 1)
         {
-            // Only teleport player if this isn't the end of the round
+            Vector3 deathPoint = LevelManager.Get().GetDeathPosition();
             Player.TeleportTo(deathPoint, Player.GetRotation());
         }
     }
 
     /** Custom Methods **/
 
-    public void SetPlayerId(int playerId) {
-        if (!Networking.IsOwner(gameObject)) {
-            LogError("Attempted to set player id without ownership");
-            return;
-        }
-        this.playerId = playerId;
-        if (Player == null) {
-            LogError("Player Collider: Attempted to follow a null player with id: " + playerId);
-            this.playerId = -1;
-            return;
-        }
-        Log("Following player: " + Player.displayName);
-        UpdateOwnership();
-    }
+    // public void SetPlayerId(int playerId) {
+    //     if (!Networking.IsOwner(gameObject)) {
+    //         LogError("Attempted to set player id without ownership");
+    //         return;
+    //     }
+    //     this.playerId = playerId;
+    //     if (Player == null) {
+    //         LogError("Player Collider: Attempted to follow a null player with id: " + playerId);
+    //         this.playerId = -1;
+    //         return;
+    //     }
+    //     Log("Following player: " + Player.displayName);
+    //     UpdateOwnership();
+    // }
 
-    public void SetPlayerNumber(int playerNumber) {
-        if (!Networking.IsOwner(gameObject)) {
-            LogError("Attempted to set player number without ownership");
-            return;
-        }
-        Log("Setting player number to " + playerNumber);
-        this.playerNumber = playerNumber;
-    }
+    // public void SetPlayerNumber(int playerNumber) {
+    //     if (!Networking.IsOwner(gameObject)) {
+    //         LogError("Attempted to set player number without ownership");
+    //         return;
+    //     }
+    //     Log("Setting player number to " + playerNumber);
+    //     this.playerNumber = playerNumber;
+    // }
 
     public string GetPlayerName() {
         if (Player == null) {
@@ -142,39 +152,33 @@ public class PlayerCollider : UdonSharpBehaviour {
         return Player.displayName;
     }
 
-    public int GetPlayerId() {
-        return playerId;
-    }
+    // public int GetPlayerId() {
+    //     return playerId;
+    // }
 
-    public int GetPlayerNumber() {
-        return playerNumber;
-    }
+    // public int GetPlayerNumber() {
+    //     return playerNumber;
+    // }
 
-    public bool IsAlive() {
-        return isAlive;
-    }
+    // public bool IsAlive() {
+    //     return isAlive;
+    // }
 
     private void GoToLevelSpawn(Level level) {
+        Log("Teleporting to spawn of level " + level);
         LevelManager manager = LevelManager.Get();
         // Get spawn point
-        Vector3 spawnPoint = manager.GetSpawnPosition(level, playerNumber);
+        Vector3 spawnPoint = manager.GetSpawnPosition(level, GameLogic.Get().GetPlayerSlot(PlayerId));
         // Update world spawn
         LocalPlayerLogic.Get().SetWorldSpawn(spawnPoint);
         // Teleport player to spawn point
         Player.TeleportTo(spawnPoint, Player.GetRotation());
-        // Update death point
-        UpdateDeathPoint();
     }
 
-    private void UpdateOwnership() {
-        if (playerId == Networking.LocalPlayer.playerId && !Networking.IsOwner(gameObject)) {
-            Log("Claiming network ownership of collider");
-            Networking.SetOwner(Networking.LocalPlayer, gameObject);
-        }
-    }
-
-    private void UpdateDeathPoint() {
-        LevelManager manager = LevelManager.Get();
-        deathPoint = manager.GetDeathPosition();
-    }
+    // private void UpdateOwnership() {
+    //     if (playerId == Networking.LocalPlayer.playerId && !Networking.IsOwner(gameObject)) {
+    //         Log("Claiming network ownership of collider");
+    //         Networking.SetOwner(Networking.LocalPlayer, gameObject);
+    //     }
+    // }
 }

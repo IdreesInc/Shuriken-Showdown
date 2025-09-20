@@ -24,8 +24,8 @@ public class Shuriken : UdonSharpBehaviour {
     private const float AMPHETAMINES_MOD = 3.5f;
     private const float MOON_SHOES_MOD = 2.75f;
 
-    [UdonSynced] private int playerId = -1;
-    [UdonSynced] private int playerNumber = -1;
+    // [UdonSynced] private int playerId = -1;
+    // [UdonSynced] private int playerNumber = -1;
 
     /// <summary>
     /// Whether we are in-game, which determines whether the shuriken can be used
@@ -42,38 +42,41 @@ public class Shuriken : UdonSharpBehaviour {
     [UdonSynced] private Quaternion rotationOnThrow = Quaternion.identity;
 
     private VRCPlayerApi Player {
-        get {
-            if (playerId == -1) {
-                return null;
-            }
-            return VRCPlayerApi.GetPlayerById(playerId);
+        get
+        {
+            // if (playerId == -1) {
+            //     return null;
+            // }
+            // return VRCPlayerApi.GetPlayerById(playerId);
+            return Networking.GetOwner(gameObject);
         }
     }
 
     private void Log(string message) {
-        Debug.Log("[Shuriken - " + playerId + "]: " + message);
+        Debug.Log("[Shuriken - Slot: " + LoggingName() + "]: " + message);
     }
 
     private void LogError(string message) {
-        Debug.LogError("[Shuriken - " + playerId + "]: " + message);
+        Debug.LogError("[Shuriken - Slot: " + LoggingName() + "]: " + message);
+    }
+
+    private string LoggingName() {
+        string name = Player.displayName == null || Player.displayName == "" ? "Unnamed Player" : Player.displayName;
+        return "(" + name + " - Slot: " + GameLogic.Get().GetPlayerSlot(Player.playerId) + ")";
     }
 
     /** Udon Overrides **/
 
     void Start() {
-        if (playerId == -1) {
-            LogError("playerId is not set");
-        }
-        if (playerNumber == -1) {
-            LogError("playerNumber is not set");
-        }
         Log("Shuriken has been spawned.");
     }
 
-    public override void OnDeserialization() {
+    public override void OnDeserialization()
+    {
         // Log("Deserializing shuriken with owner id " + playerId);
         ApplyPowerUpEffects();
-        UpdateOwnership();
+        UpdateColor();
+        // UpdateOwnership();
     }
 
     void Update() {
@@ -106,18 +109,22 @@ public class Shuriken : UdonSharpBehaviour {
                     transform.Rotate(Vector3.up, ROTATION_SPEED * Time.deltaTime);
                     transform.rotation = Quaternion.Euler(0, transform.eulerAngles.y, 0);
                 }
-            } else if (HasPlayer() && Networking.IsOwner(gameObject)) {
-                if (velocity < 0.01f && hasBeenThrown && Vector3.Distance(transform.position, Player.GetPosition()) > MAX_GROUND_DISTANCE) {
+            } else if (Networking.IsOwner(gameObject)) {
+                // TODO: Wtf is this nested if statement, clean it up
+                if (velocity < 0.01f && hasBeenThrown && Vector3.Distance(transform.position, Player.GetPosition()) > MAX_GROUND_DISTANCE)
+                {
                     // Shuriken at rest after being thrown
                     ReturnToPlayer();
-                } else if (!hasBeenThrown && Vector3.Distance(transform.position, Player.GetPosition()) > 5) {
+                }
+                else if (!hasBeenThrown && Vector3.Distance(transform.position, Player.GetPosition()) > 5)
+                {
                     // Shuriken has not been thrown yet, make sure it is within reach
                     ReturnToPlayer();
                 }
             }
         }
         // If the shuriken is too far from the owner, return it no matter what
-        if (HasPlayer() && Networking.IsOwner(gameObject)) {
+        if (Networking.IsOwner(gameObject)) {
             if (Vector3.Distance(transform.position, Player.GetPosition()) > MAX_DISTANCE) {
                 ReturnToPlayer();
             } else if (transform.position.y < -1) {
@@ -162,10 +169,10 @@ public class Shuriken : UdonSharpBehaviour {
         hasFirstContact = false;
         // Disable collision with anything
         GetComponent<Rigidbody>().detectCollisions = false;
-        if (Networking.LocalPlayer.playerId != playerId) {
-            Log("Shuriken owned by " + playerId + " has been picked up by " + Networking.LocalPlayer.playerId);
-            ReturnToPlayer();
-        }
+        // if (Networking.LocalPlayer.playerId != playerId) {
+        //     Log("Shuriken owned by " + playerId + " has been picked up by " + Networking.LocalPlayer.playerId);
+        //     ReturnToPlayer();
+        // }
     }
 
     public override void OnDrop() {
@@ -251,25 +258,26 @@ public class Shuriken : UdonSharpBehaviour {
 
         if (collider.gameObject.GetComponent<PlayerCollider>() != null && (isHeld || hasBeenThrown)) {
             PlayerCollider playerCollider = collider.gameObject.GetComponent<PlayerCollider>();
-            if (!HasPlayer() || playerCollider.GetPlayerId() != playerId) {
-                Log(playerId + "'s shuriken has hit " + playerCollider.GetPlayerId());
-                if (playerCollider.IsAlive() && !playerCollider.hasBeenHitLocally) {
+            VRCPlayerApi opponentPlayer = Networking.GetOwner(collider.gameObject);
+            if (!Networking.IsOwner(collider.gameObject)) {
+                Log(Player.playerId + "'s shuriken has hit " + opponentPlayer.displayName);
+                if (GameLogic.Get().IsPlayerAlive(opponentPlayer.playerId)) {
                     // Notify the player
                     // playerCollider.SendMethodNetworked(nameof(PlayerCollider.OnHit), SyncTarget.All, GetPlayerName(), playerNumber);
-                    SendCustomNetworkEvent(NetworkEventTarget.All, nameof(playerCollider.OnHit), GetPlayerName(), playerNumber);
+                    int playerSlot = GameLogic.Get().GetPlayerSlot(Player.playerId);
+                    playerCollider.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(playerCollider.OnHit), GetPlayerName(), playerSlot);
                     // Cache the hit locally
-                    playerCollider.hasBeenHitLocally = true;
+                    // playerCollider.hasBeenHitLocally = true;
                     // Play hit sound
-                    if (audioSource != null) {
+                    if (audioSource != null)
+                    {
                         audioSource.Play();
                     }
                     // Increase the score
                     score++;
-                    // Get player name (if available)
-                    string playerName = playerCollider.Player != null ? playerCollider.Player.displayName : "[Unnamed Player]";
                     // Show UI
                     LocalPlayerLogic playerLogic = LocalPlayerLogic.Get();
-                    playerLogic.ShowKillUI(playerCollider.GetPlayerNumber(), playerName);
+                    playerLogic.ShowKillUI(GameLogic.Get().GetPlayerSlot(opponentPlayer.playerId), opponentPlayer.displayName);
                 } else {
                     Log("Player is already dead, ignoring");
                 }
@@ -343,53 +351,16 @@ public class Shuriken : UdonSharpBehaviour {
 
     /** Custom Methods **/
 
-    /// <summary>
-    /// Set the player ID of the shuriken and update the ownership
-    /// </summary>
-    public void SetPlayerId(int playerId) {
-        if (!Networking.IsOwner(gameObject)) {
-            LogError("Attempted to set player id without ownership");
-            return;
-        }
-        Log("Setting owner id to " + playerId);
-        this.playerId = playerId;
-        UpdateOwnership();
-    }
-
-    public void SetPlayerNumber(int playerNumber) {
-        if (!Networking.IsOwner(gameObject)) {
-            LogError("Attempted to set player number without ownership");
-            return;
-        }
-        Log("Setting player number to " + playerNumber);
-        this.playerNumber = playerNumber;
-    }
-
-    public bool HasPlayer() {
-        return Player != null;
-    }
-
-    public int GetPlayerId() {
-        return playerId;
-    }
-
-    public int GetPlayerNumber() {
-        return playerNumber;
-    }
-
     public int GetScore() {
         return score;
     }
 
     private void ReturnToPlayer() {
-        if (!HasPlayer()) {
-            LogError("Unable to return to player, player is not set");
-            return;
-        } else if (Networking.LocalPlayer.playerId != playerId) {
-            // Log("Won't return as shuriken is not owned by " + Networking.LocalPlayer.playerId);
+        if (Networking.IsOwner(gameObject)) {
+            LogError("Attempted to return to player without ownership");
             return;
         }
-        Log("Returning shuriken to " + playerId);
+        Log("Returning shuriken to " + Player.displayName);
         // Place the shuriken in front of the player
         PutInFrontOfPlayer();
         GetComponent<Rigidbody>().velocity = Vector3.zero;
@@ -416,7 +387,7 @@ public class Shuriken : UdonSharpBehaviour {
         powerUpTwo = powerUpOne;
         powerUpOne = type;
         ApplyPowerUpEffects();
-        if (Networking.LocalPlayer.playerId == playerId) {
+        if (Networking.IsOwner(gameObject)) {
             LocalPlayerLogic.Get().ShowEquippedUI(type, powerUpOne, powerUpTwo, powerUpThree);
         }
     }
@@ -474,15 +445,28 @@ public class Shuriken : UdonSharpBehaviour {
         }
     }
 
-    private void UpdateOwnership() {
-        if (playerId == Networking.LocalPlayer.playerId && !Networking.IsOwner(gameObject)) {
-            Log("Claiming network ownership of shuriken");
-            Networking.SetOwner(Networking.LocalPlayer, gameObject);
-            ReturnToPlayer();
-        }
+    // private void UpdateOwnership() {
+    //     if (playerId == Networking.LocalPlayer.playerId && !Networking.IsOwner(gameObject)) {
+    //         Log("Claiming network ownership of shuriken");
+    //         Networking.SetOwner(Networking.LocalPlayer, gameObject);
+    //         ReturnToPlayer();
+    //     }
+    //     Color color = Color.grey;
+    //     if (playerId != -1) {
+    //         color = Shared.Colors()[(playerId - 1) % Shared.Colors().Length];
+    //     }
+    //     GetComponent<Renderer>().material.color = color;
+    //     if (GetComponent<TrailRenderer>() != null) {
+    //         GetComponent<TrailRenderer>().endColor = color;
+    //     }
+    // }
+
+    private void UpdateColor()
+    {
         Color color = Color.grey;
-        if (playerId != -1) {
-            color = Shared.Colors()[(playerId - 1) % Shared.Colors().Length];
+        int playerSlot = GameLogic.Get().GetPlayerSlot(Player.playerId);
+        if (playerSlot != -1) {
+            color = Shared.Colors()[playerSlot % Shared.Colors().Length];
         }
         GetComponent<Renderer>().material.color = color;
         if (GetComponent<TrailRenderer>() != null) {
@@ -490,7 +474,8 @@ public class Shuriken : UdonSharpBehaviour {
         }
     }
 
-    private Vector3 GetSpawnOffset() {
+    private Vector3 GetSpawnOffset()
+    {
         int numOfEmbiggens = GetPowerUpLevel(0);
         return new Vector3(0, 0.5f, 1f + 0.5f * numOfEmbiggens);
     }
@@ -510,10 +495,6 @@ public class Shuriken : UdonSharpBehaviour {
     }
 
     private void PutInFrontOfPlayer() {
-        if (!HasPlayer()) {
-            LogError("Unable to place in front of player, player is not set");
-            return;
-        }
         // Place the shuriken in front of the player
         transform.position = Player.GetPosition() + Player.GetRotation() * GetSpawnOffset();
     }

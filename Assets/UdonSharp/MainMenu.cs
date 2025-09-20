@@ -38,7 +38,8 @@ public class MainMenu : UdonSharpBehaviour {
     {
         Log("Start Game Pressed");
         // GameLogic.Get().SendMethodNetworked(nameof(GameLogic.StartGame), SyncTarget.All);
-        SendCustomNetworkEvent(NetworkEventTarget.All, nameof(GameLogic.StartGame));
+        // SendCustomNetworkEvent(NetworkEventTarget.All, nameof(GameLogic.StartGame));
+        GameLogic.Get().SendCustomNetworkEvent(NetworkEventTarget.All, nameof(GameLogic.StartGame));
     }
 
     /** Custom Methods */
@@ -54,13 +55,13 @@ public class MainMenu : UdonSharpBehaviour {
     private void UpdatePlayerIcons() {
         GameLogic gameLogic = GameLogic.Get();
         for (int i = 0; i < playerIcons.Length; i++) {
-            if (gameLogic.IsPlayerActive(i + 1)) {
-                playerIcons[i].GetComponent<Image>().color = Shared.Colors()[i];
-                playerIcons[i].transform.Find("Player Icon Text").GetComponent<TextMeshProUGUI>().text = "P" + (i + 1);
-            } else {
+            // if (gameLogic.IsPlayerActive(i + 1)) {
+            //     playerIcons[i].GetComponent<Image>().color = Shared.Colors()[i];
+            //     playerIcons[i].transform.Find("Player Icon Text").GetComponent<TextMeshProUGUI>().text = "P" + (i + 1);
+            // } else {
                 playerIcons[i].GetComponent<Image>().color = new Color(0, 0, 0, 0.1f);
                 playerIcons[i].transform.Find("Player Icon Text").GetComponent<TextMeshProUGUI>().text = "";
-            }
+            // }
         }
     }
 }

@@ -15,11 +15,20 @@ using VRC.SDK3.UdonNetworkCalling;
 [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
 public class GameLogic : UdonSharpBehaviour {
 
-    public VRC.SDK3.Components.VRCObjectPool shurikenPool;
-    public VRC.SDK3.Components.VRCObjectPool playerColliderPool;
+    // public VRC.SDK3.Components.VRCObjectPool shurikenPool;
+    // public VRC.SDK3.Components.VRCObjectPool playerColliderPool;
+
+    public GameObject playerObjectsParent;
+
     public VRC.SDK3.Components.VRCObjectPool powerUpPool;
-    public GameObject shurikensParent;
-    public GameObject playerCollidersParent;
+    // public GameObject shurikensParent;
+    // public GameObject playerCollidersParent;
+
+    /// <summary>
+    /// Max number of players that can participate in the game at once
+    /// </summary>
+    public const int MAX_PLAYERS = 8;
+
 
     /// <summary>
     /// The delay between a power up being collected and the next one spawning
@@ -37,10 +46,6 @@ public class GameLogic : UdonSharpBehaviour {
     /** Synced Variables **/
 
     /// <summary>
-    /// The current number of players. Note that the array starts at 0 but the player number will be the index + 1
-    /// </summary>
-    [UdonSynced] private bool[] _activePlayers = {false, false, false, false, false, false, false, false};
-    /// <summary>
     /// The time at which the next round will start
     /// </summary>
     [UdonSynced] private float nextRoundTime = 0;
@@ -53,11 +58,22 @@ public class GameLogic : UdonSharpBehaviour {
     /// </summary>
     [UdonSynced] private float nextPowerUpTime = 0;
     /// <summary>
+    /// Array of players IDs for active players, 0 if the slot is empty
+    /// </summary>
+    [UdonSynced] private readonly int[] playerSlots = new int[MAX_PLAYERS];
+    /// <summary>
+    /// Whether each player is alive or not, indexed by player slot
+    /// </summary>
+    [UdonSynced] private readonly bool[] playerAlive = new bool[MAX_PLAYERS];
+
+    /// <summary>
     /// The current level (cast to an int for syncing)
+    /// TODO: Turn into one of those magic fields to convert between enum and int automatically
     /// </summary>
     [UdonSynced] private int _currentLevel = (int) Level.LOBBY;
     
-    private void Log(string message) {
+    private void Log(string message)
+    {
         Debug.Log("[GameLogic - " + Networking.LocalPlayer.playerId + "]: " + message);
     }
 
@@ -66,7 +82,7 @@ public class GameLogic : UdonSharpBehaviour {
     }
 
     /// <summary>
-    /// Get the GameLogic in the scene (there should only be one)
+    /// Get the GameLogic singleton
     /// </summary>
     public static GameLogic Get() {
         return GameObject.Find("Game Logic").GetComponent<GameLogic>();
@@ -83,14 +99,17 @@ public class GameLogic : UdonSharpBehaviour {
         OnDeserialization();
     }
 
-    public override void OnPlayerJoined(VRCPlayerApi player) {
+    public override void OnPlayerJoined(VRCPlayerApi player)
+    {
         Log("Player joined: " + player.displayName);
-        if (!Networking.IsOwner(gameObject)) {
+        if (!Networking.IsOwner(gameObject))
+        {
             Log("A player joined but we are not the owner so who cares");
             return;
         }
 
-        if (player == null || !Utilities.IsValid(player)) {
+        if (player == null || !Utilities.IsValid(player))
+        {
             LogError("Somehow, the player is null in OnPlayerJoined");
             return;
         }
@@ -101,53 +120,50 @@ public class GameLogic : UdonSharpBehaviour {
         // // Increase player jump height
         // player.SetJumpImpulse(5);
 
-        if (playerColliderPool == null) {
-            LogError("Player Collider Pool is not set");
-            return;
-        } else if (player == null) {
+        if (player == null)
+        {
             LogError("Interacting player is not set");
             return;
-        } else if (shurikenPool == null) {
-            LogError("Shuriken Pool is not set");
-            return;
-        } else if (powerUpPool == null) {
+        }
+        else if (powerUpPool == null)
+        {
             LogError("Power Up Pool is not set");
             return;
         }
+        
 
-        int availablePlayerSlot = Array.IndexOf(_activePlayers, false) + 1;
-
-        if (availablePlayerSlot == 0) {
-            // TODO: Create guest player
-            LogError("Max players reached, not adding components for " + player.playerId);
+        bool success = AddPlayer(player.playerId);
+        if (!success) {
+            LogError("Max players reached, not adding player " + player.playerId);
             return;
         }
 
-        SetPlayerActive(availablePlayerSlot, true);
+        // // Create a shuriken for the player
+        // GameObject shuriken = shurikenPool.TryToSpawn();
+        // if (shuriken == null)
+        // {
+        //     LogError("No available shurikens");
+        //     return;
+        // }
+        // shuriken.SetActive(true);
+        // Shuriken shurikenComponent = shuriken.GetComponent<Shuriken>();
+        // shurikenComponent.SetPlayerNumber(availablePlayerSlot);
+        // // Assign ownership of the shuriken to the player
+        // shurikenComponent.SetPlayerId(player.playerId);
 
-        // Create a shuriken for the player
-        GameObject shuriken = shurikenPool.TryToSpawn();
-        if (shuriken == null) {
-            LogError("No available shurikens");
-            return;
-        }
-        shuriken.SetActive(true);
-        Shuriken shurikenComponent = shuriken.GetComponent<Shuriken>();
-        shurikenComponent.SetPlayerNumber(availablePlayerSlot);
-        // Assign ownership of the shuriken to the player
-        shurikenComponent.SetPlayerId(player.playerId);
-
-        // Create a player collider for the player
-        GameObject playerCollider = playerColliderPool.TryToSpawn();
-        if (playerCollider == null) {
-            LogError("No available player colliders");
-            return;
-        }
-        playerCollider.SetActive(true);
-        PlayerCollider playerColliderComponent = playerCollider.GetComponent<PlayerCollider>();
-        playerColliderComponent.SetPlayerNumber(availablePlayerSlot);
-        // Assign ownership of the player collider to the player
-        playerColliderComponent.SetPlayerId(player.playerId);
+        // // Create a player collider for the player
+        // GameObject playerCollider = playerColliderPool.TryToSpawn();
+        // if (playerCollider == null)
+        // {
+        //     LogError("No available player colliders");
+        //     return;
+        // }
+        // playerCollider.SetActive(true);
+        // PlayerCollider playerColliderComponent = playerCollider.GetComponent<PlayerCollider>();
+        // // playerColliderComponent.SetPlayerNumber(availablePlayerSlot);
+        // // Assign ownership of the player collider to the player
+        // // playerColliderComponent.SetPlayerId(player.playerId);
+        // Networking.SetOwner(player, playerCollider);
     }
 
     void Update() {
@@ -155,25 +171,34 @@ public class GameLogic : UdonSharpBehaviour {
             return;
         }
         if (GetAlivePlayerCount() <= 1 && GetPlayerCount() > 1) {
-            Shuriken winner = GetWinnerShuriken();
-            if (winner == null) {
+            // Shuriken winner = GetWinnerShuriken();
+            // if (winner == null) {
                 EndRound();
-            } else {
-                EndGame(winner.GetPlayerNumber(), Networking.GetOwner(winner.gameObject).displayName);
-            }
+            // } else {
+            //     EndGame(winner.GetPlayerNumber(), Networking.GetOwner(winner.gameObject).displayName);
+            // }
         }
         if (nextRoundTime != 0 && Time.time * 1000 >= nextRoundTime) {
             StartNextRound();
         }
-        if (fightingStartTime != 0 && Time.time * 1000 >= fightingStartTime) {
+        if (fightingStartTime != 0 && Time.time * 1000 >= fightingStartTime)
+        {
             fightingStartTime = 0;
             // Send an event to each shuriken
-            foreach (Transform child in shurikensParent.transform) {
-                if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null)
+            // foreach (Transform child in shurikensParent.transform) {
+            //     if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null)
+            //     {
+            //         Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
+            //         // shuriken.SendMethodNetworked(nameof(Shuriken.OnFightingStart), SyncTarget.All);
+            //         SendCustomNetworkEvent(NetworkEventTarget.All, nameof(Shuriken.OnFightingStart));
+            //     }
+            // }
+            // SendCustomNetworkEvent(NetworkEventTarget.All, nameof(Shuriken.OnFightingStart));
+            foreach (Shuriken child in Shurikens())
+            {
+                if (child.gameObject.activeSelf)
                 {
-                    Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
-                    // shuriken.SendMethodNetworked(nameof(Shuriken.OnFightingStart), SyncTarget.All);
-                    SendCustomNetworkEvent(NetworkEventTarget.All, nameof(shuriken.OnFightingStart));
+                    child.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(Shuriken.OnFightingStart));
                 }
             }
         }
@@ -237,33 +262,48 @@ public class GameLogic : UdonSharpBehaviour {
         }
     }
 
-    private bool[] GetActivePlayers() {
-        return _activePlayers;
-    }
-
-    public bool IsPlayerActive(int playerNumber) {
-        if (playerNumber < 1 || playerNumber > _activePlayers.Length) {
-            LogError("Invalid player number: " + playerNumber);
-        }
-        return _activePlayers[playerNumber - 1];
-    }
-
-    private void SetActivePlayers(bool[] activePlayers) {
-        _activePlayers = activePlayers;
-        RequestSerialization();
-    }
-
-    private void SetPlayerActive(int playerNumber, bool active) {
-        _activePlayers[playerNumber - 1] = active;
-        RequestSerialization();
-    }
-
     /** Custom methods **/
+    
+    /// <summary>
+    /// Get the player slot index for a given VRChat player ID, or -1 if not found
+    /// </summary>
+    public int GetPlayerSlot(int playerId)
+    {
+        return Array.IndexOf(playerSlots, playerId);
+    }
 
-    private int GetAlivePlayerCount() {
+    /// <summary>
+    /// Check if a player with the given VRChat player ID is alive
+    /// Returns false if the player is dead or the player ID is not found
+    /// </summary>
+    public bool IsPlayerAlive(int playerId)
+    {
+        int playerSlot = GetPlayerSlot(playerId);
+        if (playerSlot < 0 || playerSlot >= playerAlive.Length)
+        {
+            return false;
+        }
+        return playerAlive[playerSlot];
+    }
+
+    private bool AddPlayer(int playerId)
+    {
+        int availablePlayerSlot = Array.IndexOf(playerSlots, 0);
+        if (availablePlayerSlot == -1)
+        {
+            return false;
+        }
+        playerSlots[availablePlayerSlot] = playerId;
+        playerAlive[availablePlayerSlot] = true;
+        return true;
+    }
+
+    private int GetAlivePlayerCount()
+    {
+        
         int count = 0;
-        foreach (Transform child in playerCollidersParent.transform) {
-            if (child.gameObject.activeSelf && child.gameObject.GetComponent<PlayerCollider>() != null && child.gameObject.GetComponent<PlayerCollider>().IsAlive()) {
+        for (int i = 0; i < playerAlive.Length; i++) {
+            if (playerAlive[i]) {
                 count++;
             }
         }
@@ -272,44 +312,69 @@ public class GameLogic : UdonSharpBehaviour {
 
     private int GetPlayerCount() {
         int count = 0;
-        for (int i = 0; i < GetActivePlayers().Length; i++) {
-            if (GetActivePlayers()[i]) {
+        for (int i = 0; i < playerSlots.Length; i++) {
+            if (playerSlots[i] != 0) {
                 count++;
             }
         }
         return count;
     }
-
-    private Shuriken GetWinnerShuriken() {
-        foreach (Transform child in shurikensParent.transform) {
-            if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null) {
-                Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
-                if (shuriken.GetScore() >= MAX_SCORE) {
-                    return shuriken;
-                }
-            }
-        }
-        return null;
+    
+    private Shuriken[] Shurikens() {
+        return playerObjectsParent.GetComponentsInChildren<Shuriken>();
     }
 
-    private void EndRound() {
+    private PlayerCollider[] PlayerColliders()
+    {
+        return playerObjectsParent.GetComponentsInChildren<PlayerCollider>();
+    }
+
+    // private Shuriken GetWinnerShuriken() {
+    //     foreach (Transform child in shurikensParent.transform) {
+    //         if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null) {
+    //             Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
+    //             if (shuriken.GetScore() >= MAX_SCORE) {
+    //                 return shuriken;
+    //             }
+    //         }
+    //     }
+    //     return null;
+    // }
+
+    private void EndRound()
+    {
         nextRoundTime = 0;
         // Send an event to each shuriken
-        foreach (Transform child in shurikensParent.transform) {
-            if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null)
+        // foreach (Transform child in shurikensParent.transform) {
+        //     if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null)
+        //     {
+        //         Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
+        //         // shuriken.SendMethodNetworked(nameof(Shuriken.OnRoundEnd), SyncTarget.All);
+        //         SendCustomNetworkEvent(NetworkEventTarget.All, nameof(shuriken.OnRoundEnd));
+        //     }
+        // }
+        foreach (Shuriken child in Shurikens())
+        {
+            if (child.gameObject.activeSelf)
             {
-                Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
-                // shuriken.SendMethodNetworked(nameof(Shuriken.OnRoundEnd), SyncTarget.All);
-                SendCustomNetworkEvent(NetworkEventTarget.All, nameof(shuriken.OnRoundEnd));
+                child.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(Shuriken.OnRoundEnd));
             }
         }
         // Send an event to each player collider
-        foreach (Transform child in playerCollidersParent.transform) {
-            if (child.gameObject.activeSelf && child.gameObject.GetComponent<PlayerCollider>() != null)
+        // foreach (Transform child in playerCollidersParent.transform)
+        // {
+        //     if (child.gameObject.activeSelf && child.gameObject.GetComponent<PlayerCollider>() != null)
+        //     {
+        //         PlayerCollider playerCollider = child.gameObject.GetComponent<PlayerCollider>();
+        //         // playerCollider.SendMethodNetworked(nameof(PlayerCollider.OnRoundEnd), SyncTarget.All);
+        //         SendCustomNetworkEvent(NetworkEventTarget.All, nameof(playerCollider.OnRoundEnd));
+        //     }
+        // }
+        foreach (PlayerCollider child in PlayerColliders())
+        {
+            if (child.gameObject.activeSelf)
             {
-                PlayerCollider playerCollider = child.gameObject.GetComponent<PlayerCollider>();
-                // playerCollider.SendMethodNetworked(nameof(PlayerCollider.OnRoundEnd), SyncTarget.All);
-                SendCustomNetworkEvent(NetworkEventTarget.All, nameof(playerCollider.OnRoundEnd));
+                child.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(PlayerCollider.OnRoundEnd));
             }
         }
         nextRoundTime = (Time.time + 3) * 1000;
@@ -317,49 +382,81 @@ public class GameLogic : UdonSharpBehaviour {
 
     private void EndGame(int winnerNumber, string winnerName) {
         // Send an event to each shuriken
-        foreach (Transform child in shurikensParent.transform) {
-            if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null)
+        // foreach (Transform child in shurikensParent.transform) {
+        //     if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null)
+        //     {
+        //         Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
+        //         // shuriken.SendMethodNetworked(nameof(Shuriken.OnGameEnd), SyncTarget.All);
+        //         SendCustomNetworkEvent(NetworkEventTarget.All, nameof(shuriken.OnGameEnd));
+        //     }
+        // }
+        foreach (Shuriken child in Shurikens())
+        {
+            if (child.gameObject.activeSelf)
             {
-                Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
-                // shuriken.SendMethodNetworked(nameof(Shuriken.OnGameEnd), SyncTarget.All);
-                SendCustomNetworkEvent(NetworkEventTarget.All, nameof(shuriken.OnGameEnd));
+                child.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(Shuriken.OnGameEnd));
             }
         }
-
         ChangeLevel(Level.LOBBY);
 
         // Send an event to each player collider
-        foreach (Transform child in playerCollidersParent.transform) {
-            if (child.gameObject.activeSelf && child.gameObject.GetComponent<PlayerCollider>() != null) {
-                PlayerCollider playerCollider = child.gameObject.GetComponent<PlayerCollider>();
-                // playerCollider.SendMethodNetworked(nameof(PlayerCollider.OnGameEnd), SyncTarget.All, winnerNumber, winnerName);
-                SendCustomNetworkEvent(NetworkEventTarget.All, nameof(playerCollider.OnGameEnd), winnerNumber, winnerName);
+        // foreach (Transform child in playerCollidersParent.transform) {
+        //     if (child.gameObject.activeSelf && child.gameObject.GetComponent<PlayerCollider>() != null) {
+        //         PlayerCollider playerCollider = child.gameObject.GetComponent<PlayerCollider>();
+        //         // playerCollider.SendMethodNetworked(nameof(PlayerCollider.OnGameEnd), SyncTarget.All, winnerNumber, winnerName);
+        //         SendCustomNetworkEvent(NetworkEventTarget.All, nameof(playerCollider.OnGameEnd), winnerNumber, winnerName);
+        //     }
+        // }
+        foreach (PlayerCollider child in PlayerColliders())
+        {
+            if (child.gameObject.activeSelf)
+            {
+                child.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(PlayerCollider.OnGameEnd), winnerNumber, winnerName);
             }
         }
         nextRoundTime = 0;
     }
 
-    private void StartNextRound() {
+    private void StartNextRound()
+    {
         nextRoundTime = 0;
         fightingStartTime = (Time.time * 1000) + FIGHTING_DELAY;
         ChangeLevel(LevelManager.GetRandomLevel(GetCurrentLevel()));
         // Send an event to each shuriken
-        foreach (Transform child in shurikensParent.transform) {
-            if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null)
+        // foreach (Transform child in shurikensParent.transform) {
+        //     if (child.gameObject.activeSelf && child.gameObject.GetComponent<Shuriken>() != null)
+        //     {
+        //         Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
+        //         // shuriken.SendMethodNetworked(nameof(Shuriken.OnRoundStart), SyncTarget.All);
+        //         SendCustomNetworkEvent(NetworkEventTarget.All, nameof(shuriken.OnRoundStart));
+        //     }
+        // }
+        foreach (Shuriken child in Shurikens())
+        {
+            if (child.gameObject.activeSelf)
             {
-                Shuriken shuriken = child.gameObject.GetComponent<Shuriken>();
-                // shuriken.SendMethodNetworked(nameof(Shuriken.OnRoundStart), SyncTarget.All);
-                SendCustomNetworkEvent(NetworkEventTarget.All, nameof(shuriken.OnRoundStart));
+                child.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(Shuriken.OnRoundStart));
             }
         }
 
         // Send an event to each player collider
-        foreach (Transform child in playerCollidersParent.transform) {
-            if (child.gameObject.activeSelf && child.gameObject.GetComponent<PlayerCollider>() != null) {
-                PlayerCollider playerCollider = child.gameObject.GetComponent<PlayerCollider>();
+        // foreach (Transform child in playerCollidersParent.transform)
+        // {
+        //     if (child.gameObject.activeSelf && child.gameObject.GetComponent<PlayerCollider>() != null)
+        //     {
+        //         PlayerCollider playerCollider = child.gameObject.GetComponent<PlayerCollider>();
+        //         Log("Sending start round for player collider " + child.gameObject.name);
+        //         // playerCollider.SendMethodNetworked(nameof(PlayerCollider.OnRoundStart), SyncTarget.All, GetCurrentLevelInt());
+        //         SendCustomNetworkEvent(NetworkEventTarget.All, nameof(playerCollider.OnRoundStart), GetCurrentLevelInt());
+        //     }
+        // }
+
+        foreach (PlayerCollider child in PlayerColliders())
+        {
+            if (child.gameObject.activeSelf)
+            {
                 Log("Sending start round for player collider " + child.gameObject.name);
-                // playerCollider.SendMethodNetworked(nameof(PlayerCollider.OnRoundStart), SyncTarget.All, GetCurrentLevelInt());
-                SendCustomNetworkEvent(NetworkEventTarget.All, nameof(playerCollider.OnRoundStart), GetCurrentLevelInt());
+                child.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(PlayerCollider.OnRoundStart), GetCurrentLevelInt());
             }
         }
     }

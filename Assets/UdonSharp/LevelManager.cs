@@ -85,19 +85,19 @@ public class LevelManager : UdonSharpBehaviour {
         GetBackgroundMusic(loadedLevel).Play();
     }
 
-    public Vector3 GetSpawnPosition(Level level, int playerNumber) {
+    public Vector3 GetSpawnPosition(Level level, int playerSlot) {
         Transform spawnMarkerParent = GetLevelObject(level).transform.Find("Spawn Markers");
         if (spawnMarkerParent == null) {
             LogError("Spawn markers not found for level: " + level);
             return Vector3.zero;
         }
         int spawnIndex = 0;
-        if (playerNumber != -1) {
-            spawnIndex = (playerNumber - 1) % spawnMarkerParent.childCount;
+        if (playerSlot >= 0) {
+            spawnIndex = playerSlot % spawnMarkerParent.childCount;
         } else {
-            LogError("Player number is -1 while trying to get spawn position");
+            LogError("Player slot is not valid while trying to get spawn position: " + playerSlot);
         }
-        Log("Player " + playerNumber + " spawning at index " + spawnIndex + " out of " + spawnMarkerParent.childCount + " for level " + level);
+        Log("Player " + playerSlot + " spawning at index " + spawnIndex + " out of " + spawnMarkerParent.childCount + " for level " + level);
         Transform spawnMarker = spawnMarkerParent.GetChild(spawnIndex);
         return spawnMarker.position;
     }
