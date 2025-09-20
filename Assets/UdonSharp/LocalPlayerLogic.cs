@@ -89,7 +89,7 @@ public class LocalPlayerLogic : UdonSharpBehaviour
         );
     }
 
-    public void ShowHitUI(int playerNumber, string senderName, string verb)
+    public void ShowHitUI(int playerSlot, string senderName, string verb)
     {
         int numRemaining = GameLogic.Get().GetAlivePlayerCount() - 1;
         if (numRemaining <= 0)
@@ -111,7 +111,7 @@ public class LocalPlayerLogic : UdonSharpBehaviour
             remaining,
             null,
             true,
-            Shared.Colors()[(playerNumber - 1) % Shared.Colors().Length],
+            Shared.Colors()[playerSlot % Shared.Colors().Length],
             1500);
     }
 
@@ -137,7 +137,7 @@ public class LocalPlayerLogic : UdonSharpBehaviour
             remaining,
             null,
             true,
-            Shared.Colors()[(playerSlot - 1) % Shared.Colors().Length],
+            Shared.Colors()[playerSlot % Shared.Colors().Length],
             1300);
     }
 
@@ -146,9 +146,9 @@ public class LocalPlayerLogic : UdonSharpBehaviour
         UIManager.Get().ShowScoreUI(GameLogic.Get().GetPlayerScores(), playerNames, 3000);
     }
 
-    public void ShowGameOverUI(int winnerNumber, string winnerName)
+    public void ShowGameOverUI(int winnerSlot, string winnerName)
     {
-        bool won = Networking.LocalPlayer.playerId == winnerNumber;
+        bool won = Networking.LocalPlayer.playerId == winnerSlot;
         string[] losingMessages = {
             "It wasn't even close...",
             "Better luck next time",
@@ -166,7 +166,7 @@ public class LocalPlayerLogic : UdonSharpBehaviour
             message,
             null,
             true,
-            Shared.Colors()[(winnerNumber - 1) % Shared.Colors().Length],
+            Shared.Colors()[(winnerSlot - 1) % Shared.Colors().Length],
             5000);
     }
 

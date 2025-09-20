@@ -11,7 +11,7 @@ public enum Level
 }
 
 /// <summary>
-/// Local UdonSharpBehaviour for switching between levels/terrains
+/// Client-side local UdonSharpBehaviour for switching between levels/terrains
 /// </summary>
 [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class LevelManager : UdonSharpBehaviour

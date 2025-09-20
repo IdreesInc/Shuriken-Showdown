@@ -9,6 +9,7 @@ using VRC.SDK3.UdonNetworkCalling;
 [UdonBehaviourSyncMode(BehaviourSyncMode.Continuous)]
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(TrailRenderer))]
+[RequireComponent(typeof(Renderer))]
 public class Shuriken : UdonSharpBehaviour
 {
 
@@ -69,17 +70,10 @@ public class Shuriken : UdonSharpBehaviour
 
     /** Udon Overrides **/
 
-    void Start()
-    {
-        Log("Shuriken has been spawned.");
-        UpdateColor();
-    }
-
     public override void OnDeserialization()
     {
         // Log("Deserializing shuriken with owner id " + playerId);
         ApplyPowerUpEffects();
-        UpdateColor();
     }
 
     void Update()
@@ -363,6 +357,11 @@ public class Shuriken : UdonSharpBehaviour
             return;
         }
         AddPowerUp(type);
+    }
+
+    public void OnPlayerSlotAssigned()
+    {
+        UpdateColor();
     }
 
     [NetworkCallable]

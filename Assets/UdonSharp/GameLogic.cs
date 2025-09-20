@@ -22,7 +22,7 @@ public class GameLogic : UdonSharpBehaviour
 
     public GameObject playerObjectsParent;
 
-    public VRC.SDK3.Components.VRCObjectPool powerUpPool;
+    public VRCObjectPool powerUpPool;
     // public GameObject shurikensParent;
     // public GameObject playerCollidersParent;
 
@@ -98,17 +98,6 @@ public class GameLogic : UdonSharpBehaviour
 
     /** Udon Overrides **/
 
-    void Start()
-    {
-        Log("GameLogic initializing...");
-        if (!Networking.IsOwner(gameObject))
-        {
-            Log("Not the owner, skipping rest of initialization");
-            return;
-        }
-        OnDeserialization();
-    }
-
     public override void OnPlayerJoined(VRCPlayerApi player)
     {
         Log("Player joined: " + player.displayName);
@@ -142,8 +131,8 @@ public class GameLogic : UdonSharpBehaviour
         }
 
 
-        bool success = AddPlayer(player.playerId);
-        if (!success)
+        int slot = AddPlayer(player);
+        if (slot == -1)
         {
             LogError("Max players reached, not adding player " + player.playerId);
             return;
@@ -190,14 +179,6 @@ public class GameLogic : UdonSharpBehaviour
             nextPowerUpTime = 0;
             SpawnPowerUp();
         }
-    }
-
-    public override void OnDeserialization()
-    {
-        // Called on every player's client besides the owner by default
-        // Owner must manually call this
-        Log("Deserializing GameLogic");
-        LevelManager.Get().TransitionToLevel(GetCurrentLevel());
     }
 
     /** Event Handlers **/
@@ -296,12 +277,6 @@ public class GameLogic : UdonSharpBehaviour
     {
         Log("Setting current level to " + level);
         _currentLevel = (int)level;
-        RequestSerialization();
-        if (Networking.IsOwner(gameObject))
-        {
-            // Since the owner doesn't get OnDeserialization, we need to manually call it
-            OnDeserialization();
-        }
     }
 
     /** Custom methods **/
@@ -369,19 +344,31 @@ public class GameLogic : UdonSharpBehaviour
         return count;
     }
 
-    private bool AddPlayer(int playerId)
+    private int AddPlayer(VRCPlayerApi player)
     {
+        int playerId = player.playerId;
         int availablePlayerSlot = Array.IndexOf(playerSlots, 0);
         if (availablePlayerSlot == -1)
         {
-            return false;
+            return -1;
         }
         playerSlots[availablePlayerSlot] = playerId;
         playerAlive[availablePlayerSlot] = true;
         playerScores[availablePlayerSlot] = 0;
         Log("Added player " + playerId + " to slot " + availablePlayerSlot);
+        // Update the shuriken for the player
+        GameObject[] playerObjects = player.GetPlayerObjects();
+        foreach (GameObject playerObject in playerObjects)
+        {
+            Shuriken shuriken = playerObject.GetComponent<Shuriken>();
+            if (shuriken != null)
+            {
+                shuriken.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(Shuriken.OnPlayerSlotAssigned));
+                break;
+            }
+        }
         RequestSerialization();
-        return true;
+        return availablePlayerSlot;
     }
 
     private Shuriken[] Shurikens()

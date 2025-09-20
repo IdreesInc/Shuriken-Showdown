@@ -70,13 +70,12 @@ public class PlayerCollider : UdonSharpBehaviour
     [NetworkCallable]
     public void OnRoundStart(int level)
     {
-        // isAlive = true;
-        // hasBeenHitLocally = false;
         if (!Networking.IsOwner(gameObject))
         {
             return;
         }
-        Log("Next round, resetting player collider");
+        Log("New round starting on level " + level);
+        LevelManager.Get().TransitionToLevel((Level)level);
         GoToLevelSpawn((Level)level);
     }
 
