@@ -197,11 +197,13 @@ public class GameLogic : UdonSharpBehaviour
         {
             child.OnGameLogicChange();
         }
+        // Update the local scoreboard UI
+        LocalUIManager.Get().TriggerScoreboardUpdate();
     }
 
     /** Event Handlers **/
 
-    /// <summary>`
+    /// <summary>
     /// Triggered over the network when the game is started
     /// </summary>
     [NetworkCallable]

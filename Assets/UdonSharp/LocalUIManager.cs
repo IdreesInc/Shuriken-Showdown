@@ -79,6 +79,11 @@ public class LocalUIManager : UdonSharpBehaviour
         UpdateUI();
     }
 
+    public void TriggerScoreboardUpdate()
+    {
+        scoreBoard.UpdateScores();
+    }
+
     public void ShowScoreUI(float duration = 2000)
     {
         timeToShowUI = Time.time * 1000 + UI_FADE_TIME;
