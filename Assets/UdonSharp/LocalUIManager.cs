@@ -15,7 +15,7 @@ enum UIType
 /// Local UdonSharpBehaviour for managing the player's UI
 /// </summary>
 [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
-public class UIManager : UdonSharpBehaviour
+public class LocalUIManager : UdonSharpBehaviour
 {
 
     public GameObject messageUI;
@@ -46,11 +46,11 @@ public class UIManager : UdonSharpBehaviour
     }
 
     /// <summary>
-    /// Get the UIManager in the scene (there should only be one)
+    /// Get the LocalUIManager in the scene (there should only be one)
     /// </summary>
-    public static UIManager Get()
+    public static LocalUIManager Get()
     {
-        return GameObject.Find("UI Manager").GetComponent<UIManager>();
+        return GameObject.Find("Local UI Manager").GetComponent<LocalUIManager>();
     }
 
     /** Udon Overrides **/

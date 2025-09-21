@@ -61,7 +61,7 @@ public class LocalPlayerLogic : UdonSharpBehaviour
         {
             currentlyEquipped = currentlyEquipped.Substring(0, currentlyEquipped.Length - 2);
         }
-        UIManager.Get().ShowMessageUI(
+        LocalUIManager.Get().ShowMessageUI(
             null,
             PowerUp.GetPowerUpName(powerUpType),
             PowerUp.GetPowerUpSubtitle(powerUpType),
@@ -89,7 +89,7 @@ public class LocalPlayerLogic : UdonSharpBehaviour
         {
             remaining = numRemaining + " " + remaining;
         }
-        UIManager.Get().ShowMessageUI((verb + " by").ToUpper(),
+        LocalUIManager.Get().ShowMessageUI((verb + " by").ToUpper(),
             senderName,
             remaining,
             null,
@@ -115,7 +115,7 @@ public class LocalPlayerLogic : UdonSharpBehaviour
         {
             remaining = numRemaining + " " + remaining;
         }
-        UIManager.Get().ShowMessageUI("you sliced".ToUpper(),
+        LocalUIManager.Get().ShowMessageUI("you sliced".ToUpper(),
             playerName,
             remaining,
             null,
@@ -127,7 +127,7 @@ public class LocalPlayerLogic : UdonSharpBehaviour
     public void ShowScoreUI()
     {
         int[] playerScores = GameLogic.Get().GetPlayerScores();
-        UIManager.Get().ShowScoreUI(playerScores, playerNames, 3000);
+        LocalUIManager.Get().ShowScoreUI(playerScores, playerNames, 3000);
     }
 
     public void ShowGameOverUI(int winnerSlot, string winnerName)
@@ -145,7 +145,7 @@ public class LocalPlayerLogic : UdonSharpBehaviour
             "Easy peasy",
         };
         string message = won ? winningMessages[Random.Range(0, winningMessages.Length)] : losingMessages[Random.Range(0, losingMessages.Length)];
-        UIManager.Get().ShowMessageUI("WINNER",
+        LocalUIManager.Get().ShowMessageUI("WINNER",
             winnerName,
             message,
             null,
