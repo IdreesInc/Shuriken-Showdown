@@ -16,15 +16,9 @@ using VRC.SDK3.Components;
 [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
 public class GameLogic : UdonSharpBehaviour
 {
-
-    // public VRC.SDK3.Components.VRCObjectPool shurikenPool;
-    // public VRC.SDK3.Components.VRCObjectPool playerColliderPool;
-
     public GameObject playerObjectsParent;
 
     public VRCObjectPool powerUpPool;
-    // public GameObject shurikensParent;
-    // public GameObject playerCollidersParent;
 
     /// <summary>
     /// Max number of players that can participate in the game at once
@@ -509,14 +503,6 @@ public class GameLogic : UdonSharpBehaviour
         // Commit the changes
         CommitChanges();
 
-        // Send an event to each shuriken
-        foreach (Shuriken child in Shurikens())
-        {
-            if (child.gameObject.activeSelf)
-            {
-                child.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(Shuriken.OnRoundStart));
-            }
-        }
         // Send an event to each player collider
         foreach (PlayerCollider child in PlayerColliders())
         {

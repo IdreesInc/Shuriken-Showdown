@@ -349,15 +349,6 @@ public class Shuriken : UdonSharpBehaviour
     }
 
     [NetworkCallable]
-    public void OnRoundStart()
-    {
-        if (!Networking.IsOwner(gameObject))
-        {
-            return;
-        }
-    }
-
-    [NetworkCallable]
     public void OnFightingStart()
     {
         if (!Networking.IsOwner(gameObject))
