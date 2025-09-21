@@ -306,26 +306,18 @@ public class Shuriken : UdonSharpBehaviour
             VRCPlayerApi opponentPlayer = Networking.GetOwner(collider.gameObject);
             if (!Networking.IsOwner(collider.gameObject))
             {
-                Log(Player.playerId + "'s shuriken has hit " + opponentPlayer.displayName);
+                Log("My shuriken has hit " + opponentPlayer.displayName);
                 if (GameLogic.Get().IsPlayerAlive(opponentPlayer.playerId))
                 {
                     // Notify the server
                     int hitPlayerId = opponentPlayer.playerId;
-                    GameLogic.Get().SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(GameLogic.OnHit), hitPlayerId);
-
-                    // Notify the player
-                    // int playerSlot = GameLogic.Get().GetPlayerSlot(Player.playerId);
-                    // playerCollider.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(playerCollider.OnHit), GetPlayerName(), playerSlot);
+                    GameLogic.Get().SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(GameLogic.OnPlayerHit), hitPlayerId);
 
                     // Play hit sound
                     if (audioSource != null)
                     {
                         audioSource.Play();
                     }
-
-                    // Show UI
-                    LocalPlayerLogic playerLogic = LocalPlayerLogic.Get();
-                    playerLogic.ShowKillUI(GameLogic.Get().GetPlayerSlot(opponentPlayer.playerId), opponentPlayer.displayName);
                 }
                 else
                 {

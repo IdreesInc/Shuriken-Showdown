@@ -44,9 +44,22 @@ public class GameLogic : UdonSharpBehaviour
     /// The delay between the start of a round and the start of the fighting
     /// </summary>
     private const float FIGHTING_DELAY = 3000;
+    /// <summary>
+    /// The delay between the last kill and the end of the round (gives time for the last kill to register on players' UIs)
+    /// </summary>
+    private const float END_ROUND_DELAY = 500;
+
+    /// <summary>
+    /// The delay between the end of a round and the start of the next round
+    /// </summary>
+    private const float NEXT_ROUND_DELAY = 3000;
 
     /** Synced Variables **/
 
+    /// <summary>
+    /// The time at which the current round will end
+    /// </summary>
+    [UdonSynced] private float roundEndTime = 0;
     /// <summary>
     /// The time at which the next round will start
     /// </summary>
@@ -145,8 +158,10 @@ public class GameLogic : UdonSharpBehaviour
         {
             return;
         }
-        if (GetAlivePlayerCount() <= 1 && GetPlayerCount() > 1)
+        // Check for timed events
+        if (roundEndTime != 0 && Time.time * 1000 >= roundEndTime)
         {
+            roundEndTime = 0;
             int winnerSlot = GetWinner();
             if (winnerSlot == -1)
             {
@@ -224,7 +239,7 @@ public class GameLogic : UdonSharpBehaviour
     }
 
     [NetworkCallable]
-    public void OnHit(int hitPlayerId)
+    public void OnPlayerHit(int hitPlayerId)
     {
         if (!Networking.IsOwner(gameObject))
         {
@@ -236,7 +251,7 @@ public class GameLogic : UdonSharpBehaviour
         int hitPlayerSlot = GetPlayerSlot(hitPlayerId);
         int throwerSlot = GetPlayerSlot(thrower.playerId);
 
-        if (hitPlayerSlot <= 0)
+        if (hitPlayerSlot < 0)
         {
             LogError("Hit player with id " + hitPlayerId + " not found in any slot");
             return;
@@ -246,7 +261,8 @@ public class GameLogic : UdonSharpBehaviour
             LogError("Hit player in slot " + hitPlayerSlot + " is already dead");
             return;
         }
-        if (throwerSlot < 0) {
+        if (throwerSlot < 0)
+        {
             LogError("Thrower with id " + thrower.playerId + " not found in any slot");
             return;
         }
@@ -259,16 +275,33 @@ public class GameLogic : UdonSharpBehaviour
         // Commit the changes
         CommitChanges();
 
-        // Notify the hit player that they have been hit
+
+        // Notify relevant parties
         PlayerCollider[] playerColliders = PlayerColliders();
         foreach (PlayerCollider child in playerColliders)
         {
             if (Networking.GetOwner(child.gameObject).playerId == hitPlayerId)
             {
-                child.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(PlayerCollider.OnHit), thrower.displayName, throwerSlot);
+                // Notify the hit player that they have been hit
+                child.SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(PlayerCollider.OnHit), thrower.displayName, throwerSlot);
+                break;
+            }
+            else if (Networking.GetOwner(child.gameObject).playerId == thrower.playerId)
+            {
+                // Notify the thrower of the kill
+                child.SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(PlayerCollider.OnKill), VRCPlayerApi.GetPlayerById(hitPlayerId).displayName, hitPlayerSlot);
                 break;
             }
         }
+
+        // Check for end of round/game
+        if (GetAlivePlayerCount() <= 1 && GetPlayerCount() > 1)
+        {
+            // Notify players that the round is ending after a short delay
+            roundEndTime = (Time.time * 1000) + END_ROUND_DELAY;
+        }
+
+        Log("Player hit processing complete");
     }
 
     /** Getters/setters for synced variables **/
@@ -411,7 +444,8 @@ public class GameLogic : UdonSharpBehaviour
 
     private void EndRound()
     {
-        nextRoundTime = (Time.time + 3) * 1000;
+        Log("Ending round");
+        nextRoundTime = Time.time + NEXT_ROUND_DELAY;
 
         // Reset alive statuses
         for (int i = 0; i < playerAlive.Length; i++)

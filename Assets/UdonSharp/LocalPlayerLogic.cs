@@ -17,7 +17,7 @@ public class LocalPlayerLogic : UdonSharpBehaviour
     /// <summary>
     /// Player names indexed by player number (not player ID)
     /// </summary>
-    private readonly string[] playerNames = new string[Shared.MaxPlayers() + 1];
+    private readonly string[] playerNames = new string[Shared.MaxPlayers()];
 
     private void Log(string message)
     {
@@ -126,7 +126,8 @@ public class LocalPlayerLogic : UdonSharpBehaviour
 
     public void ShowScoreUI()
     {
-        UIManager.Get().ShowScoreUI(GameLogic.Get().GetPlayerScores(), playerNames, 3000);
+        int[] playerScores = GameLogic.Get().GetPlayerScores();
+        UIManager.Get().ShowScoreUI(playerScores, playerNames, 3000);
     }
 
     public void ShowGameOverUI(int winnerSlot, string winnerName)

@@ -81,6 +81,9 @@ public class PlayerCollider : UdonSharpBehaviour
         GoToLevelSpawn(Level.LOBBY);
     }
 
+    /// <summary>
+    /// Called when the player is hit by a shuriken
+    /// </summary>
     [NetworkCallable]
     public void OnHit(string playerName, int playerSlot)
     {
@@ -97,6 +100,23 @@ public class PlayerCollider : UdonSharpBehaviour
             Vector3 deathPoint = LevelManager.Get().GetDeathPosition();
             Player.TeleportTo(deathPoint, Player.GetRotation());
         }
+    }
+
+    /// <summary>
+    /// Called when the player successfully hits another player
+    /// <param name="playerName">The name of the player who was hit</param>
+    /// <param name="playerSlot">The slot of the player who was hit</param
+    /// </summary>
+    [NetworkCallable]
+    public void OnKill(string playerName, int playerSlot)
+    {
+        if (!Networking.IsOwner(gameObject))
+        {
+            return;
+        }
+        Log("Successfully hit " + playerName);
+        LocalPlayerLogic playerLogic = LocalPlayerLogic.Get();
+        playerLogic.ShowKillUI(playerSlot, playerName);
     }
 
     /** Custom Methods **/
