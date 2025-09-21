@@ -10572,7 +10572,7 @@ GameObject:
   - component: {fileID: 620753244}
   - component: {fileID: 620753243}
   m_Layer: 0
-  m_Name: UI Manager
+  m_Name: Local UI Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -36362,8 +36362,8 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1125052462}
-  - {fileID: 1801919686}
   - {fileID: 582250890}
+  - {fileID: 1801919686}
   - {fileID: 620753245}
   - {fileID: 3480278762663400089}
   - {fileID: 1069902877}
