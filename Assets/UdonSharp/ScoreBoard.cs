@@ -44,11 +44,34 @@ public class ScoreBoard : UdonSharpBehaviour
 
     /** Custom Methods **/
 
-    public void UpdateScores(int[] scores, string[] names)
+    public void UpdateScores()
     {
+        GameLogic gameLogic = GameLogic.Get();
+        int[] scores = gameLogic.GetPlayerScores();
+        int[] playerSlots = gameLogic.GetPlayerSlots();
+        string[] names = new string[playerSlots.Length];
+        for (int i = 0; i < playerSlots.Length; i++)
+        {
+            int slot = playerSlots[i];
+            if (slot > 0)
+            {
+                VRCPlayerApi player = VRCPlayerApi.GetPlayerById(slot);
+                if (player != null)
+                {
+                    names[i] = player.displayName;
+                }
+                else
+                {
+                    names[i] = "Player " + slot;
+                }
+            }
+            else
+            {
+                names[i] = "";
+            }
+        }
         for (int i = 0; i < scores.Length; i++)
         {
-            // Log("Updating score for player " + i + " to " + scores[i]);
             UpdateScore(i, names[i], scores[i]);
         }
     }

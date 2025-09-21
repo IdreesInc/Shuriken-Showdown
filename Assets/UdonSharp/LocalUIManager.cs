@@ -79,12 +79,12 @@ public class LocalUIManager : UdonSharpBehaviour
         UpdateUI();
     }
 
-    public void ShowScoreUI(int[] playerScores, string[] playerNames, float duration = 2000)
+    public void ShowScoreUI(float duration = 2000)
     {
         timeToShowUI = Time.time * 1000 + UI_FADE_TIME;
         timeToHideUI = timeToShowUI + duration + UI_FADE_TIME;
         visibleUI = UIType.SCORE_UI;
-        scoreBoard.UpdateScores(playerScores, playerNames);
+        scoreBoard.UpdateScores();
         UpdateUI();
     }
 

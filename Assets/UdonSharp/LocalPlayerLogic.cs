@@ -14,11 +14,6 @@ public class LocalPlayerLogic : UdonSharpBehaviour
     public GameObject vrcWorld;
     public GameObject playerCollidersParent;
 
-    /// <summary>
-    /// Player names indexed by player number (not player ID)
-    /// </summary>
-    private readonly string[] playerNames = new string[Shared.MaxPlayers()];
-
     private void Log(string message)
     {
         Debug.Log("[LocalPlayerLogic]: " + message);
@@ -126,8 +121,7 @@ public class LocalPlayerLogic : UdonSharpBehaviour
 
     public void ShowScoreUI()
     {
-        int[] playerScores = GameLogic.Get().GetPlayerScores();
-        LocalUIManager.Get().ShowScoreUI(playerScores, playerNames, 3000);
+        LocalUIManager.Get().ShowScoreUI(3000);
     }
 
     public void ShowGameOverUI(int winnerSlot, string winnerName)

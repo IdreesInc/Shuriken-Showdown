@@ -369,6 +369,11 @@ public class GameLogic : UdonSharpBehaviour
         return playerScores;
     }
 
+    public int[] GetPlayerSlots()
+    {
+        return playerSlots;
+    }
+
     private void CommitChanges()
     {
         // Commit the changes
