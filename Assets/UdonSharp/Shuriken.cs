@@ -222,32 +222,20 @@ public class Shuriken : UdonSharpBehaviour
         rotationOnThrow = transform.rotation;
     }
 
-    private void CheckForLocalExplosionCollision(Vector3 position, int level)
-    {
-        Vector3 playerPosition = Player.GetPosition();
-        float range = GetExplosionRange(level);
-        // Determine if the local player is within the explosion radius
-        if (Vector3.Distance(playerPosition, position) <= range)
-        {
-            Log("Local player has been hit by explosion");
-        }
-        else
-        {
-            Log("Distance: " + Vector3.Distance(playerPosition, position));
-        }
-    }
-
     private void OnCollisionEnter(Collision collision)
     {
-        if (hasBeenThrown && !hasFirstContact)
+        if (!inGame)
+        {
+            Log("Shuriken is disabled, ignoring collision");
+            return;
+        }
+
+        int explosionLevel = GetPowerUpLevel(3);
+
+        if (hasBeenThrown && !hasFirstContact && explosionLevel > 0)
         {
             // Create explosions locally
-            int explosionLevel = GetPowerUpLevel(3);
-            if (explosionLevel > 0)
-            {
-                Effects.Get().SpawnExplosion(collision.contacts[0].point, explosionLevel);
-                CheckForLocalExplosionCollision(collision.contacts[0].point, explosionLevel);
-            }
+            Effects.Get().SpawnExplosion(collision.contacts[0].point, explosionLevel);
         }
 
         if (!Networking.IsOwner(gameObject))
@@ -255,10 +243,11 @@ public class Shuriken : UdonSharpBehaviour
             Log("Not the owner, skipping collision");
             return;
         }
-        if (!inGame)
+
+        if (hasBeenThrown && !hasFirstContact && explosionLevel > 0)
         {
-            Log("Shuriken is disabled, ignoring collision");
-            return;
+            // Check for explosion hits
+            ExplodinatePlayers(collision.contacts[0].point, explosionLevel);
         }
 
         hasFirstContact = true;
@@ -295,25 +284,7 @@ public class Shuriken : UdonSharpBehaviour
             VRCPlayerApi opponentPlayer = Networking.GetOwner(collider.gameObject);
             if (!Networking.IsOwner(collider.gameObject))
             {
-                Log("My shuriken has hit " + opponentPlayer.displayName);
-                if (GameLogic.Get().IsPlayerAlive(opponentPlayer.playerId))
-                {
-                    // Notify the server
-                    int hitPlayerId = opponentPlayer.playerId;
-                    GameLogic.Get().SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(GameLogic.OnPlayerHit), hitPlayerId);
-
-                    // Play hit sound
-                    if (audioSource != null)
-                    {
-                        audioSource.Play();
-                    }
-                }
-                else
-                {
-                    Log("Player is already dead, ignoring");
-                }
-                // Return the shuriken to the owner
-                ReturnToPlayer();
+                HitOpponent(opponentPlayer);
             }
         }
         else
@@ -383,7 +354,7 @@ public class Shuriken : UdonSharpBehaviour
 
     public static float GetExplosionRange(int level)
     {
-        float[] EXPLOSION_RANGES = { 3.75f, 4.5f, 5.25f };
+        float[] EXPLOSION_RANGES = { 2f, 3.25f, 5f };
         return EXPLOSION_RANGES[Math.Min(level - 1, EXPLOSION_RANGES.Length - 1)];
     }
 
@@ -396,6 +367,47 @@ public class Shuriken : UdonSharpBehaviour
         GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
         hasBeenThrown = false;
         hasFirstContact = false;
+    }
+
+    private void HitOpponent(VRCPlayerApi opponent)
+    {
+        Log("My shuriken has hit " + opponent.displayName);
+        if (GameLogic.Get().IsPlayerAlive(opponent.playerId))
+        {
+            // Notify the server
+            int hitPlayerId = opponent.playerId;
+            GameLogic.Get().SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(GameLogic.OnPlayerHit), hitPlayerId);
+
+            // Play hit sound
+            if (audioSource != null)
+            {
+                audioSource.Play();
+            }
+        }
+        else
+        {
+            Log("Player is already dead, ignoring");
+        }
+        ReturnToPlayer();
+    }
+
+    private void ExplodinatePlayers(Vector3 position, int level)
+    {
+        float radius = GetExplosionRange(level);
+        // Create a bounding sphere to check for players within range
+        Collider[] collisions = Physics.OverlapSphere(position, radius / 2f);
+        foreach (Collider collision in collisions)
+        {
+            if (collision != null && collision.gameObject != null && collision.gameObject.GetComponent<PlayerCollider>() != null)
+            {
+                PlayerCollider collider = collision.gameObject.GetComponent<PlayerCollider>();
+                VRCPlayerApi opponentPlayer = Networking.GetOwner(collider.gameObject);
+                if (opponentPlayer != null && !Networking.IsOwner(collider.gameObject))
+                {
+                    HitOpponent(opponentPlayer);
+                }
+            }
+        }
     }
 
     private string GetPlayerName()

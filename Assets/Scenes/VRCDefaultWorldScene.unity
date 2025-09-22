@@ -32528,7 +32528,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1961405167}
   serializedVersion: 8
-  lengthInSec: 0.8
+  lengthInSec: 0.5
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -32603,7 +32603,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.8
+      scalar: 0.5
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -33540,6 +33540,15 @@ ParticleSystem:
           inWeight: 0
           outWeight: 0
         - serializedVersion: 3
+          time: 0.2769548
+          value: 0.73232025
+          inSlope: 1.1962762
+          outSlope: 1.1962762
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
           time: 1
           value: 1
           inSlope: 0
@@ -33870,7 +33879,7 @@ ParticleSystem:
         ctime6: 0
         ctime7: 0
         atime0: 0
-        atime1: 63094
+        atime1: 56540
         atime2: 63094
         atime3: 0
         atime4: 0
@@ -40921,6 +40930,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player Collider
       objectReference: {fileID: 0}
+    - target: {fileID: 6823772707654675457, guid: 69683da166448ae4d8642d5a0686266c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8883100365308875322, guid: 69683da166448ae4d8642d5a0686266c,
         type: 3}
       propertyPath: networkID
@@ -40982,19 +40996,18 @@ MonoBehaviour:
   useAssignedLayers: 0
   DynamicPrefabs: []
   DynamicMaterials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
-  - {fileID: 2100000, guid: 653b0fff082caf549a07767b0161c779, type: 2}
   - {fileID: 2100000, guid: 3b5aa7069686a0f448973d864d715001, type: 2}
+  - {fileID: 2100000, guid: 653b0fff082caf549a07767b0161c779, type: 2}
   - {fileID: 2100000, guid: 35c4bacfbc0048a44a996277d0b4136f, type: 2}
-  - {fileID: 2100000, guid: 3ee1b7b636b521b4494794f33c347d11, type: 2}
-  - {fileID: 2100000, guid: f0ba27caacbde064a9c469114ca1f9f8, type: 2}
-  - {fileID: 2100000, guid: 5202219d2eb7d344d82ea065a7cf23ea, type: 2}
-  - {fileID: 2100000, guid: 30a9b0f818294c4489f3ed6cffae50fe, type: 2}
-  - {fileID: 2100000, guid: 3c88d4c4e5ad5ad45a3733155943ddd3, type: 2}
   - {fileID: 2100000, guid: b1e4e0376e366ae40800c7985e201025, type: 2}
+  - {fileID: 2100000, guid: 30a9b0f818294c4489f3ed6cffae50fe, type: 2}
   - {fileID: 2100000, guid: 70b905d6110476240b67484a4e938a5a, type: 2}
+  - {fileID: 2100000, guid: 3c88d4c4e5ad5ad45a3733155943ddd3, type: 2}
   - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
   - {fileID: 2100000, guid: 6edf1e8abaaa74941af7f2c89366d384, type: 2}
+  - {fileID: 2100000, guid: 3ee1b7b636b521b4494794f33c347d11, type: 2}
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 15303, guid: 0000000000000000f000000000000000, type: 0}
   LightMapsNear: []
   LightMapsFar: []
   LightMode: 0
