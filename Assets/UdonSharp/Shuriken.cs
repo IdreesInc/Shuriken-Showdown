@@ -67,12 +67,6 @@ public class Shuriken : UdonSharpBehaviour
 
     /** Udon Overrides **/
 
-    public override void OnDeserialization()
-    {
-        // Log("Deserializing shuriken with owner id " + playerId);
-        ApplyPowerUpEffects();
-    }
-
     void Update()
     {
         // Update the trail graphics (applies to all clients)
@@ -309,6 +303,12 @@ public class Shuriken : UdonSharpBehaviour
     }
 
     [NetworkCallable]
+    public void OnRoundStart()
+    {
+        ApplyPowerUpEffects();
+    }
+
+    [NetworkCallable]
     public void OnFightingStart()
     {
         if (!Networking.IsOwner(gameObject))
@@ -369,14 +369,14 @@ public class Shuriken : UdonSharpBehaviour
         hasFirstContact = false;
     }
 
-    private void HitOpponent(VRCPlayerApi opponent)
+    private void HitOpponent(VRCPlayerApi opponent, string verb = "sliced")
     {
-        Log("My shuriken has hit " + opponent.displayName);
+        Log("I have " + verb + " " + opponent.displayName);
         if (GameLogic.Get().IsPlayerAlive(opponent.playerId))
         {
             // Notify the server
             int hitPlayerId = opponent.playerId;
-            GameLogic.Get().SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(GameLogic.OnPlayerHit), hitPlayerId);
+            GameLogic.Get().SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(GameLogic.OnPlayerHit), hitPlayerId, verb);
 
             // Play hit sound
             if (audioSource != null)
@@ -404,7 +404,7 @@ public class Shuriken : UdonSharpBehaviour
                 VRCPlayerApi opponentPlayer = Networking.GetOwner(collider.gameObject);
                 if (opponentPlayer != null && !Networking.IsOwner(collider.gameObject))
                 {
-                    HitOpponent(opponentPlayer);
+                    HitOpponent(opponentPlayer, "exploded");
                 }
             }
         }

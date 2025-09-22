@@ -93,7 +93,7 @@ public class LocalPlayerLogic : UdonSharpBehaviour
             1500);
     }
 
-    public void ShowKillUI(int playerSlot, string playerName)
+    public void ShowKillUI(int playerSlot, string playerName, string verb)
     {
         int numRemaining = GameLogic.Get().GetAlivePlayerCount  () - 1;
         if (numRemaining <= 0)
@@ -110,7 +110,7 @@ public class LocalPlayerLogic : UdonSharpBehaviour
         {
             remaining = numRemaining + " " + remaining;
         }
-        LocalUIManager.Get().ShowMessageUI("you sliced".ToUpper(),
+        LocalUIManager.Get().ShowMessageUI(("you " + verb).ToUpper(),
             playerName,
             remaining,
             null,

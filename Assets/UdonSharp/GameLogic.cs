@@ -235,14 +235,14 @@ public class GameLogic : UdonSharpBehaviour
     }
 
     [NetworkCallable]
-    public void OnPlayerHit(int hitPlayerId)
+    public void OnPlayerHit(int hitPlayerId, string verb)
     {
         if (!Networking.IsOwner(gameObject))
         {
             return;
         }
         VRCPlayerApi thrower = NetworkCalling.CallingPlayer;
-        Log("Player " + thrower.displayName + " hit player " + VRCPlayerApi.GetPlayerById(hitPlayerId).displayName);
+        Log("Player " + thrower.displayName + " " + verb + " player " + VRCPlayerApi.GetPlayerById(hitPlayerId).displayName);
 
         int hitPlayerSlot = GetPlayerSlot(hitPlayerId);
         int throwerSlot = GetPlayerSlot(thrower.playerId);
@@ -271,21 +271,22 @@ public class GameLogic : UdonSharpBehaviour
         // Commit the changes
         CommitChanges();
 
-
-        // Notify relevant parties
         PlayerCollider[] playerColliders = PlayerColliders();
+        // Notify the hit player that they have been hit
         foreach (PlayerCollider child in playerColliders)
         {
             if (Networking.GetOwner(child.gameObject).playerId == hitPlayerId)
             {
-                // Notify the hit player that they have been hit
-                child.SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(PlayerCollider.OnHit), thrower.displayName, throwerSlot);
+                child.SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(PlayerCollider.OnHit), thrower.displayName, throwerSlot, verb);
                 break;
             }
-            else if (Networking.GetOwner(child.gameObject).playerId == thrower.playerId)
+        }
+        // Notify the thrower of the kill
+        foreach (PlayerCollider child in playerColliders)
+        {
+            if (Networking.GetOwner(child.gameObject).playerId == thrower.playerId)
             {
-                // Notify the thrower of the kill
-                child.SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(PlayerCollider.OnKill), VRCPlayerApi.GetPlayerById(hitPlayerId).displayName, hitPlayerSlot);
+                child.SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(PlayerCollider.OnKill), VRCPlayerApi.GetPlayerById(hitPlayerId).displayName, hitPlayerSlot, verb);
                 break;
             }
         }
@@ -510,6 +511,15 @@ public class GameLogic : UdonSharpBehaviour
         // Commit the changes
         CommitChanges();
 
+        // Send an event to each shuriken
+        foreach (Shuriken child in Shurikens())
+        {
+            if (child.gameObject.activeSelf)
+            {
+                // Intentionally send to all shurikens so they can apply power-ups
+                child.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(Shuriken.OnRoundStart));
+            }
+        }
         // Send an event to each player collider
         foreach (PlayerCollider child in PlayerColliders())
         {

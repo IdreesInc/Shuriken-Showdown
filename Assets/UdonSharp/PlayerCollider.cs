@@ -83,18 +83,21 @@ public class PlayerCollider : UdonSharpBehaviour
 
     /// <summary>
     /// Called when the player is hit by a shuriken
+    /// <param name="playerName">The name of the player who hit this player</param>
+    /// <param name="playerSlot">The slot of the player who hit this player</param>
+    /// <param name="verb">The verb to use in the hit message</param>
     /// </summary>
     [NetworkCallable]
-    public void OnHit(string playerName, int playerSlot)
+    public void OnHit(string playerName, int playerSlot, string verb)
     {
         if (!Networking.IsOwner(gameObject))
         {
             Log("Not the owner, skipping collision");
             return;
         }
-        Log("Player hit by " + playerName);
+        Log("Player " + verb + " by " + playerName);
         LocalPlayerLogic playerLogic = LocalPlayerLogic.Get();
-        playerLogic.ShowHitUI(playerSlot, playerName, "sliced");
+        playerLogic.ShowHitUI(playerSlot, playerName, verb);
         if (GameLogic.Get().GetAlivePlayerCount() > 1)
         {
             Vector3 deathPoint = LevelManager.Get().GetDeathPosition();
@@ -105,18 +108,19 @@ public class PlayerCollider : UdonSharpBehaviour
     /// <summary>
     /// Called when the player successfully hits another player
     /// <param name="playerName">The name of the player who was hit</param>
-    /// <param name="playerSlot">The slot of the player who was hit</param
+    /// <param name="playerSlot">The slot of the player who was hit</param>
+    /// <param name="verb">The verb to use in the kill message</param>
     /// </summary>
     [NetworkCallable]
-    public void OnKill(string playerName, int playerSlot)
+    public void OnKill(string playerName, int playerSlot, string verb)
     {
         if (!Networking.IsOwner(gameObject))
         {
             return;
         }
-        Log("Successfully hit " + playerName);
+        Log("Successfully " + verb + " " + playerName);
         LocalPlayerLogic playerLogic = LocalPlayerLogic.Get();
-        playerLogic.ShowKillUI(playerSlot, playerName);
+        playerLogic.ShowKillUI(playerSlot, playerName, verb);
     }
 
     /** Custom Methods **/
