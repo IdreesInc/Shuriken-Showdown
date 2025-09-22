@@ -19,19 +19,13 @@ public class Effects : UdonSharpBehaviour
     {
         GameObject clone = Instantiate(explosion);
         clone.transform.position = position;
+        // Set start size based on level
+        float startSize = Shuriken.GetExplosionRange(level);
+        ParticleSystem.MainModule main = clone.GetComponent<ParticleSystem>().main;
+        main.startSize = startSize;
         foreach (ParticleSystem ps in clone.GetComponentsInChildren<ParticleSystem>())
         {
             ps.Play();
-        }
-
-        if (level > 0)
-        {
-            int numOfClones = 3 * level;
-            float randomRange = 0.5f * level;
-            for (int i = 0; i < numOfClones; i++)
-            {
-                SpawnExplosion(position + new Vector3(UnityEngine.Random.Range(-randomRange, randomRange), UnityEngine.Random.Range(-randomRange, randomRange), UnityEngine.Random.Range(-randomRange, randomRange)));
-            }
         }
     }
 }

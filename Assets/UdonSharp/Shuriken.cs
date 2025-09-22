@@ -189,7 +189,8 @@ public class Shuriken : UdonSharpBehaviour
         hasFirstContact = false;
         // Disable collision with anything
         GetComponent<Rigidbody>().detectCollisions = false;
-        if (!Networking.IsOwner(gameObject)) {
+        if (!Networking.IsOwner(gameObject))
+        {
             Log("Shuriken owned by " + Networking.GetOwner(gameObject).playerId + " has been picked up by " + Networking.LocalPlayer.playerId);
             ReturnToPlayer();
         }
@@ -224,19 +225,7 @@ public class Shuriken : UdonSharpBehaviour
     private void CheckForLocalExplosionCollision(Vector3 position, int level)
     {
         Vector3 playerPosition = Player.GetPosition();
-        float range = 0;
-        if (level == 1)
-        {
-            range = 3.75f;
-        }
-        else if (level == 2)
-        {
-            range = 4.5f;
-        }
-        else if (level >= 3)
-        {
-            range = 5.25f;
-        }
+        float range = GetExplosionRange(level);
         // Determine if the local player is within the explosion radius
         if (Vector3.Distance(playerPosition, position) <= range)
         {
@@ -250,14 +239,14 @@ public class Shuriken : UdonSharpBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (hasBeenThrown)
+        if (hasBeenThrown && !hasFirstContact)
         {
             // Create explosions locally
             int explosionLevel = GetPowerUpLevel(3);
             if (explosionLevel > 0)
             {
-                Effects.Get().SpawnExplosion(collision.contacts[0].point, explosionLevel + 1);
-                CheckForLocalExplosionCollision(collision.contacts[0].point, explosionLevel + 1);
+                Effects.Get().SpawnExplosion(collision.contacts[0].point, explosionLevel);
+                CheckForLocalExplosionCollision(collision.contacts[0].point, explosionLevel);
             }
         }
 
@@ -391,6 +380,12 @@ public class Shuriken : UdonSharpBehaviour
     }
 
     /** Custom Methods **/
+
+    public static float GetExplosionRange(int level)
+    {
+        float[] EXPLOSION_RANGES = { 3.75f, 4.5f, 5.25f };
+        return EXPLOSION_RANGES[Math.Min(level - 1, EXPLOSION_RANGES.Length - 1)];
+    }
 
     private void ReturnToPlayer()
     {
