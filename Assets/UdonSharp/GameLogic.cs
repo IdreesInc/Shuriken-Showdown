@@ -282,6 +282,8 @@ public class GameLogic : UdonSharpBehaviour
             }
         }
         // Notify the thrower of the kill
+        // TODO: Fix race condition where the thrower shows wrong message cause the hit player calculation hasn't updated yet
+        // (Should likely just calculate alive players manually and filter out the hit player (and themselves))
         foreach (PlayerCollider child in playerColliders)
         {
             if (Networking.GetOwner(child.gameObject).playerId == thrower.playerId)
