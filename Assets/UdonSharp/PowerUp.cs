@@ -50,12 +50,12 @@ public class PowerUp : UdonSharpBehaviour
 
     private void Log(string message)
     {
-        Debug.Log("[PowerUp]: " + message);
+        Shared.Log("PowerUp", message, Networking.GetOwner(gameObject));
     }
 
     private void LogError(string message)
     {
-        Debug.LogError("[PowerUp]: " + message);
+        Shared.LogError("PowerUp", message, Networking.GetOwner(gameObject));
     }
 
     void Start()

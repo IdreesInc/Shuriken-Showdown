@@ -18,12 +18,12 @@ public class MainMenu : UdonSharpBehaviour
 
     private void Log(string message)
     {
-        Debug.Log("[MainMenu]: " + message);
+        Shared.Log("MainMenu", message, Networking.GetOwner(gameObject));
     }
 
     private void LogError(string message)
     {
-        Debug.Log("[MainMenu]: " + message);
+        Shared.LogError("MainMenu", message, Networking.GetOwner(gameObject));
     }
 
     void Update()

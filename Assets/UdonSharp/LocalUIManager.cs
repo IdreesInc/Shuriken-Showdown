@@ -37,12 +37,12 @@ public class LocalUIManager : UdonSharpBehaviour
 
     private void Log(string message)
     {
-        Debug.Log("[UIManager]: " + message);
+        Shared.Log("UIManager", message);
     }
 
     private void LogError(string message)
     {
-        Debug.LogError("[UIManager]: " + message);
+        Shared.LogError("UIManager", message);
     }
 
     /// <summary>

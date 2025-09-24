@@ -18,12 +18,12 @@ public class ScoreBoard : UdonSharpBehaviour
 
     private void Log(string message)
     {
-        Debug.Log("[ScoreBoard]: " + message);
+        Shared.Log("ScoreBoard", message, Networking.GetOwner(gameObject));
     }
 
     private void LogError(string message)
     {
-        Debug.LogError("[ScoreBoard]: " + message);
+        Shared.LogError("ScoreBoard", message, Networking.GetOwner(gameObject));
     }
 
     /** Udon Overrides **/

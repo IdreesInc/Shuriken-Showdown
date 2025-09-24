@@ -1,4 +1,5 @@
 using UnityEngine;
+using VRC.SDKBase;
 
 public static class Shared
 {
@@ -53,8 +54,38 @@ public static class Shared
         return colors;
     }
 
+    public static void Log(string prefix, string message, VRCPlayerApi player = null)
+    {
+        string logPrefix = GetLogStart(prefix, player);
+        Debug.Log($"{logPrefix} <color=white>{message}</color>");
+        Debug.Log(GameLogic.Get());
+    }
+
+    public static void LogError(string prefix, string message, VRCPlayerApi player = null)
+    {
+        string logPrefix = GetLogStart(prefix, player);
+        Debug.LogError($"{logPrefix} <color=white>{message}</color>");
+    }
+
     public static int MaxPlayers()
     {
         return 8;
+    }
+
+    private static string GetLogStart(string prefix, VRCPlayerApi player = null)
+    {
+        string name = "";
+        int slot = -1;
+        if (player != null)
+        {
+            name = " " + (string.IsNullOrEmpty(player.displayName) ? "Unnamed Player" : player.displayName);
+            slot = GameLogic.Get().GetPlayerSlot(player.playerId);
+        }
+        string color = "white";
+        if (slot != -1)
+        {
+            color = Shared.ColorStrings()[slot];
+        }
+        return $"<color={color}>[{prefix}{name}]:</color>";
     }
 }

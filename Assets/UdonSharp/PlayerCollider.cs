@@ -2,6 +2,7 @@
 using UnityEngine;
 using VRC.SDK3.UdonNetworkCalling;
 using VRC.SDKBase;
+using VRC.Udon.Common;
 
 [UdonBehaviourSyncMode(BehaviourSyncMode.Continuous)]
 public class PlayerCollider : UdonSharpBehaviour
@@ -26,12 +27,12 @@ public class PlayerCollider : UdonSharpBehaviour
 
     private void Log(string message)
     {
-        Debug.Log("[PlayerCollider - " + PlayerId + "]: " + message);
+        Shared.Log("PlayerCollider", message, Player);
     }
 
     private void LogError(string message)
     {
-        Debug.LogError("[PlayerCollider - " + PlayerId + "]: " + message);
+        Shared.LogError("PlayerCollider", message, Player);
     }
 
     /** Udon Overrides **/
@@ -41,6 +42,15 @@ public class PlayerCollider : UdonSharpBehaviour
         if (Player != null)
         {
             transform.position = Player.GetPosition() + offset;
+        }
+    }
+
+    // On Jump
+    public override void InputJump(bool value, UdonInputEventArgs args)
+    {
+        if (Networking.IsOwner(gameObject) && value)
+        {
+            Log("Jump detected!");
         }
     }
 

@@ -57,23 +57,12 @@ public class Shuriken : UdonSharpBehaviour
 
     private void Log(string message)
     {
-        int slot = GameLogic.Get().GetPlayerSlot(Player.playerId);
-        string color = "white";
-        if (slot != -1)
-        {
-            color = Shared.ColorStrings()[slot];
-        }
-        Debug.Log("<color=" + color + ">[Shuriken " + LoggingName() + "]:</color> <color=white>" + message + "</color>");
+        Shared.Log("Shuriken", message, Player);
     }
 
     private void LogError(string message)
     {
-        Debug.LogError("[Shuriken " + LoggingName() + "]: " + message);
-    }
-
-    private string LoggingName()
-    {
-        return Player.displayName == null || Player.displayName == "" ? "Unnamed Player" : Player.displayName;
+        Shared.LogError("Shuriken", message, Player);
     }
 
     /** Udon Overrides **/

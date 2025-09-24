@@ -27,12 +27,12 @@ public class LevelManager : UdonSharpBehaviour
 
     private void Log(string message)
     {
-        Debug.Log("[LevelManager]: " + message);
+        Shared.Log("LevelManager", message);
     }
 
     private void LogError(string message)
     {
-        Debug.LogError("[LevelManager]: " + message);
+        Shared.LogError("LevelManager", message);
     }
 
     public static LevelManager Get()

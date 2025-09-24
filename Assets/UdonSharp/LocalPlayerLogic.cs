@@ -16,12 +16,12 @@ public class LocalPlayerLogic : UdonSharpBehaviour
 
     private void Log(string message)
     {
-        Debug.Log("[LocalPlayerLogic]: " + message);
+        Shared.Log("LocalPlayerLogic", message);
     }
 
     private void LogError(string message)
     {
-        Debug.Log("[LocalPlayerLogic]: " + message);
+        Shared.LogError("LocalPlayerLogic", message);
     }
 
     /// <summary>
