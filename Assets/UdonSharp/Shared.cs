@@ -26,21 +26,30 @@ public static class Shared
         }
         return new Color(r / 255f, g / 255f, b / 255f, a / 255f);
     }
+
+    public static string[] ColorStrings()
+    {
+        // Hex strings for colors, useful for rich text in UI
+        return new string[] {
+            "#ff4c4c",
+            "#6699ff",
+            "#7dff66",
+            "#ffd966",
+            "#d580ff",
+            "#ff9966",
+            "#66ffff",
+            "#ff80bf",
+        };
+    }
     public static Color[] Colors()
     {
-        // TODO: Hardcode these colors when finalized
         // Colors become desaturated when applied to UI elements
         // Notably, this works well with shurikens because we want those to be more saturated
-        Color[] colors = {
-            HexToColor("#FD3131"),
-            HexToColor("#5089DD"),
-            HexToColor("#61C83E"),
-            HexToColor("#FBB72F"),
-            HexToColor("#B36DEA"),
-            HexToColor("#FD7D34"),
-            HexToColor("#45CFD9"),
-            HexToColor("#FF64A1"),
-        };
+        Color[] colors = new Color[ColorStrings().Length];
+        for (int i = 0; i < ColorStrings().Length; i++)
+        {
+            colors[i] = HexToColor(ColorStrings()[i]);
+        }
         return colors;
     }
 

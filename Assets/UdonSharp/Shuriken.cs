@@ -27,6 +27,10 @@ public class Shuriken : UdonSharpBehaviour
     private const float EMBIGGEN_MOD = 1f;
     private const float AMPHETAMINES_MOD = 3.5f;
     private const float MOON_SHOES_MOD = 2.75f;
+    private const float MIN_HOMING_STRENGTH = 0.005f;
+    private const float MAX_HOMING_STRENGTH = 0.02f;
+    private const float HOMING_ANGLE_THRESHOLD = 25f;
+    private const float HOMING_DURATION = 0.75f;
 
     /// <summary>
     /// Whether we are in-game, which determines whether the shuriken can be used
@@ -41,6 +45,8 @@ public class Shuriken : UdonSharpBehaviour
     [UdonSynced] private int powerUpThree = -1;
     [UdonSynced] private Quaternion rotationOnThrow = Quaternion.identity;
 
+    private float throwTime = 0f;
+
     private VRCPlayerApi Player
     {
         get
@@ -51,18 +57,23 @@ public class Shuriken : UdonSharpBehaviour
 
     private void Log(string message)
     {
-        Debug.Log("[Shuriken - Slot: " + LoggingName() + "]: " + message);
+        int slot = GameLogic.Get().GetPlayerSlot(Player.playerId);
+        string color = "white";
+        if (slot != -1)
+        {
+            color = Shared.ColorStrings()[slot];
+        }
+        Debug.Log("<color=" + color + ">[Shuriken " + LoggingName() + "]:</color> <color=white>" + message + "</color>");
     }
 
     private void LogError(string message)
     {
-        Debug.LogError("[Shuriken - Slot: " + LoggingName() + "]: " + message);
+        Debug.LogError("[Shuriken " + LoggingName() + "]: " + message);
     }
 
     private string LoggingName()
     {
-        string name = Player.displayName == null || Player.displayName == "" ? "Unnamed Player" : Player.displayName;
-        return "(" + name + " - Slot: " + GameLogic.Get().GetPlayerSlot(Player.playerId) + ")";
+        return Player.displayName == null || Player.displayName == "" ? "Unnamed Player" : Player.displayName;
     }
 
     /** Udon Overrides **/
@@ -138,9 +149,26 @@ public class Shuriken : UdonSharpBehaviour
             }
         }
 
+        float timeSinceThrow = Time.time - throwTime;
+
         if (hasBeenThrown)
         {
+            // Gravity
             rb.AddForce(GRAVITY_FORCE, ForceMode.Acceleration);
+
+            if (!hasFirstContact && timeSinceThrow <= HOMING_DURATION && Networking.IsOwner(gameObject))
+            {
+                // Apply homing force at the beginning of the throw
+                PlayerCollider nearestOpponent = FindNearestOpponent();
+                if (nearestOpponent != null)
+                {
+                    Vector3 newVelocity = CalculateHomingVelocity(nearestOpponent, rb.velocity);
+                    if (newVelocity != Vector3.zero)
+                    {
+                        rb.velocity = newVelocity;
+                    }
+                }
+            }
         }
 
         if (!hasBeenThrown && !isHeld)
@@ -200,6 +228,7 @@ public class Shuriken : UdonSharpBehaviour
         isHeld = false;
         hasBeenThrown = true;
         hasFirstContact = false;
+        throwTime = Time.time; // Record when the shuriken was thrown
         // Enable collision with anything
         GetComponent<Rigidbody>().detectCollisions = true;
         // Throw the shuriken if the initial velocity is high enough
@@ -358,6 +387,80 @@ public class Shuriken : UdonSharpBehaviour
         return EXPLOSION_RANGES[Math.Min(level - 1, EXPLOSION_RANGES.Length - 1)];
     }
 
+    /// <summary>
+    /// Finds the nearest opponent player collider in the direction of the shuriken's travel
+    /// </summary>
+    /// <returns>The nearest opponent player collider, or null if none found</returns>
+    private PlayerCollider FindNearestOpponent()
+    {
+        Vector3 currentVelocity = GetComponent<Rigidbody>().velocity;
+        Vector3 currentDirection = currentVelocity.normalized;
+        PlayerCollider[] playerColliders = GameLogic.Get().playerObjectsParent.GetComponentsInChildren<PlayerCollider>();
+
+        float minAngle = 360f;
+        PlayerCollider bestCandidate = null;
+
+        foreach (PlayerCollider playerCollider in playerColliders)
+        {
+            if (playerCollider == null) continue;
+
+            VRCPlayerApi otherPlayer = Networking.GetOwner(playerCollider.gameObject);
+            if (otherPlayer == null || otherPlayer.playerId == Player.playerId) continue;
+
+            Vector3 directionToTarget = (playerCollider.transform.position - transform.position).normalized;
+            float angle = Vector3.Angle(currentDirection, directionToTarget);
+
+            if (angle < minAngle)
+            {
+                minAngle = angle;
+                bestCandidate = playerCollider;
+            }
+        }
+        return bestCandidate;
+    }
+
+    /// <summary>
+    /// Calculates the new velocity vector for homing behavior.
+    /// Gradually steers the shuriken towards the target while maintaining current speed.
+    /// </summary>
+    /// <param name="target">The target player collider</param>
+    /// <param name="currentVelocity">The current velocity of the shuriken</param>
+    /// <returns>The new velocity vector, or zero if no homing should be applied</returns>
+    private Vector3 CalculateHomingVelocity(PlayerCollider target, Vector3 currentVelocity)
+    {
+        if (target == null)
+        {
+            return Vector3.zero;
+        }
+
+        if (currentVelocity.magnitude < 0.1f) return Vector3.zero; // Don't home if barely moving
+
+        Vector3 directionToTarget = (target.transform.position - transform.position).normalized;
+        Vector3 currentDirection = currentVelocity.normalized;
+
+        // Calculate angle between current direction and target direction
+        float angle = Vector3.Angle(currentDirection, directionToTarget);
+
+        if (angle > HOMING_ANGLE_THRESHOLD)
+        {
+            // Target is outside of homing angle threshold
+            return Vector3.zero;
+        }
+
+        // Calculate time-based homing strength (stronger at beginning of throw)
+        float timeSinceThrow = Time.time - throwTime;
+        float timeFactor = Mathf.Clamp01(1f - (timeSinceThrow / HOMING_DURATION));
+        float currentHomingStrength = Mathf.Lerp(MIN_HOMING_STRENGTH, MAX_HOMING_STRENGTH, timeFactor);
+
+        // // Calculate alignment factor (stronger when more aligned with target)
+        // float alignmentFactor = 1f - (angle / HOMING_ANGLE_THRESHOLD);
+        // float finalHomingStrength = currentHomingStrength * alignmentFactor * Time.fixedDeltaTime;
+
+        // Lerp between current direction and target direction, maintaining current speed
+        Vector3 newDirection = Vector3.Slerp(currentDirection, directionToTarget, currentHomingStrength).normalized;
+        return newDirection * currentVelocity.magnitude;
+    }
+
     private void ReturnToPlayer()
     {
         Log("Returning shuriken to " + Player.displayName);
@@ -367,6 +470,7 @@ public class Shuriken : UdonSharpBehaviour
         GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
         hasBeenThrown = false;
         hasFirstContact = false;
+        throwTime = 0f; // Reset throw time
     }
 
     private void HitOpponent(VRCPlayerApi opponent, string verb = "sliced")
