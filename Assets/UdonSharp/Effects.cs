@@ -20,7 +20,7 @@ public class Effects : UdonSharpBehaviour
         GameObject clone = Instantiate(explosion);
         clone.transform.position = position;
         // Set start size based on level
-        float startSize = Shuriken.GetExplosionRange(level) + 0.5f;
+        float startSize = Shuriken.GetExplosionRange(level) + 0.75f;
         ParticleSystem.MainModule main = clone.GetComponent<ParticleSystem>().main;
         main.startSize = startSize;
         foreach (ParticleSystem ps in clone.GetComponentsInChildren<ParticleSystem>())

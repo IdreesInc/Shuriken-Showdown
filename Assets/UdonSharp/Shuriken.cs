@@ -354,7 +354,7 @@ public class Shuriken : UdonSharpBehaviour
 
     public static float GetExplosionRange(int level)
     {
-        float[] EXPLOSION_RANGES = { 2f, 3.25f, 5f };
+        float[] EXPLOSION_RANGES = { 2.25f, 3f, 4.5f };
         return EXPLOSION_RANGES[Math.Min(level - 1, EXPLOSION_RANGES.Length - 1)];
     }
 
