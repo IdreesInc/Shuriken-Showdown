@@ -49,30 +49,23 @@ public class ScoreBoard : UdonSharpBehaviour
         GameLogic gameLogic = GameLogic.Get();
         int[] scores = gameLogic.GetPlayerScores();
         int[] playerSlots = gameLogic.GetPlayerSlots();
-        string[] names = new string[playerSlots.Length];
         for (int i = 0; i < playerSlots.Length; i++)
         {
             int slot = playerSlots[i];
             if (slot > 0)
             {
                 VRCPlayerApi player = VRCPlayerApi.GetPlayerById(slot);
+                string name = "Unknown";
                 if (player != null)
                 {
-                    names[i] = player.displayName;
+                    name = player.displayName;
                 }
-                else
-                {
-                    names[i] = "Player " + slot;
-                }
+                UpdateScore(i, name, scores[i]);
             }
             else
             {
-                names[i] = "";
+                HideScoreLine(i);
             }
-        }
-        for (int i = 0; i < scores.Length; i++)
-        {
-            UpdateScore(i, names[i], scores[i]);
         }
     }
 
@@ -80,6 +73,7 @@ public class ScoreBoard : UdonSharpBehaviour
     {
         // Get the scoreLine for the player
         GameObject scoreLine = scoreLines[playerSlot];
+        scoreLine.SetActive(true);
         GameObject scoreName = scoreLine.transform.Find("Score Name").gameObject;
         // Get the Text component of the scoreName
         scoreName.GetComponent<TextMeshProUGUI>().text = name;
@@ -92,5 +86,11 @@ public class ScoreBoard : UdonSharpBehaviour
             // If the score is greater than i, set the alpha to 1, otherwise set it to 0.5
             image.color = new Color(image.color.r, image.color.g, image.color.b, score > i ? 1 : 0.3f);
         }
+    }
+
+    private void HideScoreLine(int playerSlot)
+    {
+        GameObject scoreLine = scoreLines[playerSlot];
+        scoreLine.SetActive(false);
     }
 }
