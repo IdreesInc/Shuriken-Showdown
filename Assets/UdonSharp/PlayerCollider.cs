@@ -45,15 +45,6 @@ public class PlayerCollider : UdonSharpBehaviour
         }
     }
 
-    // On Jump
-    public override void InputJump(bool value, UdonInputEventArgs args)
-    {
-        if (Networking.IsOwner(gameObject) && value)
-        {
-            Log("Jump detected!");
-        }
-    }
-
     /** Event Handlers **/
 
     [NetworkCallable]

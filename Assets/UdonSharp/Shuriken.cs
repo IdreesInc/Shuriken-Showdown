@@ -5,6 +5,7 @@ using VRC.Udon;
 using VRC.Udon.Common.Interfaces;
 using System;
 using VRC.SDK3.UdonNetworkCalling;
+using VRC.Udon.Common;
 
 [UdonBehaviourSyncMode(BehaviourSyncMode.Continuous)]
 [RequireComponent(typeof(Rigidbody))]
@@ -31,6 +32,7 @@ public class Shuriken : UdonSharpBehaviour
     private const float MAX_HOMING_STRENGTH = 0.02f;
     private const float HOMING_ANGLE_THRESHOLD = 25f;
     private const float HOMING_DURATION = 0.75f;
+    private const float AIR_JUMP_FORCE = 5f;
 
     /// <summary>
     /// Whether we are in-game, which determines whether the shuriken can be used
@@ -46,6 +48,7 @@ public class Shuriken : UdonSharpBehaviour
     [UdonSynced] private Quaternion rotationOnThrow = Quaternion.identity;
 
     private float throwTime = 0f;
+    private int numberOfJumps = 0;
 
     private VRCPlayerApi Player
     {
@@ -124,9 +127,10 @@ public class Shuriken : UdonSharpBehaviour
                 }
             }
         }
-        // If the shuriken is too far from the owner, return it no matter what
+
         if (Networking.IsOwner(gameObject))
         {
+            // If the shuriken is too far from the owner, return it no matter what
             if (Vector3.Distance(transform.position, Player.GetPosition()) > MAX_DISTANCE)
             {
                 ReturnToPlayer();
@@ -135,6 +139,12 @@ public class Shuriken : UdonSharpBehaviour
             {
                 // Shuriken fell below map
                 ReturnToPlayer();
+            }
+
+            // Reset number of jumps when grounded
+            if (Player.IsPlayerGrounded())
+            {
+                numberOfJumps = 0;
             }
         }
 
@@ -302,6 +312,27 @@ public class Shuriken : UdonSharpBehaviour
         else
         {
             Log("Shuriken has triggered with " + collider.gameObject.name);
+        }
+    }
+
+    public override void InputJump(bool value, UdonInputEventArgs args)
+    {
+        if (Networking.IsOwner(gameObject) && value)
+        {
+            numberOfJumps++;
+            if (!Player.IsPlayerGrounded())
+            {
+                int numberOfAirJumps = GetPowerUpLevel(4);
+                if (numberOfJumps - 1 > numberOfAirJumps)
+                {
+                    return;
+                }
+                float force = AIR_JUMP_FORCE;
+                // Add moon shoes
+                force += MOON_SHOES_MOD * GetPowerUpLevel(2) * 0.5f;
+                Player.SetVelocity(new Vector3(Player.GetVelocity().x, force, Player.GetVelocity().z));
+                Log("Performing air jump " + (numberOfJumps - 1) + " of " + numberOfAirJumps);
+            }
         }
     }
 

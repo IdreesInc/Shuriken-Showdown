@@ -18,7 +18,8 @@ public class PowerUp : UdonSharpBehaviour
             "Embiggen",
             "Amphetamines",
             "Moon Shoes",
-            "Badaboom"
+            "Badaboom",
+            "Jump Start"
         };
         if (type < 0 || type >= POWER_UP_NAMES.Length)
         {
@@ -33,7 +34,8 @@ public class PowerUp : UdonSharpBehaviour
             "Go big or go home",
             "Gotta go fast",
             "Reach for the stars",
-            "Hearing protection recommended"
+            "Hearing protection recommended",
+            "Watch your head"
         };
         if (type < 0 || type >= POWER_UP_SUBTITLES.Length)
         {
@@ -45,7 +47,7 @@ public class PowerUp : UdonSharpBehaviour
     public static int GetNumberOfPowerUps()
     {
         // Stupid necessity due to UdonSharp not allowing for static fields
-        return 4;
+        return 5;
     }
 
     private void Log(string message)
