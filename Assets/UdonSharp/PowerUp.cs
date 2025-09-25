@@ -2,46 +2,77 @@
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
-using VRC.Udon;
 using VRC.Udon.Common.Interfaces;
+
+public enum PowerUpType
+{
+    Embiggen = 0,
+    Amphetamines = 1,
+    MoonShoes = 2,
+    Badaboom = 3,
+    JumpStart = 4
+}
 
 [UdonBehaviourSyncMode(BehaviourSyncMode.Continuous)]
 public class PowerUp : UdonSharpBehaviour
 {
 
-    [UdonSynced] private int powerUpType = 0;
+    [UdonSynced] private PowerUpType powerUpType = PowerUpType.Embiggen;
+
+    public static string GetPowerUpName(PowerUpType type)
+    {
+        switch (type)
+        {
+            case PowerUpType.Embiggen:
+                return "Embiggen";
+            case PowerUpType.Amphetamines:
+                return "Amphetamines";
+            case PowerUpType.MoonShoes:
+                return "Moon Shoes";
+            case PowerUpType.Badaboom:
+                return "Badaboom";
+            case PowerUpType.JumpStart:
+                return "Jump Start";
+            default:
+                return "N/A";
+        }
+    }
+
+    public static string GetPowerUpSubtitle(PowerUpType type)
+    {
+        switch (type)
+        {
+            case PowerUpType.Embiggen:
+                return "Go big or go home";
+            case PowerUpType.Amphetamines:
+                return "Gotta go fast";
+            case PowerUpType.MoonShoes:
+                return "Reach for the stars";
+            case PowerUpType.Badaboom:
+                return "Hearing protection recommended";
+            case PowerUpType.JumpStart:
+                return "Watch your head";
+            default:
+                return "N/A";
+        }
+    }
 
     public static string GetPowerUpName(int type)
     {
-        // Can't make this static due to UdonSharp limitations, using getter instead
-        string[] POWER_UP_NAMES = {
-            "Embiggen",
-            "Amphetamines",
-            "Moon Shoes",
-            "Badaboom",
-            "Jump Start"
-        };
-        if (type < 0 || type >= POWER_UP_NAMES.Length)
+        if (type < 0 || type > 4)
         {
-            return "Unknown";
+            return "N/A";
         }
-        return POWER_UP_NAMES[type];
+        return GetPowerUpName((PowerUpType)type);
     }
 
     public static string GetPowerUpSubtitle(int type)
     {
-        string[] POWER_UP_SUBTITLES = {
-            "Go big or go home",
-            "Gotta go fast",
-            "Reach for the stars",
-            "Hearing protection recommended",
-            "Watch your head"
-        };
-        if (type < 0 || type >= POWER_UP_SUBTITLES.Length)
+        if (type < 0 || type > 4)
         {
-            return "Unknown";
+            return "N/A";
         }
-        return POWER_UP_SUBTITLES[type];
+        return GetPowerUpSubtitle((PowerUpType)type);
     }
 
     public static int GetNumberOfPowerUps()
@@ -65,21 +96,22 @@ public class PowerUp : UdonSharpBehaviour
         Log("Power up has been spawned");
     }
 
-    public void SetPowerUpType(int powerUpType)
+    public void SetPowerUpType(PowerUpType powerUpType)
     {
         Log("Setting power up type to " + powerUpType);
         this.powerUpType = powerUpType;
+    }
+
+    public void SetPowerUpType(int powerUpType)
+    {
+        Log("Setting power up type to " + powerUpType);
+        this.powerUpType = (PowerUpType)powerUpType;
     }
 
     public void SetRandomPowerUpType()
     {
         int randomPowerUpType = Random.Range(0, GetNumberOfPowerUps());
         SetPowerUpType(randomPowerUpType);
-    }
-
-    public int GetPowerUpType()
-    {
-        return powerUpType;
     }
 
     private void FixedUpdate()
@@ -100,7 +132,7 @@ public class PowerUp : UdonSharpBehaviour
         {
             Shuriken shuriken = collider.gameObject.GetComponent<Shuriken>();
             Log("Power up has collided with a shuriken owned by " + Networking.GetOwner(shuriken.gameObject).displayName);
-            shuriken.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(shuriken.ActivatePowerUp), powerUpType);
+            shuriken.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(shuriken.ActivatePowerUp), (int)powerUpType);
             GameLogic.Get().OnPowerUpCollected(gameObject);
         }
     }

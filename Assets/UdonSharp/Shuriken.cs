@@ -1,7 +1,6 @@
 ﻿using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
-using VRC.Udon;
 using VRC.Udon.Common.Interfaces;
 using System;
 using VRC.SDK3.UdonNetworkCalling;
@@ -252,7 +251,7 @@ public class Shuriken : UdonSharpBehaviour
             return;
         }
 
-        int explosionLevel = GetPowerUpLevel(3);
+        int explosionLevel = GetPowerUpLevel((int)PowerUpType.Badaboom);
 
         if (hasBeenThrown && !hasFirstContact && explosionLevel > 0)
         {
@@ -583,7 +582,7 @@ public class Shuriken : UdonSharpBehaviour
             return;
         }
         Log("Applying power up: " + PowerUp.GetPowerUpName(type));
-        if (type == 0)
+        if (type == (int)PowerUpType.Embiggen)
         {
             // Embiggen
             transform.localScale = new Vector3(
@@ -592,7 +591,7 @@ public class Shuriken : UdonSharpBehaviour
                 transform.localScale.z + EMBIGGEN_MOD
             );
         }
-        else if (type == 1)
+        else if (type == (int)PowerUpType.Amphetamines)
         {
             // Amphetamines
             if (Networking.IsOwner(gameObject))
@@ -601,7 +600,7 @@ public class Shuriken : UdonSharpBehaviour
                 player.SetRunSpeed(player.GetRunSpeed() + AMPHETAMINES_MOD);
             }
         }
-        else if (type == 2)
+        else if (type == (int)PowerUpType.MoonShoes)
         {
             // Moon Shoes
             if (Networking.IsOwner(gameObject))
