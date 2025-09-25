@@ -95,20 +95,33 @@ public class LocalPlayerLogic : UdonSharpBehaviour
 
     public void ShowKillUI(int playerSlot, string playerName, string verb)
     {
-        int numRemaining = GameLogic.Get().GetAlivePlayerCount  () - 1;
+        // Alive player count might not yet be updated, calculate it manually
+        bool[] statuses = GameLogic.Get().GetPlayerAliveStatuses();
+        int numRemaining = -1; // Start at -1 to ignore self
+        for (int i = 0; i < statuses.Length; i++)
+        {
+            if (statuses[i] && i != playerSlot)
+            {
+                numRemaining++;
+            }
+        }
         if (numRemaining <= 0)
         {
             // Round is over, ignore this UI to wait for round update from instance owner
             return;
         }
-        string remaining = "Players Remaining";
+        string remaining = "";
         if (numRemaining < 1)
         {
-            remaining = "No " + remaining;
+            remaining = "No Players Remaining";
+        }
+        else if (numRemaining == 1)
+        {
+            remaining = "1 Player Remaining";
         }
         else
         {
-            remaining = numRemaining + " " + remaining;
+            remaining = numRemaining + " Players Remaining";
         }
         LocalUIManager.Get().ShowMessageUI(("you " + verb).ToUpper(),
             playerName,
