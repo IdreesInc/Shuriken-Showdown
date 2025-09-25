@@ -38,7 +38,10 @@ public class ScoreBoard : UdonSharpBehaviour
         // Set the color of each score line
         for (int i = 0; i < scoreLines.Length; i++)
         {
-            scoreLines[i].GetComponent<UnityEngine.UI.Image>().color = Shared.Colors()[i];
+            Color color = Shared.Colors()[i];
+            // Desaturate the color
+            color = Color.Lerp(color, Color.white, 0.4f);
+            scoreLines[i].GetComponent<UnityEngine.UI.Image>().color = color;
         }
     }
 
@@ -75,12 +78,13 @@ public class ScoreBoard : UdonSharpBehaviour
         GameObject scoreLine = scoreLines[playerSlot];
         scoreLine.SetActive(true);
         GameObject scoreName = scoreLine.transform.Find("Score Name").gameObject;
+        GameObject dotsContainer = scoreLine.transform.Find("Dots Container").gameObject;
         // Get the Text component of the scoreName
         scoreName.GetComponent<TextMeshProUGUI>().text = name;
         for (int i = 0; i < 10; i++)
         {
             // Get child of scoreLine with name "Score Dot " + i
-            GameObject scoreDot = scoreLine.transform.Find("Score Dot " + i).gameObject;
+            GameObject scoreDot = dotsContainer.transform.Find("Score Dot " + i).gameObject;
             // Get the Image component of the scoreDot
             UnityEngine.UI.Image image = scoreDot.GetComponent<UnityEngine.UI.Image>();
             // If the score is greater than i, set the alpha to 1, otherwise set it to 0.5
