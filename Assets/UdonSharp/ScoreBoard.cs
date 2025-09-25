@@ -2,10 +2,7 @@
 using TMPro;
 using UdonSharp;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
 using VRC.SDKBase;
-using VRC.Udon;
 
 /// <summary>
 /// Non-networked UdonSharpBehaviour for updating the score board UI

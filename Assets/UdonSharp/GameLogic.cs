@@ -1,10 +1,6 @@
-﻿
-using System.Linq;
-using TMPro;
-using UdonSharp;
+﻿using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
-using VRC.Udon;
 using VRC.Udon.Common.Interfaces;
 using System;
 using VRC.SDK3.UdonNetworkCalling;
