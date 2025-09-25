@@ -97,10 +97,11 @@ public class LocalPlayerLogic : UdonSharpBehaviour
     {
         // Alive player count might not yet be updated, calculate it manually
         bool[] statuses = GameLogic.Get().GetPlayerAliveStatuses();
-        int numRemaining = -1; // Start at -1 to ignore self
+        int numRemaining = 0;
+        int currentPlayerSlot = GameLogic.Get().GetPlayerSlot(Networking.LocalPlayer.playerId);
         for (int i = 0; i < statuses.Length; i++)
         {
-            if (statuses[i] && i != playerSlot)
+            if (statuses[i] && i != playerSlot && i != currentPlayerSlot)
             {
                 numRemaining++;
             }
@@ -110,7 +111,7 @@ public class LocalPlayerLogic : UdonSharpBehaviour
             // Round is over, ignore this UI to wait for round update from instance owner
             return;
         }
-        string remaining = "";
+        string remaining;
         if (numRemaining < 1)
         {
             remaining = "No Players Remaining";
