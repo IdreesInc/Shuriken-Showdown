@@ -32,6 +32,8 @@ public class Shuriken : UdonSharpBehaviour
     private const float HOMING_ANGLE_THRESHOLD = 25f;
     private const float HOMING_DURATION = 0.75f;
     private const float AIR_JUMP_FORCE = 5f;
+    private const float HOMING_PIGEON_FORCE_MOD = 0.01f;
+    private const float HOMING_PIGEON_ANGLE_MOD = 2.5f;
 
     /// <summary>
     /// Whether we are in-game, which determines whether the shuriken can be used
@@ -457,10 +459,13 @@ public class Shuriken : UdonSharpBehaviour
         Vector3 directionToTarget = (target.transform.position - transform.position).normalized;
         Vector3 currentDirection = currentVelocity.normalized;
 
+        int homingPigeonLevel = GetPowerUpLevel((int)PowerUpType.HomingPigeon);
+
         // Calculate angle between current direction and target direction
         float angle = Vector3.Angle(currentDirection, directionToTarget);
+        float threshold = HOMING_ANGLE_THRESHOLD + (HOMING_PIGEON_ANGLE_MOD * homingPigeonLevel);
 
-        if (angle > HOMING_ANGLE_THRESHOLD)
+        if (angle > threshold)
         {
             // Target is outside of homing angle threshold
             return Vector3.zero;
@@ -471,9 +476,10 @@ public class Shuriken : UdonSharpBehaviour
         float timeFactor = Mathf.Clamp01(1f - (timeSinceThrow / HOMING_DURATION));
         float currentHomingStrength = Mathf.Lerp(MIN_HOMING_STRENGTH, MAX_HOMING_STRENGTH, timeFactor);
 
-        // // Calculate alignment factor (stronger when more aligned with target)
-        // float alignmentFactor = 1f - (angle / HOMING_ANGLE_THRESHOLD);
-        // float finalHomingStrength = currentHomingStrength * alignmentFactor * Time.fixedDeltaTime;
+        if (GetPowerUpLevel((int)PowerUpType.HomingPigeon) > 0)
+        {
+            currentHomingStrength += HOMING_PIGEON_FORCE_MOD * homingPigeonLevel;
+        }
 
         // Lerp between current direction and target direction, maintaining current speed
         Vector3 newDirection = Vector3.Slerp(currentDirection, directionToTarget, currentHomingStrength).normalized;

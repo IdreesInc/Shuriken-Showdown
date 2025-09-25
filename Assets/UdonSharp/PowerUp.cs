@@ -10,7 +10,8 @@ public enum PowerUpType
     Amphetamines = 1,
     MoonShoes = 2,
     Badaboom = 3,
-    JumpStart = 4
+    Jumpman = 4,
+    HomingPigeon = 5
 }
 
 [UdonBehaviourSyncMode(BehaviourSyncMode.Continuous)]
@@ -31,8 +32,10 @@ public class PowerUp : UdonSharpBehaviour
                 return "Moon Shoes";
             case PowerUpType.Badaboom:
                 return "Badaboom";
-            case PowerUpType.JumpStart:
-                return "Jump Start";
+            case PowerUpType.Jumpman:
+                return "Jumpman";
+            case PowerUpType.HomingPigeon:
+                return "Homing Pigeon";
             default:
                 return "N/A";
         }
@@ -50,8 +53,10 @@ public class PowerUp : UdonSharpBehaviour
                 return "Reach for the stars";
             case PowerUpType.Badaboom:
                 return "Hearing protection recommended";
-            case PowerUpType.JumpStart:
-                return "Watch your head";
+            case PowerUpType.Jumpman:
+                return "It's-a me, legally-distinct character!";
+            case PowerUpType.HomingPigeon:
+                return "You miss all the shots you don't take";
             default:
                 return "N/A";
         }
