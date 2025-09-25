@@ -253,22 +253,22 @@ public class Shuriken : UdonSharpBehaviour
             return;
         }
 
-        int explosionLevel = GetPowerUpLevel((int)PowerUpType.Badaboom);
-
-        if (hasBeenThrown && !hasFirstContact && explosionLevel > 0)
-        {
-            // Create explosions locally
-            Effects.Get().SpawnExplosion(collision.contacts[0].point, explosionLevel);
-        }
-
         if (!Networking.IsOwner(gameObject))
         {
             Log("Not the owner, skipping collision");
             return;
         }
 
+        int explosionLevel = GetPowerUpLevel((int)PowerUpType.Badaboom);
+
         if (hasBeenThrown && !hasFirstContact && explosionLevel > 0)
         {
+            // Create explosion locally first
+            Effects.Get().SpawnExplosion(collision.contacts[0].point, explosionLevel);
+
+            // Tell other players to create explosion
+            this.SendCustomNetworkEvent(NetworkEventTarget.Others, nameof(CreateExplosionEffect), collision.contacts[0].point, explosionLevel);
+
             // Check for explosion hits
             ExplodinatePlayers(collision.contacts[0].point, explosionLevel);
         }
@@ -395,6 +395,12 @@ public class Shuriken : UdonSharpBehaviour
         ResetPowerUpEffects();
     }
 
+    [NetworkCallable]
+    public void CreateExplosionEffect(Vector3 position, int level)
+    {
+        Effects.Get().SpawnExplosion(position, level);
+    }
+
     public void OnGameLogicChange()
     {
         UpdateColor();
@@ -495,7 +501,7 @@ public class Shuriken : UdonSharpBehaviour
         GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
         hasBeenThrown = false;
         hasFirstContact = false;
-        throwTime = 0f; // Reset throw time
+        throwTime = 0f;
     }
 
     private void HitOpponent(VRCPlayerApi opponent, string verb = "sliced")
