@@ -97,8 +97,8 @@ public class LocalPlayerLogic : UdonSharpBehaviour
     {
         // Alive player count might not yet be updated, calculate it manually
         bool[] statuses = GameLogic.Get().GetPlayerAliveStatuses();
-        int numRemaining = 0;
         int currentPlayerSlot = GameLogic.Get().GetPlayerSlot(Networking.LocalPlayer.playerId);
+        int numRemaining = 0;
         for (int i = 0; i < statuses.Length; i++)
         {
             if (statuses[i] && i != playerSlot && i != currentPlayerSlot)
@@ -146,11 +146,26 @@ public class LocalPlayerLogic : UdonSharpBehaviour
             "Better luck next time",
             "I bet they cheated",
             "That was a fluke",
+            "You fought bravely",
+            "You can't win them all",
+            "You'll get 'em next time",
+            "You were just warming up",
+            "You win some, you lose some",
+            "You fought well",
+            "You put up a good fight",
         };
         string[] winningMessages = {
             "It wasn't even close...",
             "What did they expect?",
             "Easy peasy",
+            "Too easy",
+            "You can't be stopped",
+            "You're unstoppable",
+            "You're on fire",
+            "You reign supreme",
+            "You are the champion",
+            "You are the best",
+            "You are a legend",
         };
         string message = won ? winningMessages[Random.Range(0, winningMessages.Length)] : losingMessages[Random.Range(0, losingMessages.Length)];
         LocalUIManager.Get().ShowMessageUI("WINNER",
