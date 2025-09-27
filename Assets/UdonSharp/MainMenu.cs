@@ -12,7 +12,8 @@ public class MainMenu : UdonSharpBehaviour
 {
 
     public GameObject[] playerIcons;
-    public GameObject gameMasterText;
+    public GameObject[] gameMasterTexts;
+    public GameObject settingsUI;
 
     /** Udon Overrides */
 
@@ -39,6 +40,18 @@ public class MainMenu : UdonSharpBehaviour
         GameLogic.Get().SendCustomNetworkEvent(NetworkEventTarget.All, nameof(GameLogic.StartGame));
     }
 
+    public void OnShowSettingsPressed()
+    {
+        Log("Show Settings Pressed");
+        settingsUI.SetActive(true);
+    }
+
+    public void OnHideSettingsPressed()
+    {
+        Log("Hide Settings Pressed");
+        settingsUI.SetActive(false);
+    }
+
     /** Custom Methods */
 
     private void UpdateGameMaster()
@@ -48,7 +61,10 @@ public class MainMenu : UdonSharpBehaviour
         {
             return;
         }
-        gameMasterText.GetComponent<TextMeshProUGUI>().text = "Game Master: " + gameMaster.displayName;
+        foreach (GameObject gameMasterText in gameMasterTexts)
+        {
+            gameMasterText.GetComponent<TextMeshProUGUI>().text = "Game Master: " + gameMaster.displayName;
+        }
     }
 
     private void UpdatePlayerIcons()

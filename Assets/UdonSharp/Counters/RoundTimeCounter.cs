@@ -3,7 +3,7 @@ using UdonSharp;
 using VRC.SDKBase;
 
 [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
-public class KillsToWinCounter : Counter
+public class RoundTimeCounter : Counter
 {
 
     void Start()
@@ -13,17 +13,17 @@ public class KillsToWinCounter : Counter
 
     private void UpdateCounterText()
     {
-        counterText.text = GameLogic.Get().GetMaxScore() + " KILLS";
+        counterText.text = GameLogic.Get().GetRoundTimeLimit() + " SEC";
     }
 
     public override void OnIncrement()
     {
         if (!Networking.IsOwner(gameObject))
         {
-            LogError("Not the instance owner, cannot increment kills to win");
+            LogError("Not the instance owner, cannot increment round time limit");
             return;
         }
-        GameLogic.Get().ModifyMaxScore(1);
+        GameLogic.Get().ModifyRoundTimeLimit(10);
         UpdateCounterText();
     }
 
@@ -31,10 +31,11 @@ public class KillsToWinCounter : Counter
     {
         if (!Networking.IsOwner(gameObject))
         {
-            LogError("Not the instance owner, cannot decrement kills to win");
+            LogError("Not the instance owner, cannot decrement round time limit");
             return;
         }
-        GameLogic.Get().ModifyMaxScore(-1);
+        GameLogic.Get().ModifyRoundTimeLimit(-10);
         UpdateCounterText();
     }
 }
+    

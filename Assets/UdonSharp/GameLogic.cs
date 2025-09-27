@@ -27,10 +27,6 @@ public class GameLogic : UdonSharpBehaviour
     /// </summary>
     private const float POWER_UP_DELAY = 5000;
     /// <summary>
-    /// The maximum score a player can achieve before the game ends
-    /// </summary>
-    private const int MAX_SCORE = 10;
-    /// <summary>
     /// The delay between the start of a round and the start of the fighting
     /// </summary>
     private const float FIGHTING_DELAY = 3000;
@@ -47,9 +43,13 @@ public class GameLogic : UdonSharpBehaviour
     /** Synced Variables **/
 
     /// <summary>
-    /// The number of kills required to win the game
+    /// The score a player needs to reach to win the game
     /// </summary>
-    [UdonSynced] private int killsToWin = 10;
+    [UdonSynced] private int maxScore = 10;
+    /// <summary>
+    /// The time limit for each round in seconds
+    /// </summary>
+    [UdonSynced] private int roundTimeLimit = 300;
     /// <summary>
     /// The time at which the current round will end
     /// </summary>
@@ -303,20 +303,39 @@ public class GameLogic : UdonSharpBehaviour
 
     /** Getters/setters for synced variables **/
 
-    public int GetKillsToWin()
+    public int GetMaxScore()
     {
-        return killsToWin;
+        return maxScore;
     }
 
-    public void ModifyKillsToWin(int mod)
+    public void ModifyMaxScore(int mod)
     {
         if (!Networking.IsOwner(gameObject))
         {
-            LogError("ModifyKillsToWin called by non-owner");
+            LogError("ModifyMaxScore called by non-owner");
             return;
         }
 
-        killsToWin = Mathf.Clamp(killsToWin + mod, 1, 10);
+        maxScore = Mathf.Clamp(maxScore + mod, 1, 10);
+
+        // Commit the changes
+        CommitChanges();
+    }
+
+    public int GetRoundTimeLimit()
+    {
+        return roundTimeLimit;
+    }
+
+    public void ModifyRoundTimeLimit(int mod)
+    {
+        if (!Networking.IsOwner(gameObject))
+        {
+            LogError("ModifyRoundTimeLimit called by non-owner");
+            return;
+        }
+
+        roundTimeLimit = Mathf.Clamp(roundTimeLimit + mod, 10, 600);
 
         // Commit the changes
         CommitChanges();
@@ -460,7 +479,7 @@ public class GameLogic : UdonSharpBehaviour
     {
         for (int i = 0; i < playerScores.Length; i++)
         {
-            if (playerScores[i] >= MAX_SCORE)
+            if (playerScores[i] >= maxScore)
             {
                 return playerSlots[i];
             }
@@ -504,6 +523,18 @@ public class GameLogic : UdonSharpBehaviour
     {
         ChangeLevel(Level.LOBBY);
         nextRoundTime = 0;
+
+        // Reset alive statuses
+        for (int i = 0; i < playerAlive.Length; i++)
+        {
+            playerAlive[i] = true;
+        }
+
+        // Reset scores
+        for (int i = 0; i < playerScores.Length; i++)
+        {
+            playerScores[i] = 0;
+        }
 
         // Commit the changes
         CommitChanges();
