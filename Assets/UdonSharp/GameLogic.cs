@@ -47,6 +47,10 @@ public class GameLogic : UdonSharpBehaviour
     /** Synced Variables **/
 
     /// <summary>
+    /// The number of kills required to win the game
+    /// </summary>
+    [UdonSynced] private int killsToWin = 10;
+    /// <summary>
     /// The time at which the current round will end
     /// </summary>
     [UdonSynced] private float roundEndTime = 0;
@@ -298,6 +302,25 @@ public class GameLogic : UdonSharpBehaviour
     }
 
     /** Getters/setters for synced variables **/
+
+    public int GetKillsToWin()
+    {
+        return killsToWin;
+    }
+
+    public void ModifyKillsToWin(int mod)
+    {
+        if (!Networking.IsOwner(gameObject))
+        {
+            LogError("ModifyKillsToWin called by non-owner");
+            return;
+        }
+
+        killsToWin = Mathf.Clamp(killsToWin + mod, 1, 10);
+
+        // Commit the changes
+        CommitChanges();
+    }
 
     private Level GetCurrentLevel()
     {
