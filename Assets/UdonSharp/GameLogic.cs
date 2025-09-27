@@ -292,7 +292,7 @@ public class GameLogic : UdonSharpBehaviour
         }
 
         // Check for end of round/game
-        if (GetAlivePlayerCount() <= 1 && GetPlayerCount() > 1)
+        if ((GetAlivePlayerCount() <= 1 && GetPlayerCount() > 1) || GetWinner() != -1)
         {
             // Notify players that the round is ending after a short delay
             roundEndTime = (Time.time * 1000) + END_ROUND_DELAY;

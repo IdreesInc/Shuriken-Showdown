@@ -86,6 +86,8 @@ public class ScoreBoard : UdonSharpBehaviour
             UnityEngine.UI.Image image = scoreDot.GetComponent<UnityEngine.UI.Image>();
             // If the score is greater than i, set the alpha to 1, otherwise set it to 0.5
             image.color = new Color(image.color.r, image.color.g, image.color.b, score > i ? 1 : 0.3f);
+            // Set active/inactive based on max score
+            scoreDot.SetActive(i < GameLogic.Get().GetMaxScore());
         }
     }
 
