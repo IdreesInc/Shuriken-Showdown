@@ -23,7 +23,7 @@ public class RoundTimeCounter : Counter
             LogError("Not the instance owner, cannot increment round time limit");
             return;
         }
-        GameLogic.Get().ModifyRoundTimeLimit(10);
+        GameLogic.Get().ModifyRoundTimeLimit(15);
         UpdateCounterText();
     }
 
@@ -34,7 +34,7 @@ public class RoundTimeCounter : Counter
             LogError("Not the instance owner, cannot decrement round time limit");
             return;
         }
-        GameLogic.Get().ModifyRoundTimeLimit(-10);
+        GameLogic.Get().ModifyRoundTimeLimit(-15);
         UpdateCounterText();
     }
 }

@@ -49,7 +49,7 @@ public class GameLogic : UdonSharpBehaviour
     /// <summary>
     /// The time limit for each round in seconds
     /// </summary>
-    [UdonSynced] private int roundTimeLimit = 300;
+    [UdonSynced] private int roundTimeLimit = 120;
     /// <summary>
     /// The time at which the current round will end
     /// </summary>
@@ -335,7 +335,7 @@ public class GameLogic : UdonSharpBehaviour
             return;
         }
 
-        roundTimeLimit = Mathf.Clamp(roundTimeLimit + mod, 10, 600);
+        roundTimeLimit = Mathf.Clamp(roundTimeLimit + mod, 15, 600);
 
         // Commit the changes
         CommitChanges();
