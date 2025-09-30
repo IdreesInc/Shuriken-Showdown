@@ -121,19 +121,6 @@ public class LevelManager : UdonSharpBehaviour
         return spawnMarker.position;
     }
 
-    public Vector3 GetDeathPosition()
-    {
-        Transform deathMarkerTrans = afterlife.transform.Find("Death Marker");
-        if (deathMarkerTrans == null)
-        {
-            LogError("Death marker not found");
-            return Vector3.zero;
-        }
-        GameObject deathMarker = deathMarkerTrans.gameObject;
-        Vector3 position = deathMarker.transform.position;
-        return position;
-    }
-
     public Vector3[] GetPowerUpSpawnPoints(Level level)
     {
         Transform powerUpMarkerParent = GetLevelObject(level).transform.Find("Power Up Markers");

@@ -81,7 +81,7 @@ public static class Shared
             name = " " + (string.IsNullOrEmpty(player.displayName) ? "Unnamed Player" : player.displayName);
             slot = GameLogic.Get().GetPlayerSlot(player.playerId);
         }
-        string color = "white";
+        string color = "#ff00ce";
         if (slot != -1)
         {
             color = Shared.ColorStrings()[slot];

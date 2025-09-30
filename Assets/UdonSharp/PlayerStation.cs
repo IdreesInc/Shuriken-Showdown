@@ -2,10 +2,11 @@
 using UnityEngine;
 using VRC.SDKBase;
 
-[UnityEngine.RequireComponent(typeof(VRCStation))]
+[RequireComponent(typeof(VRCStation))]
 public class PlayerStation : UdonSharpBehaviour
 {
     private VRCStation station;
+    private Vector3 initialPosition;
 
     private void Log(string message)
     {
@@ -17,6 +18,8 @@ public class PlayerStation : UdonSharpBehaviour
         Shared.LogError("Station", message, Networking.GetOwner(gameObject));
     }
 
+    /** Udon Overrides **/
+
     void Start()
     {
         station = GetComponent<VRCStation>();
@@ -26,9 +29,9 @@ public class PlayerStation : UdonSharpBehaviour
         {
             LogError("No owner assigned to station somehow");
         }
-        Vector3 position = station.transform.position;
-        position.x += 10f * playerId;
-        station.transform.position = position;
+        initialPosition = station.transform.position;
+        initialPosition.x += 10f * playerId;
+        station.transform.position = initialPosition;
     }
 
     public override void Interact()
@@ -48,6 +51,42 @@ public class PlayerStation : UdonSharpBehaviour
             pos.y -= 20f;
             station.transform.position = pos;
         }
+    }
+
+    /** Custom Methods **/
+
+    public void MoveToPosition(Vector3 position)
+    {
+        if (!Networking.IsOwner(gameObject))
+        {
+            LogError("Non-owner tried to move station");
+            return;
+        }
+        Log("Moving station to " + position);
+        station.transform.position = position;
+    }
+
+    public void SeatPlayer()
+    {
+        if (!Networking.IsOwner(gameObject))
+        {
+            LogError("Non-owner tried to seat player");
+            return;
+        }
+        Log("Seating player");
+        station.PlayerMobility = VRCStation.Mobility.Mobile;
+        station.UseStation(Networking.GetOwner(gameObject));
+    }
+
+    public void ResetLocation()
+    {
+        if (!Networking.IsOwner(gameObject))
+        {
+            LogError("Non-owner tried to reset station");
+            return;
+        }
+        Log("Resetting station position");
+        station.transform.position = initialPosition;
     }
 
 }

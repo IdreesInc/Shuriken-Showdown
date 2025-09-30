@@ -7,6 +7,7 @@ using VRC.SDKBase;
 public class PlayerCollider : UdonSharpBehaviour
 {
     private readonly Vector3 offset = new Vector3(0, 1, 0);
+    private PlayerStation playerStation;
 
     private VRCPlayerApi Player
     {
@@ -35,6 +36,28 @@ public class PlayerCollider : UdonSharpBehaviour
     }
 
     /** Udon Overrides **/
+
+    void Start()
+    {
+        if (Networking.IsOwner(gameObject))
+        {
+            GameObject[] playerObjects = Networking.GetPlayerObjects(Player);
+            foreach (GameObject obj in playerObjects)
+            {
+                PlayerStation station = obj.GetComponent<PlayerStation>();
+                if (station != null)
+                {
+                    playerStation = station;
+                    break;
+                }
+            }
+            if (playerStation == null)
+            {
+                LogError("No PlayerStation found for player");
+                return;
+            }
+        }
+    }
 
     void Update()
     {
@@ -98,11 +121,9 @@ public class PlayerCollider : UdonSharpBehaviour
         Log("Player " + verb + " by " + playerName);
         LocalPlayerLogic playerLogic = LocalPlayerLogic.Get();
         playerLogic.ShowHitUI(playerSlot, playerName, verb);
-        if (GameLogic.Get().GetAlivePlayerCount() > 1)
-        {
-            Vector3 deathPoint = LevelManager.Get().GetDeathPosition();
-            Player.TeleportTo(deathPoint, Player.GetRotation());
-        }
+        // Make the player a ghost
+        playerStation.MoveToPosition(Player.GetPosition());
+        playerStation.SeatPlayer();
     }
 
     /// <summary>
@@ -142,7 +163,9 @@ public class PlayerCollider : UdonSharpBehaviour
         Vector3 spawnPoint = manager.GetSpawnPosition(level, GameLogic.Get().GetPlayerSlot(PlayerId));
         // Update world spawn
         LocalPlayerLogic.Get().SetWorldSpawn(spawnPoint);
-        // Teleport player to spawn point
+        // Teleport player to spawn point (also forces the player out of the station)
         Player.TeleportTo(spawnPoint, Player.GetRotation());
+        // Reset station position
+        playerStation.ResetLocation();
     }
 }
