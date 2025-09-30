@@ -29,6 +29,9 @@ public class StationTest : UdonSharpBehaviour
         {
             station.PlayerMobility = VRCStation.Mobility.Immobilize;
             Log("Set to immobile");
+            var pos = station.transform.position;
+            pos.y -= 20f;
+            station.transform.position = pos;
         }
     }
 
