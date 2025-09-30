@@ -36,10 +36,9 @@ public class Shuriken : UdonSharpBehaviour
     private const float HOMING_PIGEON_ANGLE_MOD = 2.5f;
 
     /// <summary>
-    /// Whether we are in-game, which determines whether the shuriken can be used
-    /// and if it can collide with anything
+    /// Whether the shuriken can be picked up and used
     /// </summary>
-    [UdonSynced] private bool inGame = true;
+    [UdonSynced] private bool isActive = false;
     [UdonSynced] private bool isHeld = false;
     [UdonSynced] private bool hasBeenThrown = false;
     [UdonSynced] private bool hasFirstContact = false;
@@ -71,6 +70,11 @@ public class Shuriken : UdonSharpBehaviour
 
     /** Udon Overrides **/
 
+    void Start()
+    {
+        SetActive(isActive);
+    }
+
     void Update()
     {
         // Update the trail graphics (applies to all clients)
@@ -82,7 +86,7 @@ public class Shuriken : UdonSharpBehaviour
 
     void FixedUpdate()
     {
-        if (!inGame)
+        if (!isActive)
         {
             // Disable the ability to pick up the shuriken
             GetComponent<Rigidbody>().detectCollisions = false;
@@ -179,7 +183,7 @@ public class Shuriken : UdonSharpBehaviour
             // Set collision layer to Walkthrough
             // TODO: Determine if this has any adverse effects
             gameObject.layer = 17;
-            if (inGame)
+            if (isActive)
             {
                 // Spin that baby
                 transform.Rotate(Vector3.up, IDLE_ROTATION_SPEED * Time.deltaTime);
@@ -247,7 +251,7 @@ public class Shuriken : UdonSharpBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (!inGame)
+        if (!isActive)
         {
             Log("Shuriken is disabled, ignoring collision");
             return;
@@ -295,7 +299,7 @@ public class Shuriken : UdonSharpBehaviour
             Log("Not the owner, skipping trigger");
             return;
         }
-        if (!inGame)
+        if (!isActive)
         {
             Log("Shuriken is disabled, ignoring trigger");
             return;
@@ -366,7 +370,7 @@ public class Shuriken : UdonSharpBehaviour
             return;
         }
         Log("Fighting has started, enabling shuriken");
-        inGame = true;
+        SetActive(true);
     }
 
     [NetworkCallable]
@@ -377,7 +381,7 @@ public class Shuriken : UdonSharpBehaviour
             return;
         }
         ResetShurikenBetweenRounds();
-        inGame = false;
+        SetActive(false);
     }
 
     [NetworkCallable]
@@ -391,7 +395,7 @@ public class Shuriken : UdonSharpBehaviour
         powerUpOne = -1;
         powerUpTwo = -1;
         powerUpThree = -1;
-        inGame = false;
+        SetActive(false);
         ResetPowerUpEffects();
     }
 
@@ -413,6 +417,14 @@ public class Shuriken : UdonSharpBehaviour
         float[] EXPLOSION_RANGES = { 2.25f, 3f, 4.5f };
         return EXPLOSION_RANGES[Math.Min(level - 1, EXPLOSION_RANGES.Length - 1)];
     }
+
+    private void SetActive(bool active)
+    {
+        isActive = active;
+        GetComponent<Rigidbody>().detectCollisions = isActive;
+        GetComponent<Renderer>().enabled = isActive;
+    }
+
 
     /// <summary>
     /// Finds the nearest opponent player collider in the direction of the shuriken's travel
