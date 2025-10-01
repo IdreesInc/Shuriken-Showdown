@@ -183,20 +183,17 @@ public class LocalUIManager : UdonSharpBehaviour
             }
         }
 
+
+        messageUI.SetActive(visibleUI == UIType.MESSAGE_UI);
+        scoreBoard.gameObject.SetActive(visibleUI == UIType.SCORE_UI);
+
         if (visibleUI == UIType.MESSAGE_UI)
         {
-            messageUI.SetActive(true);
             visibleUIObject = messageUI;
         }
         else if (visibleUI == UIType.SCORE_UI)
         {
-            scoreBoard.gameObject.SetActive(true);
             visibleUIObject = scoreBoard.gameObject;
-        }
-        else
-        {
-            messageUI.SetActive(false);
-            scoreBoard.gameObject.SetActive(false);
         }
 
         if (visibleUIObject != null)
