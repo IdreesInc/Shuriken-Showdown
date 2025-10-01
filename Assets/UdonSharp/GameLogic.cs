@@ -6,6 +6,15 @@ using System;
 using VRC.SDK3.UdonNetworkCalling;
 using VRC.SDK3.Components;
 
+public enum GameState
+{
+    Lobby,
+    RoundStarting,
+    Fighting,
+    RoundEnding,
+    GameEnding
+}
+
 /// <summary>
 /// Game server logic that is only executed by the instance owner (who also owns this object)
 /// </summary>
@@ -20,8 +29,6 @@ public class GameLogic : UdonSharpBehaviour
     /// Max number of players that can participate in the game at once
     /// </summary>
     public const int MAX_PLAYERS = 8;
-
-
     /// <summary>
     /// The delay between a power up being collected and the next one spawning
     /// </summary>
@@ -34,11 +41,14 @@ public class GameLogic : UdonSharpBehaviour
     /// The delay between the last kill and the end of the round (gives time for the last kill to register on players' UIs)
     /// </summary>
     private const float END_ROUND_DELAY = 500;
-
     /// <summary>
     /// The delay between the end of a round and the start of the next round
     /// </summary>
     private const float NEXT_ROUND_DELAY = 3000;
+    /// <summary>
+    /// The delay between the end of the game and returning to the lobby
+    /// </summary>
+    private const float END_GAME_DELAY = 3000;
 
     /** Synced Variables **/
 
@@ -51,17 +61,13 @@ public class GameLogic : UdonSharpBehaviour
     /// </summary>
     [UdonSynced] private int roundTimeLimit = 120;
     /// <summary>
-    /// The time at which the current round will end
+    /// The current game state
     /// </summary>
-    [UdonSynced] private float roundEndTime = 0;
+    [UdonSynced] private int _currentGameState = (int)GameState.Lobby;
     /// <summary>
-    /// The time at which the next round will start
+    /// The time at which the current state will transition to the next state
     /// </summary>
-    [UdonSynced] private float nextRoundTime = 0;
-    /// <summary>
-    /// The time at which the fighting will start
-    /// </summary>
-    [UdonSynced] private float fightingStartTime = 0;
+    [UdonSynced] private float nextStateTime = 0;
     /// <summary>
     /// The time at which the next power up will spawn
     /// </summary>
@@ -87,12 +93,12 @@ public class GameLogic : UdonSharpBehaviour
 
     private void Log(string message)
     {
-        Debug.Log("[GameLogic - " + Networking.LocalPlayer.playerId + "]: " + message);
+        Shared.Log("GameLogic", message);
     }
 
     private void LogError(string message)
     {
-        Debug.Log("[GameLogic - " + Networking.LocalPlayer.playerId + "]: " + message);
+        Shared.LogError("GameLogic", message);
     }
 
     /// <summary>
@@ -152,37 +158,15 @@ public class GameLogic : UdonSharpBehaviour
         {
             return;
         }
-        // Check for timed events
-        if (roundEndTime != 0 && Time.time * 1000 >= roundEndTime)
+
+        // Handle state transitions
+        if (nextStateTime != 0 && Time.time * 1000 >= nextStateTime)
         {
-            roundEndTime = 0;
-            int winnerSlot = GetWinner();
-            if (winnerSlot == -1)
-            {
-                EndRound();
-            }
-            else
-            {
-                int winnerId = playerSlots[GetPlayerSlot(winnerSlot)];
-                EndGame(winnerSlot, VRCPlayerApi.GetPlayerById(winnerId).displayName);
-            }
+            nextStateTime = 0;
+            GoToNextState();
         }
-        if (nextRoundTime != 0 && Time.time * 1000 >= nextRoundTime)
-        {
-            StartNextRound();
-        }
-        if (fightingStartTime != 0 && Time.time * 1000 >= fightingStartTime)
-        {
-            fightingStartTime = 0;
-            // Send an event to each shuriken
-            foreach (Shuriken child in Shurikens())
-            {
-                if (child.gameObject.activeSelf)
-                {
-                    child.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(Shuriken.OnFightingStart));
-                }
-            }
-        }
+
+        // Handle power up spawning
         if (nextPowerUpTime != 0 && Time.time * 1000 >= nextPowerUpTime)
         {
             nextPowerUpTime = 0;
@@ -214,7 +198,7 @@ public class GameLogic : UdonSharpBehaviour
             return;
         }
         Log("Starting game");
-        StartNextRound();
+        TransitionToRoundStarting();
     }
 
     /// <summary>
@@ -294,8 +278,8 @@ public class GameLogic : UdonSharpBehaviour
         // Check for end of round/game
         if ((GetAlivePlayerCount() <= 1 && GetPlayerCount() > 1) || GetWinner() != -1)
         {
-            // Notify players that the round is ending after a short delay
-            roundEndTime = (Time.time * 1000) + END_ROUND_DELAY;
+            ScheduleNextState(END_ROUND_DELAY);
+            CommitChanges();
         }
 
         Log("Player hit processing complete");
@@ -357,6 +341,32 @@ public class GameLogic : UdonSharpBehaviour
         Log("Setting current level to " + level);
         _currentLevel = (int)level;
     }
+
+    private GameState GetCurrentGameState()
+    {
+        return (GameState)_currentGameState;
+    }
+
+    private void SetGameState(GameState gameState, float duration = 0)
+    {
+        _currentGameState = (int)gameState;
+        Log("Setting game state to " + GetCurrentGameState().ToString() + (duration > 0 ? " with duration " + duration + "ms" : " indefinitely"));
+        if (duration > 0)
+        {
+            ScheduleNextState(duration);
+        }
+        else
+        {
+            nextStateTime = 0;
+        }
+        CommitChanges();
+    }
+
+    private void ScheduleNextState(float duration)
+    {
+        nextStateTime = (Time.time * 1000) + duration;
+    }
+
 
     /** Custom methods **/
 
@@ -431,6 +441,150 @@ public class GameLogic : UdonSharpBehaviour
         }
     }
 
+    private void GoToNextState()
+    {
+        GameState currentState = GetCurrentGameState();
+
+        switch (currentState)
+        {
+            case GameState.RoundStarting:
+                TransitionToFighting();
+                break;
+
+            case GameState.Fighting:
+                int winnerSlot = GetWinner();
+                if (winnerSlot == -1)
+                {
+                    TransitionToRoundEnding();
+                }
+                else
+                {
+                    int winnerId = playerSlots[GetPlayerSlot(winnerSlot)];
+                    TransitionToGameEnding(winnerSlot, VRCPlayerApi.GetPlayerById(winnerId).displayName);
+                }
+                break;
+
+            case GameState.RoundEnding:
+                TransitionToRoundStarting();
+                break;
+
+            case GameState.GameEnding:
+                TransitionToLobby();
+                break;
+            default:
+                LogError("Tried to go to next state from invalid state " + currentState);
+                break;
+        }
+    }
+
+    private void TransitionToLobby()
+    {
+        SetGameState(GameState.Lobby);
+
+        // Reset alive statuses
+        for (int i = 0; i < playerAlive.Length; i++)
+        {
+            playerAlive[i] = true;
+        }
+
+        // Reset scores
+        for (int i = 0; i < playerScores.Length; i++)
+        {
+            playerScores[i] = 0;
+        }
+
+        // Commit the changes
+        CommitChanges();
+    }
+
+    private void TransitionToRoundStarting()
+    {
+        SetGameState(GameState.RoundStarting, FIGHTING_DELAY);
+        ChangeLevel(LevelManager.GetRandomLevel(GetCurrentLevel()));
+
+        // Reset alive statuses
+        for (int i = 0; i < playerAlive.Length; i++)
+        {
+            playerAlive[i] = true;
+        }
+
+        // Commit the changes
+        CommitChanges();
+
+        // Send round start events
+        foreach (Shuriken child in Shurikens())
+        {
+            if (child.gameObject.activeSelf)
+            {
+                child.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(Shuriken.OnRoundStart));
+            }
+        }
+        foreach (PlayerCollider child in PlayerColliders())
+        {
+            if (child.gameObject.activeSelf)
+            {
+                Log("Sending start round for player collider " + child.gameObject.name);
+                child.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(PlayerCollider.OnRoundStart), GetCurrentLevelInt());
+            }
+        }
+    }
+
+    private void TransitionToFighting()
+    {
+        SetGameState(GameState.Fighting, roundTimeLimit * 1000);
+
+        // Send fighting start events
+        foreach (Shuriken child in Shurikens())
+        {
+            if (child.gameObject.activeSelf)
+            {
+                child.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(Shuriken.OnFightingStart));
+            }
+        }
+    }
+
+    private void TransitionToRoundEnding()
+    {
+        SetGameState(GameState.RoundEnding, NEXT_ROUND_DELAY);
+
+        // Send round end events
+        foreach (Shuriken child in Shurikens())
+        {
+            if (child.gameObject.activeSelf)
+            {
+                child.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(Shuriken.OnRoundEnd));
+            }
+        }
+        foreach (PlayerCollider child in PlayerColliders())
+        {
+            if (child.gameObject.activeSelf)
+            {
+                child.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(PlayerCollider.OnRoundEnd));
+            }
+        }
+    }
+
+    private void TransitionToGameEnding(int winnerSlot, string winnerName)
+    {
+        SetGameState(GameState.GameEnding, END_GAME_DELAY);
+
+        // Send game end events
+        foreach (Shuriken child in Shurikens())
+        {
+            if (child.gameObject.activeSelf)
+            {
+                child.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(Shuriken.OnGameEnd));
+            }
+        }
+        foreach (PlayerCollider child in PlayerColliders())
+        {
+            if (child.gameObject.activeSelf)
+            {
+                child.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(PlayerCollider.OnGameEnd), winnerSlot, winnerName);
+            }
+        }
+    }
+
     private int GetPlayerCount()
     {
         int count = 0;
@@ -485,105 +639,6 @@ public class GameLogic : UdonSharpBehaviour
             }
         }
         return -1;
-    }
-
-    private void EndRound()
-    {
-        Log("Ending round");
-        nextRoundTime = Time.time + NEXT_ROUND_DELAY;
-
-        // Reset alive statuses
-        for (int i = 0; i < playerAlive.Length; i++)
-        {
-            playerAlive[i] = true;
-        }
-
-        // Commit the changes
-        CommitChanges();
-
-        // Send an event to each shuriken
-        foreach (Shuriken child in Shurikens())
-        {
-            if (child.gameObject.activeSelf)
-            {
-                child.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(Shuriken.OnRoundEnd));
-            }
-        }
-        // Send an event to each player collider
-        foreach (PlayerCollider child in PlayerColliders())
-        {
-            if (child.gameObject.activeSelf)
-            {
-                child.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(PlayerCollider.OnRoundEnd));
-            }
-        }
-    }
-
-    private void EndGame(int winnerSlot, string winnerName)
-    {
-        ChangeLevel(Level.LOBBY);
-        nextRoundTime = 0;
-
-        // Reset alive statuses
-        for (int i = 0; i < playerAlive.Length; i++)
-        {
-            playerAlive[i] = true;
-        }
-
-        // Reset scores
-        for (int i = 0; i < playerScores.Length; i++)
-        {
-            playerScores[i] = 0;
-        }
-
-        // Commit the changes
-        CommitChanges();
-
-        // Send an event to each shuriken
-        foreach (Shuriken child in Shurikens())
-        {
-            if (child.gameObject.activeSelf)
-            {
-                child.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(Shuriken.OnGameEnd));
-            }
-        }
-        // Send an event to each player collider
-        foreach (PlayerCollider child in PlayerColliders())
-        {
-            if (child.gameObject.activeSelf)
-            {
-                child.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(PlayerCollider.OnGameEnd), winnerSlot, winnerName);
-            }
-        }
-    }
-
-    private void StartNextRound()
-    {
-        nextRoundTime = 0;
-        fightingStartTime = (Time.time * 1000) + FIGHTING_DELAY;
-        ChangeLevel(LevelManager.GetRandomLevel(GetCurrentLevel()));
-
-        // Commit the changes
-        CommitChanges();
-
-        // Send an event to each shuriken
-        foreach (Shuriken child in Shurikens())
-        {
-            if (child.gameObject.activeSelf)
-            {
-                // Intentionally send to all shurikens so they can apply power-ups
-                child.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(Shuriken.OnRoundStart));
-            }
-        }
-        // Send an event to each player collider
-        foreach (PlayerCollider child in PlayerColliders())
-        {
-            if (child.gameObject.activeSelf)
-            {
-                Log("Sending start round for player collider " + child.gameObject.name);
-                child.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(PlayerCollider.OnRoundStart), GetCurrentLevelInt());
-            }
-        }
     }
 
     private void ChangeLevel(Level level)

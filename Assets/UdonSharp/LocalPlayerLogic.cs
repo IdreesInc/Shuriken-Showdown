@@ -97,11 +97,12 @@ public class LocalPlayerLogic : UdonSharpBehaviour
     {
         // Alive player count might not yet be updated, calculate it manually
         bool[] statuses = GameLogic.Get().GetPlayerAliveStatuses();
+        int[] slots = GameLogic.Get().GetPlayerSlots();
         int currentPlayerSlot = GameLogic.Get().GetPlayerSlot(Networking.LocalPlayer.playerId);
         int numRemaining = 0;
         for (int i = 0; i < statuses.Length; i++)
         {
-            if (statuses[i] && i != playerSlot && i != currentPlayerSlot)
+            if (statuses[i] && i != playerSlot && i != currentPlayerSlot && slots[i] != 0)
             {
                 numRemaining++;
             }
