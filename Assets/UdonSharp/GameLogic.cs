@@ -36,7 +36,7 @@ public class GameLogic : UdonSharpBehaviour
     /// <summary>
     /// The delay between the start of a round and the start of the fighting
     /// </summary>
-    private const float FIGHTING_DELAY = 3000;
+    private const float FIGHTING_DELAY = 4000;
     /// <summary>
     /// The delay between the last kill and the end of the round (gives time for the last kill to register on players' UIs)
     /// </summary>
@@ -44,11 +44,11 @@ public class GameLogic : UdonSharpBehaviour
     /// <summary>
     /// The delay between the end of a round and the start of the next round
     /// </summary>
-    private const float NEXT_ROUND_DELAY = 3000;
+    private const float NEXT_ROUND_DELAY = 4500;
     /// <summary>
     /// The delay between the end of the game and returning to the lobby
     /// </summary>
-    private const float END_GAME_DELAY = 3000;
+    private const float END_GAME_DELAY = 4000;
 
     /** Synced Variables **/
 

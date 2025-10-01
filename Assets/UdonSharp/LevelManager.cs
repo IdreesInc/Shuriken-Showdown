@@ -16,8 +16,10 @@ public enum Level
 [UdonBehaviourSyncMode(BehaviourSyncMode.None)]
 public class LevelManager : UdonSharpBehaviour
 {
+
+    public AudioSource lobbyMusic;
+    public AudioSource battleMusic;
     public GameObject sharedTerrain;
-    public GameObject afterlife;
     public GameObject lobby;
     public GameObject ruins;
     public GameObject foundations;
@@ -73,10 +75,16 @@ public class LevelManager : UdonSharpBehaviour
             return;
         }
         Log("Transitioning to level: " + level);
-        if (loadedLevel != Level.NONE)
+
+        if (loadedLevel == Level.LOBBY && level != Level.LOBBY)
         {
-            // Stop the current background music
-            GetBackgroundMusic(loadedLevel).Stop();
+            lobbyMusic.Stop();
+            battleMusic.Play();
+        }
+        else if (loadedLevel != Level.LOBBY && level == Level.LOBBY)
+        {
+            battleMusic.Stop();
+            lobbyMusic.Play();
         }
 
         loadedLevel = level;
@@ -94,9 +102,6 @@ public class LevelManager : UdonSharpBehaviour
         Vector3 levelPos = levelObject.transform.position;
         // Move the shared terrain to the new level's terrain position
         sharedTerrain.transform.position = new Vector3(levelPos.x, terrainPos.y, levelPos.z);
-
-        // Play the new background music
-        GetBackgroundMusic(loadedLevel).Play();
     }
 
     public Vector3 GetSpawnPosition(Level level, int playerSlot)
@@ -135,10 +140,5 @@ public class LevelManager : UdonSharpBehaviour
             powerUpSpawnPoints[i] = powerUpMarkerParent.GetChild(i).position;
         }
         return powerUpSpawnPoints;
-    }
-
-    private AudioSource GetBackgroundMusic(Level level)
-    {
-        return GetLevelObject(level).transform.Find("Background Music").GetComponent<AudioSource>();
     }
 }

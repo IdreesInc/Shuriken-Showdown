@@ -56,6 +56,8 @@ public class PlayerCollider : UdonSharpBehaviour
                 LogError("No PlayerStation found for player");
                 return;
             }
+            // Start at the lobby
+            LevelManager.Get().TransitionToLevel(Level.LOBBY);
         }
     }
 
