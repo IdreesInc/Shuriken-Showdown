@@ -34,8 +34,8 @@ public static class Shared
         return new string[] {
             "#ff4c4c",
             "#6699ff",
-            "#7dff66",
-            "#ffd966",
+            "#6fe35b",
+            "#ffcf3f",
             "#d580ff",
             "#ff9966",
             "#66ffff",
@@ -50,6 +50,26 @@ public static class Shared
         for (int i = 0; i < ColorStrings().Length; i++)
         {
             colors[i] = HexToColor(ColorStrings()[i]);
+        }
+        return colors;
+    }
+
+    public static Color[] LightenedColors()
+    {
+        Color[] colors = Colors();
+        for (int i = 0; i < colors.Length; i++)
+        {
+            colors[i] = Color.Lerp(colors[i], Color.white, 0.3f);
+        }
+        return colors;
+    }
+
+    public static Color[] DarkenedColors()
+    {
+        Color[] colors = Colors();
+        for (int i = 0; i < colors.Length; i++)
+        {
+            colors[i] = Color.Lerp(colors[i], Color.black, 0.3f);
         }
         return colors;
     }

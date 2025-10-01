@@ -31,13 +31,11 @@ public class ScoreBoard : UdonSharpBehaviour
         {
             LogError("scoreLines is null or empty");
         }
-        Log(Shared.Colors().Length + " colors available");
+        Log(Shared.DarkenedColors().Length + " colors available");
         // Set the color of each score line
         for (int i = 0; i < scoreLines.Length; i++)
         {
-            Color color = Shared.Colors()[i];
-            // Desaturate the color
-            color = Color.Lerp(color, Color.white, 0.4f);
+            Color color = Shared.DarkenedColors()[i];
             scoreLines[i].GetComponent<UnityEngine.UI.Image>().color = color;
         }
     }
@@ -85,7 +83,7 @@ public class ScoreBoard : UdonSharpBehaviour
             // Get the Image component of the scoreDot
             UnityEngine.UI.Image image = scoreDot.GetComponent<UnityEngine.UI.Image>();
             // If the score is greater than i, set the alpha to 1, otherwise set it to 0.5
-            image.color = new Color(image.color.r, image.color.g, image.color.b, score > i ? 1 : 0.3f);
+            image.color = new Color(image.color.r, image.color.g, image.color.b, score > i ? 1 : 0.5f);
             // Set active/inactive based on max score
             scoreDot.SetActive(i < GameLogic.Get().GetMaxScore());
         }
