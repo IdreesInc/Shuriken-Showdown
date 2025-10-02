@@ -14,6 +14,8 @@ public class LocalPlayerLogic : UdonSharpBehaviour
     public GameObject vrcWorld;
     public GameObject playerCollidersParent;
 
+    private int jumpHeldTicks = 0;
+
     private void Log(string message)
     {
         Shared.Log("LocalPlayerLogic", message);
@@ -22,6 +24,17 @@ public class LocalPlayerLogic : UdonSharpBehaviour
     private void LogError(string message)
     {
         Shared.LogError("LocalPlayerLogic", message);
+    }
+
+    void Update()
+    {
+        if (Input.GetButton("Jump"))
+        {
+            jumpHeldTicks++;
+        } else
+        {
+            jumpHeldTicks = 0;
+        }
     }
 
     /// <summary>
