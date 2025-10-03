@@ -8,9 +8,11 @@ using TMPro;
 public class DebugUI : UdonSharpBehaviour
 {
 
-    public TMP_Dropdown dropdown;
+    public TMP_Dropdown levelSelector;
+    public TMP_Dropdown powerUpSelector;
 
     private PlayerCollider playerCollider;
+    private Shuriken shuriken;
 
     private void Log(string message)
     {
@@ -26,16 +28,32 @@ public class DebugUI : UdonSharpBehaviour
             if (collider != null)
             {
                 playerCollider = collider;
-                break;
+            }
+            Shuriken shuriken = obj.GetComponent<Shuriken>();
+            if (shuriken != null)
+            {
+                this.shuriken = shuriken;
             }
         }
     }
 
     public void PickLevel()
     {
-        int level = dropdown.value;
+        int level = levelSelector.value;
         Log($"Picking level {level}");
         LevelManager.Get().TransitionToLevel((Level)level);
         playerCollider.GoToLevelSpawn((Level)level);
+    }
+
+    public void GivePowerUp()
+    {
+        if (powerUpSelector.value == 0)
+        {
+            return;
+        }
+        int powerUp = powerUpSelector.value - 1;
+        Log($"Giving power up {powerUp}");
+        shuriken.ActivatePowerUp(powerUp);
+        powerUpSelector.value = 0;
     }
 }
