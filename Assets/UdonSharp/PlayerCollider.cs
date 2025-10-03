@@ -157,7 +157,7 @@ public class PlayerCollider : UdonSharpBehaviour
         return Player.displayName;
     }
 
-    private void GoToLevelSpawn(Level level)
+    public void GoToLevelSpawn(Level level)
     {
         Log("Teleporting to spawn of level " + level);
         LevelManager manager = LevelManager.Get();

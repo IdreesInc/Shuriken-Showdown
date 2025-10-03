@@ -14,6 +14,7 @@ public class LocalPlayerLogic : UdonSharpBehaviour
     public GameObject vrcWorld;
     public GameObject playerCollidersParent;
 
+    private const int JUMP_HELD_TICKS = 60;
     private int jumpHeldTicks = 0;
 
     private void Log(string message)
@@ -31,7 +32,13 @@ public class LocalPlayerLogic : UdonSharpBehaviour
         if (Input.GetButton("Jump"))
         {
             jumpHeldTicks++;
-        } else
+            if (jumpHeldTicks == JUMP_HELD_TICKS)
+            {
+                Log("Toggling Debug UI");
+                LocalUIManager.Get().ToggleDebugUI();
+            }
+        }
+        else
         {
             jumpHeldTicks = 0;
         }

@@ -20,6 +20,7 @@ public class LocalUIManager : UdonSharpBehaviour
 
     public GameObject messageUI;
     public ScoreBoard scoreBoard;
+    public GameObject debugUI;
 
     /// <summary>
     /// The currently visible UI
@@ -54,6 +55,11 @@ public class LocalUIManager : UdonSharpBehaviour
     }
 
     /** Udon Overrides **/
+
+    void Start()
+    {
+        debugUI.SetActive(false);
+    }
 
     void Update()
     {
@@ -91,6 +97,12 @@ public class LocalUIManager : UdonSharpBehaviour
         visibleUI = UIType.SCORE_UI;
         scoreBoard.UpdateScores();
         UpdateUI();
+    }
+
+    public void ToggleDebugUI()
+    {
+        debugUI.SetActive(!debugUI.activeSelf);
+        CenterUIObject(debugUI);
     }
 
     private void SetMessageUI(
@@ -198,17 +210,21 @@ public class LocalUIManager : UdonSharpBehaviour
 
         if (visibleUIObject != null)
         {
-            // Put UI in front of player's camera
-            VRCPlayerApi localPlayer = Networking.LocalPlayer;
-            // Get the player's head tracking data (camera position and rotation)
-            VRCPlayerApi.TrackingData headData = localPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
-
-            // Calculate position in front of the player's camera
-            Vector3 newPosition = headData.position + headData.rotation * Vector3.forward * 1.1f;
-
-            // Set the target object's position and rotation
-            visibleUIObject.transform.SetPositionAndRotation(newPosition, headData.rotation);
-            visibleUIObject.GetComponent<CanvasGroup>().alpha = alpha;
+            CenterUIObject(visibleUIObject);
         }
+    }
+    
+    private void CenterUIObject(GameObject uiObject)
+    {
+        // Put UI in front of player's camera
+        VRCPlayerApi localPlayer = Networking.LocalPlayer;
+        // Get the player's head tracking data (camera position and rotation)
+        VRCPlayerApi.TrackingData headData = localPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
+
+        // Calculate position in front of the player's camera
+        Vector3 newPosition = headData.position + headData.rotation * Vector3.forward * 1.1f;
+
+        // Set the target object's position and rotation
+        uiObject.transform.SetPositionAndRotation(newPosition, headData.rotation);
     }
 }
