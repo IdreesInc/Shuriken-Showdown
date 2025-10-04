@@ -7,7 +7,8 @@ public enum Level
     NONE,
     LOBBY,
     RUINS,
-    FOUNDATIONS
+    FOUNDATIONS,
+    FROZEN_BAY
 }
 
 /// <summary>
@@ -23,9 +24,10 @@ public class LevelManager : UdonSharpBehaviour
     public GameObject lobby;
     public GameObject ruins;
     public GameObject foundations;
+    public GameObject frozenBay;
 
     private Level loadedLevel = Level.NONE;
-    private readonly Level[] levels = { Level.LOBBY, Level.RUINS, Level.FOUNDATIONS };
+    private readonly Level[] levels = { Level.LOBBY, Level.RUINS, Level.FOUNDATIONS, Level.FROZEN_BAY };
 
     private void Log(string message)
     {
@@ -52,6 +54,8 @@ public class LevelManager : UdonSharpBehaviour
                 return ruins;
             case Level.FOUNDATIONS:
                 return foundations;
+            case Level.FROZEN_BAY:
+                return frozenBay;
             default:
                 LogError("Unknown level: " + level);
                 return null;
@@ -63,7 +67,7 @@ public class LevelManager : UdonSharpBehaviour
         Level randomLevel;
         do
         {
-            randomLevel = (Level)Random.Range(1, 4);
+            randomLevel = (Level)Random.Range(1, 5);
         } while (randomLevel == Level.LOBBY || randomLevel == currentLevel);
         return randomLevel;
     }
