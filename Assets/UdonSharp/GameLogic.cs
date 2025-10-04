@@ -145,12 +145,24 @@ public class GameLogic : UdonSharpBehaviour
         }
 
 
-        // int slot = AddPlayer(player);
-        // if (slot == -1)
-        // {
-        //     LogError("Max players reached, not adding player " + player.playerId);
-        //     return;
-        // }
+        int slot = AddPlayer(player);
+        if (slot == -1)
+        {
+            LogError("Max players reached, not adding player " + player.playerId);
+            return;
+        }
+    }
+
+    public override void OnPlayerLeft(VRCPlayerApi player)
+    {
+        Log("Player left: " + player.displayName);
+        if (!Networking.IsOwner(gameObject))
+        {
+            return;
+        }
+
+        RemovePlayer(player);
+        CheckForGameEnd();
     }
 
     void Update()
@@ -276,12 +288,7 @@ public class GameLogic : UdonSharpBehaviour
             }
         }
 
-        // Check for end of round/game
-        if ((GetAlivePlayerCount() <= 1 && GetPlayerCount() > 1) || GetWinner() != -1)
-        {
-            ScheduleNextState(END_ROUND_DELAY);
-            CommitChanges();
-        }
+        CheckForGameEnd();
 
         Log("Player hit processing complete");
     }
@@ -627,6 +634,24 @@ public class GameLogic : UdonSharpBehaviour
         return availablePlayerSlot;
     }
 
+    private void RemovePlayer(VRCPlayerApi player)
+    {
+        int playerId = player.playerId;
+        int playerSlot = GetPlayerSlot(playerId);
+        if (playerSlot == -1)
+        {
+            LogError("Player is already guest, no need to remove: " + playerId);
+            return;
+        }
+        playerSlots[playerSlot] = 0;
+        playerAlive[playerSlot] = false;
+        playerScores[playerSlot] = 0;
+        Log("Removed player " + playerId + " from slot " + playerSlot);
+
+        // Commit the changes
+        CommitChanges();
+    }
+
     private Shuriken[] Shurikens()
     {
         return playerObjectsParent.GetComponentsInChildren<Shuriken>();
@@ -650,6 +675,15 @@ public class GameLogic : UdonSharpBehaviour
             }
         }
         return -1;
+    }
+
+    private void CheckForGameEnd()
+    {
+        if (GetCurrentGameState() == GameState.Fighting && ((GetAlivePlayerCount() <= 1 && GetPlayerCount() > 1) || GetWinner() != -1))
+        {
+            ScheduleNextState(END_ROUND_DELAY);
+            CommitChanges();
+        }
     }
 
     private void ChangeLevel(Level level)

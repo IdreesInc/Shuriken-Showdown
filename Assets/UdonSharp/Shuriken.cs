@@ -20,8 +20,9 @@ public class Shuriken : UdonSharpBehaviour
     private const float MAX_DISTANCE = 75;
     private const float MAX_GROUND_DISTANCE = 5;
     private const float THROW_FORCE = 5;
-    private const float DEFAULT_WALK_SPEED = 4f;
-    private const float DEFAULT_RUN_SPEED = 6f;
+    private const float DEFAULT_WALK_SPEED = 4.5f;
+    private const float DEFAULT_RUN_SPEED = 6.5f;
+    private const float DEFAULT_STRAFE_SPEED = 4f;
     private const float DEFAULT_JUMP_FORCE = 3.5f;
     private readonly Vector3 GRAVITY_FORCE = new Vector3(0, -9.81f / 3, 0);
     private const float EMBIGGEN_MOD = 1f;
@@ -659,6 +660,7 @@ public class Shuriken : UdonSharpBehaviour
             {
                 player.SetWalkSpeed(DEFAULT_WALK_SPEED);
                 player.SetRunSpeed(DEFAULT_RUN_SPEED);
+                player.SetStrafeSpeed(DEFAULT_STRAFE_SPEED);
                 player.SetJumpImpulse(DEFAULT_JUMP_FORCE);
             }
         }
