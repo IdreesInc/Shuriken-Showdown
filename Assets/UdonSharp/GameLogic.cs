@@ -326,7 +326,7 @@ public class GameLogic : UdonSharpBehaviour
         CommitChanges();
     }
 
-    private Level GetCurrentLevel()
+    public Level GetCurrentLevel()
     {
         return (Level)_currentLevel;
     }

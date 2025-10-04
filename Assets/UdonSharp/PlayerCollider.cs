@@ -69,6 +69,24 @@ public class PlayerCollider : UdonSharpBehaviour
         }
     }
 
+    public override void OnPlayerRespawn(VRCPlayerApi player)
+    {
+        if (!Networking.IsOwner(gameObject))
+        {
+            return;
+        }
+        if (player.playerId != PlayerId)
+        {
+            return;
+        }
+        Log("Player respawned");
+        if (!GameLogic.Get().IsPlayerAlive(PlayerId) && GameLogic.Get().GetCurrentLevel() != Level.LOBBY)
+        {
+            Log("Player tried to cheat death, ghosting them once more");
+            GoGhost();
+        }
+    }
+
     /** Event Handlers **/
 
     [NetworkCallable]

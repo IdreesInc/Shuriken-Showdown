@@ -9,6 +9,8 @@ public class PlayerStation : UdonSharpBehaviour
     private Vector3 initialPosition;
     private Ghost ghost;
 
+    private const float GHOST_GRAVITY = 0.3f;
+
     private void Log(string message)
     {
         Shared.Log("Station", message, Networking.GetOwner(gameObject));
@@ -70,6 +72,7 @@ public class PlayerStation : UdonSharpBehaviour
         }
         if (Networking.IsOwner(gameObject))
         {
+            Networking.GetOwner(gameObject).SetGravityStrength(GHOST_GRAVITY);
             ghost.FollowPlayer();
         }
     }
@@ -79,6 +82,7 @@ public class PlayerStation : UdonSharpBehaviour
         Log("OnStationExited: " + player.displayName);
         if (Networking.IsOwner(gameObject))
         {
+            Networking.GetOwner(gameObject).SetGravityStrength(1f);
             ghost.StopFollowing();
         }
     }

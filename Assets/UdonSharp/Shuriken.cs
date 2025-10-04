@@ -34,7 +34,6 @@ public class Shuriken : UdonSharpBehaviour
     private const float AIR_JUMP_FORCE = 5f;
     private const float HOMING_PIGEON_FORCE_MOD = 0.01f;
     private const float HOMING_PIGEON_ANGLE_MOD = 2.5f;
-    private const int GHOST_EXTRA_JUMPS = 2;
 
     /// <summary>
     /// Whether the shuriken can be picked up and used
@@ -328,7 +327,7 @@ public class Shuriken : UdonSharpBehaviour
             numberOfJumps++;
             if (!Player.IsPlayerGrounded())
             {
-                int numberOfAirJumps = GetPowerUpLevel(4) + (GameLogic.Get().IsPlayerAlive(Player.playerId) ? 0 : GHOST_EXTRA_JUMPS);
+                int numberOfAirJumps = GetPowerUpLevel(4);
                 if (numberOfJumps - 1 > numberOfAirJumps)
                 {
                     return;
