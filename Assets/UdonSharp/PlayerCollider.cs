@@ -6,7 +6,7 @@ using VRC.SDKBase;
 [UdonBehaviourSyncMode(BehaviourSyncMode.Continuous)]
 public class PlayerCollider : UdonSharpBehaviour
 {
-    private readonly Vector3 offset = new Vector3(0, 1, 0);
+    private readonly Vector3 OFFSET = new Vector3(0, 1, 0);
     private PlayerStation playerStation;
 
     private VRCPlayerApi Player
@@ -65,7 +65,7 @@ public class PlayerCollider : UdonSharpBehaviour
     {
         if (Player != null)
         {
-            transform.position = Player.GetPosition() + offset;
+            transform.position = Player.GetPosition() + OFFSET;
         }
     }
 
@@ -81,6 +81,12 @@ public class PlayerCollider : UdonSharpBehaviour
         Log("New round starting on level " + level);
         LevelManager.Get().TransitionToLevel((Level)level);
         GoToLevelSpawn((Level)level);
+        // If player is a guest, make them a ghost
+        if (!GameLogic.Get().HasPlayerJoined(PlayerId))
+        {
+            Log("Player is a guest, making them a ghost");
+            GoGhost();
+        }
     }
 
     [NetworkCallable]
@@ -123,9 +129,7 @@ public class PlayerCollider : UdonSharpBehaviour
         Log("Player " + verb + " by " + playerName);
         LocalPlayerLogic playerLogic = LocalPlayerLogic.Get();
         playerLogic.ShowHitUI(playerSlot, playerName, verb);
-        // Make the player a ghost
-        playerStation.MoveToPosition(Player.GetPosition());
-        playerStation.SeatPlayer();
+        GoGhost();
     }
 
     /// <summary>
@@ -169,5 +173,12 @@ public class PlayerCollider : UdonSharpBehaviour
         Player.TeleportTo(spawnPoint, Player.GetRotation());
         // Reset station position
         playerStation.ResetLocation();
+    }
+
+    private void GoGhost()
+    {
+        Log("Going ghost!");
+        playerStation.MoveToPosition(Player.GetPosition());
+        playerStation.SeatPlayer();
     }
 }

@@ -140,17 +140,17 @@ public class GameLogic : UdonSharpBehaviour
 
         if (player == null || !Utilities.IsValid(player))
         {
-            LogError("Player is invalid, not adding");
+            LogError("Player is invalid on join");
             return;
         }
 
 
-        int slot = AddPlayer(player);
-        if (slot == -1)
-        {
-            LogError("Max players reached, not adding player " + player.playerId);
-            return;
-        }
+        // int slot = AddPlayer(player);
+        // if (slot == -1)
+        // {
+        //     LogError("Max players reached, not adding player " + player.playerId);
+        //     return;
+        // }
     }
 
     void Update()
@@ -380,8 +380,18 @@ public class GameLogic : UdonSharpBehaviour
     }
 
     /// <summary>
+    /// Check if a player with the given VRChat player ID is playing
+    /// Returns false if the player is a guest
+    /// </summary>
+    public bool HasPlayerJoined(int playerId)
+    {
+        int playerSlot = GetPlayerSlot(playerId);
+        return playerSlot != -1;
+    }
+
+    /// <summary>
     /// Check if a player with the given VRChat player ID is alive
-    /// Returns false if the player is dead or the player ID is not found
+    /// Returns false if the player is dead or the player ID is a guest
     /// </summary>
     public bool IsPlayerAlive(int playerId)
     {

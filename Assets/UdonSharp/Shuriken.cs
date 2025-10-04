@@ -34,6 +34,7 @@ public class Shuriken : UdonSharpBehaviour
     private const float AIR_JUMP_FORCE = 5f;
     private const float HOMING_PIGEON_FORCE_MOD = 0.01f;
     private const float HOMING_PIGEON_ANGLE_MOD = 2.5f;
+    private const int GHOST_EXTRA_JUMPS = 2;
 
     /// <summary>
     /// Whether the shuriken can be picked up and used
@@ -327,7 +328,7 @@ public class Shuriken : UdonSharpBehaviour
             numberOfJumps++;
             if (!Player.IsPlayerGrounded())
             {
-                int numberOfAirJumps = GetPowerUpLevel(4);
+                int numberOfAirJumps = GetPowerUpLevel(4) + (GameLogic.Get().IsPlayerAlive(Player.playerId) ? 0 : GHOST_EXTRA_JUMPS);
                 if (numberOfJumps - 1 > numberOfAirJumps)
                 {
                     return;
@@ -369,7 +370,7 @@ public class Shuriken : UdonSharpBehaviour
         {
             return;
         }
-        Log("Fighting has started, enabling shuriken");
+        Log("Fighting has started");
         SetActive(true);
     }
 
@@ -418,8 +419,18 @@ public class Shuriken : UdonSharpBehaviour
         return EXPLOSION_RANGES[Math.Min(level - 1, EXPLOSION_RANGES.Length - 1)];
     }
 
+    /// <summary>
+    /// Set the shuriken to be active/inactive
+    /// If the player is a guest, the shuriken will refuse to activate
+    /// </summary>
     private void SetActive(bool active)
     {
+        if (active && !GameLogic.Get().HasPlayerJoined(Player.playerId))
+        {
+            Log("Player is a guest, not activating shuriken");
+            return;
+        }
+        Log("Setting active: " + active);
         isActive = active;
         GetComponent<Rigidbody>().detectCollisions = isActive;
         GetComponent<Renderer>().enabled = isActive;
