@@ -126,12 +126,6 @@ public class GameLogic : UdonSharpBehaviour
             return;
         }
 
-        // Increase player speed
-        // player.SetWalkSpeed(5);
-        // player.SetRunSpeed(8);
-        // // Increase player jump height
-        // player.SetJumpImpulse(5);
-
         if (player == null)
         {
             LogError("Interacting player is not set");

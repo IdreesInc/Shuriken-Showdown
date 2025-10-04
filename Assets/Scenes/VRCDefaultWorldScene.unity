@@ -18981,7 +18981,7 @@ MonoBehaviour:
   renderSettingsRTPVHDR: 0
   renderSettingsRTPVWidth: 640
   renderSettingsRTPVHeight: 360
-  lastBakeTime: 233
+  lastBakeTime: 49
   enlightenWarningShown: 0
   enlightenWarningShown2: 0
   uniqueLights:
@@ -20238,7 +20238,18 @@ MonoBehaviour:
     - Fir_Tree_m_Snow_01_LOD2
     padding: 530000005600000058000000
     unwrapper: 000000000000000000000000
-  maps: []
+  maps:
+  - {fileID: 2800000, guid: d986a0d4a1938e146967dd180b631b21, type: 3}
+  - {fileID: 2800000, guid: 5081f74b34a0a3a4e80e94fd7e8786b7, type: 3}
+  - {fileID: 2800000, guid: a4e0c48417c9ba04489cae4a6be5ccfa, type: 3}
+  - {fileID: 2800000, guid: 50235173802dac145b1687d16d972551, type: 3}
+  - {fileID: 2800000, guid: a2f5484a2602c8145aaab366caa56829, type: 3}
+  - {fileID: 2800000, guid: 8752b368d5668074fa8fc3fadd2c41b7, type: 3}
+  - {fileID: 2800000, guid: dd0a462d963294d4aabe40c2feb4f2b9, type: 3}
+  - {fileID: 2800000, guid: d7b4d5727f6d99340a0997c56560f673, type: 3}
+  - {fileID: 2800000, guid: 6907695dce9b28c4bb523c61dd9a71d3, type: 3}
+  - {fileID: 2800000, guid: 96106112964aa124c81688119494becc, type: 3}
+  - {fileID: 2800000, guid: 730e123a4b3b99448b8fd8925557e791, type: 3}
   masks: []
   dirMaps: []
   rnmMaps0: []
@@ -21366,7 +21377,7 @@ MonoBehaviour:
   bakedScaleOffsetTerrain: []
   assetList: []
   uvOverlapAssetList: 
-  idremap: 02000000030000000400000005000000060000000700000008000000090000000a0000000b0000000c0000000d000000
+  idremap: 02000000030000000400000005000000060000000700000008000000090000000a0000000b0000000c000000
   usesRealtimeGI: 0
   emptyDirectionTex: {fileID: 0}
   anyVolumes: 0
