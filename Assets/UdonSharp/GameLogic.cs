@@ -111,6 +111,24 @@ public class GameLogic : UdonSharpBehaviour
 
     /** Udon Overrides **/
 
+    void Start()
+    {
+        if (!Networking.IsOwner(gameObject))
+        {
+            return;
+        }
+        if (playerObjectsParent == null)
+        {
+            LogError("Player Objects Parent is not set");
+            return;
+        }
+        else if (powerUpPool == null)
+        {
+            LogError("Power Up Pool is not set");
+            return;
+        }
+    }
+
     public override void OnPlayerJoined(VRCPlayerApi player)
     {
         Log("Player joined: " + player.displayName);
@@ -122,18 +140,7 @@ public class GameLogic : UdonSharpBehaviour
 
         if (player == null || !Utilities.IsValid(player))
         {
-            LogError("Somehow, the player is null in OnPlayerJoined");
-            return;
-        }
-
-        if (player == null)
-        {
-            LogError("Interacting player is not set");
-            return;
-        }
-        else if (powerUpPool == null)
-        {
-            LogError("Power Up Pool is not set");
+            LogError("Player is invalid, not adding");
             return;
         }
 
