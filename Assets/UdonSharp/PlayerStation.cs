@@ -7,6 +7,7 @@ public class PlayerStation : UdonSharpBehaviour
 {
     private VRCStation station;
     private Vector3 initialPosition;
+    private Ghost ghost;
 
     private void Log(string message)
     {
@@ -25,13 +26,29 @@ public class PlayerStation : UdonSharpBehaviour
         station = GetComponent<VRCStation>();
 
         int playerId = Networking.GetOwner(gameObject).playerId;
-        if (playerId == -1)
-        {
-            LogError("No owner assigned to station somehow");
-        }
         initialPosition = station.transform.position;
         initialPosition.x += 10f * playerId;
         station.transform.position = initialPosition;
+
+        if (!Networking.IsOwner(gameObject))
+        {
+            return;
+        }
+        GameObject[] playerObjects = Networking.GetPlayerObjects(Networking.GetOwner(gameObject));
+        foreach (GameObject obj in playerObjects)
+        {
+            Ghost ghost = obj.GetComponent<Ghost>();
+            if (ghost != null)
+            {
+                this.ghost = ghost;
+                break;
+            }
+        }
+        if (ghost == null)
+        {
+            LogError("No Ghost found for player");
+            return;
+        }
     }
 
     public override void Interact()
@@ -50,6 +67,19 @@ public class PlayerStation : UdonSharpBehaviour
             var pos = station.transform.position;
             pos.y -= 20f;
             station.transform.position = pos;
+        }
+        if (Networking.IsOwner(gameObject))
+        {
+            ghost.FollowPlayer();
+        }
+    }
+
+    public override void OnStationExited(VRCPlayerApi player)
+    {
+        Log("OnStationExited: " + player.displayName);
+        if (Networking.IsOwner(gameObject))
+        {
+            ghost.StopFollowing();
         }
     }
 
@@ -87,6 +117,7 @@ public class PlayerStation : UdonSharpBehaviour
         }
         Log("Resetting station position");
         station.transform.position = initialPosition;
+        ghost.StopFollowing();
     }
 
 }
