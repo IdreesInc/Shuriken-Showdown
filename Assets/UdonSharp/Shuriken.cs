@@ -141,7 +141,7 @@ public class Shuriken : UdonSharpBehaviour
             {
                 ReturnToPlayer();
             }
-            else if (transform.position.y < -1)
+            else if (transform.position.y < -5)
             {
                 // Shuriken fell below map
                 ReturnToPlayer();
@@ -221,6 +221,12 @@ public class Shuriken : UdonSharpBehaviour
             Log("Shuriken owned by " + Networking.GetOwner(gameObject).playerId + " has been picked up by " + Networking.LocalPlayer.playerId);
             ReturnToPlayer();
         }
+    }
+
+    public override void OnDeserialization()
+    {
+        UpdateColor();
+        SetActive(isActive);
     }
 
     public override void OnDrop()
