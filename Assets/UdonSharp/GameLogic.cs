@@ -196,6 +196,11 @@ public class GameLogic : UdonSharpBehaviour
         }
         // Update the local scoreboard UI
         LocalUIManager.Get().TriggerScoreboardUpdate();
+        // Update the local HUD UI
+        if (IsPlayerAlive(Networking.LocalPlayer.playerId))
+        {
+            HUD.Get().SetScore(playerScores[GetPlayerSlot(Networking.LocalPlayer.playerId)]);
+        }
     }
 
     /** Event Handlers **/

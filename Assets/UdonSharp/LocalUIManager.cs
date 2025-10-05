@@ -6,7 +6,7 @@ using TMPro;
 
 enum UIType
 {
-    NONE,
+    HUD_UI,
     SCORE_UI,
     MESSAGE_UI
 }
@@ -21,11 +21,12 @@ public class LocalUIManager : UdonSharpBehaviour
     public GameObject messageUI;
     public ScoreBoard scoreBoard;
     public GameObject debugUI;
+    public GameObject hud;
 
     /// <summary>
     /// The currently visible UI
     /// </summary>
-    private UIType visibleUI = UIType.NONE;
+    private UIType visibleUI = UIType.HUD_UI;
     private const float UI_FADE_TIME = 200;
     /// <summary>
     /// The time at which the current UI should be fully visible (in milliseconds)
@@ -185,7 +186,7 @@ public class LocalUIManager : UdonSharpBehaviour
         {
             if (timeInMs >= timeToHideUI)
             {
-                visibleUI = UIType.NONE;
+                visibleUI = UIType.HUD_UI;
                 timeToHideUI = 0;
                 alpha = 0;
             }
@@ -198,6 +199,7 @@ public class LocalUIManager : UdonSharpBehaviour
 
         messageUI.SetActive(visibleUI == UIType.MESSAGE_UI);
         scoreBoard.gameObject.SetActive(visibleUI == UIType.SCORE_UI);
+        hud.SetActive(visibleUI == UIType.HUD_UI);
 
         if (visibleUI == UIType.MESSAGE_UI)
         {
@@ -206,6 +208,9 @@ public class LocalUIManager : UdonSharpBehaviour
         else if (visibleUI == UIType.SCORE_UI)
         {
             visibleUIObject = scoreBoard.gameObject;
+        } else if (visibleUI == UIType.HUD_UI)
+        {
+            visibleUIObject = hud;
         }
 
         if (visibleUIObject != null)

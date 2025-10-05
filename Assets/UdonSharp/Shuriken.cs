@@ -598,6 +598,7 @@ public class Shuriken : UdonSharpBehaviour
         ApplyPowerUpEffects();
         if (Networking.IsOwner(gameObject))
         {
+            HUD.Get().SetPowerUps(powerUpOne, powerUpTwo, powerUpThree);
             LocalPlayerLogic.Get().ShowEquippedUI(type, powerUpOne, powerUpTwo, powerUpThree);
         }
     }
