@@ -64,15 +64,15 @@ public class HUD : UdonSharpBehaviour
         this.powerUps = "";
         if (powerUpOne != -1)
         {
-            this.powerUps += PowerUp.GetPowerUpName(powerUpOne).ToUpper();
+            this.powerUps += GetFormattedPowerUp(powerUpOne);
         }
         if (powerUpTwo != -1)
         {
-            this.powerUps += " " + PowerUp.GetPowerUpName(powerUpTwo).ToUpper();
+            this.powerUps += " " + GetFormattedPowerUp(powerUpTwo);
         }
         if (powerUpThree != -1)
         {
-            this.powerUps += " " + PowerUp.GetPowerUpName(powerUpThree).ToUpper();
+            this.powerUps += " " + GetFormattedPowerUp(powerUpThree);
         }
         Log("Updating power ups: " + this.powerUps);
     }
@@ -81,5 +81,15 @@ public class HUD : UdonSharpBehaviour
     {
         this.score = score + "/" + GameLogic.Get().GetMaxScore();
         Log("Updating score: " + score);
+    }
+
+    private string GetFormattedPowerUp(int powerUp)
+    {
+        if (powerUp == -1)
+        {
+            return "";
+        }
+        string color = Shared.ColorStrings()[powerUp];
+        return "<color=" + color + ">" + PowerUp.GetPowerUpName(powerUp).ToUpper() + "</color>";
     }
 }

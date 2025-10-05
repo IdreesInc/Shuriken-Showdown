@@ -20,6 +20,8 @@ public class PowerUp : UdonSharpBehaviour
 
     [UdonSynced] private PowerUpType powerUpType = PowerUpType.Embiggen;
 
+    private const int NUMBER_OF_POWER_UPS = 6;
+
     public static string GetPowerUpName(PowerUpType type)
     {
         switch (type)
@@ -64,7 +66,7 @@ public class PowerUp : UdonSharpBehaviour
 
     public static string GetPowerUpName(int type)
     {
-        if (type < 0 || type > 4)
+        if (type < 0 || type > NUMBER_OF_POWER_UPS - 1)
         {
             return "N/A";
         }
@@ -73,7 +75,7 @@ public class PowerUp : UdonSharpBehaviour
 
     public static string GetPowerUpSubtitle(int type)
     {
-        if (type < 0 || type > 4)
+        if (type < 0 || type > NUMBER_OF_POWER_UPS - 1)
         {
             return "N/A";
         }
@@ -83,7 +85,7 @@ public class PowerUp : UdonSharpBehaviour
     public static int GetNumberOfPowerUps()
     {
         // Stupid necessity due to UdonSharp not allowing for static fields
-        return 5;
+        return NUMBER_OF_POWER_UPS;
     }
 
     private void Log(string message)
