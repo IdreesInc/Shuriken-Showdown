@@ -116,13 +116,13 @@ public class LocalPlayerLogic : UdonSharpBehaviour
     public void ShowKillUI(int playerSlot, string playerName, string verb)
     {
         // Alive player count might not yet be updated, calculate it manually
-        bool[] statuses = GameLogic.Get().GetPlayerAliveStatuses();
+        int[] playerLives = GameLogic.Get().GetPlayerLives();
         int[] slots = GameLogic.Get().GetPlayerSlots();
         int currentPlayerSlot = GameLogic.Get().GetPlayerSlot(Networking.LocalPlayer.playerId);
         int numRemaining = 0;
-        for (int i = 0; i < statuses.Length; i++)
+        for (int i = 0; i < playerLives.Length; i++)
         {
-            if (statuses[i] && i != playerSlot && i != currentPlayerSlot && slots[i] != 0)
+            if (slots[i] != 0 && playerLives[i] > 0 && i != playerSlot && i != currentPlayerSlot)
             {
                 numRemaining++;
             }

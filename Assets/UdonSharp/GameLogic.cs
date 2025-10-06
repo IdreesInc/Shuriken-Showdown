@@ -30,6 +30,7 @@ public class GameLogic : UdonSharpBehaviour
     /// Max number of players that can participate in the game at once
     /// </summary>
     public const int MAX_PLAYERS = 8;
+    public const int STARTING_LIVES = 2;
     /// <summary>
     /// The delay between a power up being collected and the next one spawning
     /// </summary>
@@ -80,7 +81,11 @@ public class GameLogic : UdonSharpBehaviour
     /// <summary>
     /// Whether each player is alive or not, indexed by player slot
     /// </summary>
-    [UdonSynced] private readonly bool[] playerAlive = new bool[MAX_PLAYERS];
+    // [UdonSynced] private readonly bool[] playerAlive = new bool[MAX_PLAYERS];
+    /// <summary>
+    /// The number of lives each player has, indexed by player slot
+    /// </summary>
+    [UdonSynced] private readonly int[] playerLives = new int[MAX_PLAYERS];
     /// <summary>
     /// The scores of each player, indexed by player slot
     /// </summary>
@@ -246,17 +251,17 @@ public class GameLogic : UdonSharpBehaviour
             return;
         }
         VRCPlayerApi thrower = NetworkCalling.CallingPlayer;
-        Log("Player " + thrower.displayName + " " + verb + " player " + VRCPlayerApi.GetPlayerById(hitPlayerId).displayName);
-
         int hitPlayerSlot = GetPlayerSlot(hitPlayerId);
         int throwerSlot = GetPlayerSlot(thrower.playerId);
+
+        Log("Player " + thrower.displayName + " " + verb + " player " + VRCPlayerApi.GetPlayerById(hitPlayerId).displayName + ", lives before hit: " + playerLives[hitPlayerSlot]);
 
         if (hitPlayerSlot < 0)
         {
             LogError("Hit player with id " + hitPlayerId + " not found in any slot");
             return;
         }
-        else if (!playerAlive[hitPlayerSlot])
+        else if (playerLives[hitPlayerSlot] <= 0)
         {
             LogError("Hit player in slot " + hitPlayerSlot + " is already dead");
             return;
@@ -269,8 +274,14 @@ public class GameLogic : UdonSharpBehaviour
 
 
         // Update player values
-        playerScores[throwerSlot]++;
-        playerAlive[hitPlayerSlot] = false;
+        playerLives[hitPlayerSlot]--;
+        bool playerKilled = playerLives[hitPlayerSlot] == 0;
+
+        if (playerKilled)
+        {
+            playerScores[throwerSlot]++;
+            Log("Player " + VRCPlayerApi.GetPlayerById(hitPlayerId).displayName + " was killed by " + thrower.displayName + ", new score for " + thrower.displayName + ": " + playerScores[throwerSlot]);
+        }
 
         // Commit the changes
         CommitChanges();
@@ -281,21 +292,25 @@ public class GameLogic : UdonSharpBehaviour
         {
             if (Networking.GetOwner(child.gameObject).playerId == hitPlayerId)
             {
-                child.SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(PlayerCollider.OnHit), thrower.displayName, throwerSlot, verb);
-                break;
-            }
-        }
-        // Notify the thrower of the kill
-        foreach (PlayerCollider child in playerColliders)
-        {
-            if (Networking.GetOwner(child.gameObject).playerId == thrower.playerId)
-            {
-                child.SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(PlayerCollider.OnKill), VRCPlayerApi.GetPlayerById(hitPlayerId).displayName, hitPlayerSlot, verb);
+                child.SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(PlayerCollider.OnHit), playerLives[hitPlayerSlot], thrower.displayName, throwerSlot, verb);
                 break;
             }
         }
 
-        CheckForGameEnd();
+        if (playerKilled)
+        {
+            // Notify the thrower of the kill
+            foreach (PlayerCollider child in playerColliders)
+            {
+                if (Networking.GetOwner(child.gameObject).playerId == thrower.playerId)
+                {
+                    child.SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(PlayerCollider.OnKill), VRCPlayerApi.GetPlayerById(hitPlayerId).displayName, hitPlayerSlot, verb);
+                    break;
+                }
+            }
+
+            CheckForGameEnd();
+        }
 
         Log("Player hit processing complete");
     }
@@ -410,20 +425,15 @@ public class GameLogic : UdonSharpBehaviour
     public bool IsPlayerAlive(int playerId)
     {
         int playerSlot = GetPlayerSlot(playerId);
-        if (playerSlot < 0 || playerSlot >= playerAlive.Length)
-        {
-            return false;
-        }
-        return playerAlive[playerSlot];
+        return playerSlot >= 0 && playerLives[playerSlot] > 0;
     }
 
     public int GetAlivePlayerCount()
     {
-
         int count = 0;
-        for (int i = 0; i < playerAlive.Length; i++)
+        for (int i = 0; i < playerLives.Length; i++)
         {
-            if (playerSlots[i] != 0 && playerAlive[i])
+            if (playerSlots[i] != 0 && playerLives[i] > 0)
             {
                 count++;
             }
@@ -450,9 +460,9 @@ public class GameLogic : UdonSharpBehaviour
         return playerSlots;
     }
 
-    public bool[] GetPlayerAliveStatuses()
+    public int[] GetPlayerLives()
     {
-        return playerAlive;
+        return playerLives;
     }
 
     private void CommitChanges()
@@ -506,10 +516,10 @@ public class GameLogic : UdonSharpBehaviour
     {
         SetGameState(GameState.Lobby);
 
-        // Reset alive statuses
-        for (int i = 0; i < playerAlive.Length; i++)
+        // Reset player lives
+        for (int i = 0; i < playerLives.Length; i++)
         {
-            playerAlive[i] = true;
+            playerLives[i] = STARTING_LIVES;
         }
 
         // Reset scores
@@ -527,10 +537,10 @@ public class GameLogic : UdonSharpBehaviour
         SetGameState(GameState.RoundStarting, FIGHTING_DELAY);
         ChangeLevel(LevelManager.GetRandomLevel(GetCurrentLevel()));
 
-        // Reset alive statuses
-        for (int i = 0; i < playerAlive.Length; i++)
+        // Reset player lives
+        for (int i = 0; i < playerLives.Length; i++)
         {
-            playerAlive[i] = true;
+            playerLives[i] = STARTING_LIVES;
         }
 
         // Commit the changes
@@ -632,7 +642,7 @@ public class GameLogic : UdonSharpBehaviour
             return -1;
         }
         playerSlots[availablePlayerSlot] = playerId;
-        playerAlive[availablePlayerSlot] = true;
+        playerLives[availablePlayerSlot] = STARTING_LIVES;
         playerScores[availablePlayerSlot] = 0;
         Log("Added player " + playerId + " to slot " + availablePlayerSlot);
 
@@ -651,7 +661,7 @@ public class GameLogic : UdonSharpBehaviour
             return;
         }
         playerSlots[playerSlot] = 0;
-        playerAlive[playerSlot] = false;
+        playerLives[playerSlot] = 0;
         playerScores[playerSlot] = 0;
         Log("Removed player " + playerId + " from slot " + playerSlot);
 

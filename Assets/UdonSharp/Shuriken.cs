@@ -225,7 +225,6 @@ public class Shuriken : UdonSharpBehaviour
 
     public override void OnDeserialization()
     {
-        UpdateColor();
         SetActive(isActive);
     }
 

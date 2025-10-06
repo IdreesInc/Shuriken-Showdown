@@ -6,6 +6,8 @@ using VRC.SDKBase;
 [UdonBehaviourSyncMode(BehaviourSyncMode.Continuous)]
 public class PlayerCollider : UdonSharpBehaviour
 {
+    public HUD hud;
+
     private readonly Vector3 OFFSET = new Vector3(0, 1, 0);
     private PlayerStation playerStation;
 
@@ -99,6 +101,8 @@ public class PlayerCollider : UdonSharpBehaviour
         Log("New round starting on level " + level);
         LevelManager.Get().TransitionToLevel((Level)level);
         GoToLevelSpawn((Level)level);
+        // Update HUD
+        hud.SetLives(GameLogic.STARTING_LIVES);
         // If player is a guest, make them a ghost
         if (!GameLogic.Get().HasPlayerJoined(PlayerId))
         {
@@ -137,23 +141,29 @@ public class PlayerCollider : UdonSharpBehaviour
     /// <param name="verb">The verb to use in the hit message</param>
     /// </summary>
     [NetworkCallable]
-    public void OnHit(string playerName, int playerSlot, string verb)
+    public void OnHit(int livesRemaining, string playerName, int playerSlot, string verb)
     {
         if (!Networking.IsOwner(gameObject))
         {
             Log("Not the owner, skipping collision");
             return;
         }
-        Log("Player " + verb + " by " + playerName);
+        Log("Player " + verb + " by " + playerName + ", lives remaining: " + livesRemaining);
+        hud.SetLives(livesRemaining);
+        if (livesRemaining > 0)
+        {
+            // Player is not yet dead
+            return;
+        }
         LocalPlayerLogic playerLogic = LocalPlayerLogic.Get();
         playerLogic.ShowHitUI(playerSlot, playerName, verb);
         GoGhost();
     }
 
     /// <summary>
-    /// Called when the player successfully hits another player
-    /// <param name="playerName">The name of the player who was hit</param>
-    /// <param name="playerSlot">The slot of the player who was hit</param>
+    /// Called when the player successfully kills another player
+    /// <param name="playerName">The name of the player who was killed</param>
+    /// <param name="playerSlot">The slot of the player who was killed</param>
     /// <param name="verb">The verb to use in the kill message</param>
     /// </summary>
     [NetworkCallable]

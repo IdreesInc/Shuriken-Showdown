@@ -43,7 +43,7 @@ public class HUD : UdonSharpBehaviour
         }
         SetPowerUps(-1, -1, -1);
         SetScore(0);
-        SetStatus("SHIELD UP");
+        SetLives(GameLogic.STARTING_LIVES);
     }
 
     /** Custom Methods **/
@@ -77,8 +77,21 @@ public class HUD : UdonSharpBehaviour
         playerCountText.text = "ALIVE: " + playerCount + "/" + maxPlayers;
     }
 
-    public void SetStatus(string status)
+    public void SetLives(int lives)
     {
+        string status = "ERROR";
+        if (lives == 0)
+        {
+            status = "GHOST";
+        }
+        else if (lives == 1)
+        {
+            status = "<color=red>SHIELD DOWN</color>";
+        }
+        else if (lives > 1)
+        {
+            status = "SHIELD UP";
+        }
         statusText.text = status;
         Log("Updating status: " + status);
     }
