@@ -57,11 +57,11 @@ public class HUD : UdonSharpBehaviour
         }
         if (powerUpTwo != -1)
         {
-            powerUps += " " + GetFormattedPowerUp(powerUpTwo);
+            powerUps += "  " + GetFormattedPowerUp(powerUpTwo);
         }
         if (powerUpThree != -1)
         {
-            powerUps += " " + GetFormattedPowerUp(powerUpThree);
+            powerUps += "  " + GetFormattedPowerUp(powerUpThree);
         }
         powerUpsText.text = powerUps;
         Log("Updating power ups: " + powerUps);
