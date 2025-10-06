@@ -287,12 +287,12 @@ public class GameLogic : UdonSharpBehaviour
         CommitChanges();
 
         PlayerCollider[] playerColliders = PlayerColliders();
-        // Notify the hit player that they have been hit
+        // Notify player colliders of the hit so they can play the effects
         foreach (PlayerCollider child in playerColliders)
         {
             if (Networking.GetOwner(child.gameObject).playerId == hitPlayerId)
             {
-                child.SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(PlayerCollider.OnHit), playerLives[hitPlayerSlot], thrower.displayName, throwerSlot, verb);
+                child.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(PlayerCollider.OnHit), playerLives[hitPlayerSlot], thrower.displayName, throwerSlot, verb);
                 break;
             }
         }

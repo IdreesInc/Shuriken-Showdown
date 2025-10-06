@@ -8,6 +8,8 @@ public class PlayerCollider : UdonSharpBehaviour
 {
     public HUD hud;
 
+    private ParticleSystem shieldPopEffect;
+
     private readonly Vector3 OFFSET = new Vector3(0, 1, 0);
     private PlayerStation playerStation;
 
@@ -41,6 +43,16 @@ public class PlayerCollider : UdonSharpBehaviour
 
     void Start()
     {
+        if (hud == null)
+        {
+            LogError("hud is not set");
+        }
+        shieldPopEffect = transform.Find("Shield Pop").GetComponent<ParticleSystem>();
+        if (shieldPopEffect == null)
+        {
+            LogError("Shield Pop particle system not found");
+        }
+
         if (Networking.IsOwner(gameObject))
         {
             GameObject[] playerObjects = Networking.GetPlayerObjects(Player);
@@ -143,9 +155,13 @@ public class PlayerCollider : UdonSharpBehaviour
     [NetworkCallable]
     public void OnHit(int livesRemaining, string playerName, int playerSlot, string verb)
     {
+        if (livesRemaining == 1)
+        {
+            Log("Playing shield pop effect");
+            shieldPopEffect.Play();
+        }
         if (!Networking.IsOwner(gameObject))
         {
-            Log("Not the owner, skipping collision");
             return;
         }
         Log("Player " + verb + " by " + playerName + ", lives remaining: " + livesRemaining);
