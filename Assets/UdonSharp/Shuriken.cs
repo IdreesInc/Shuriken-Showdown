@@ -12,7 +12,7 @@ using VRC.Udon.Common;
 [RequireComponent(typeof(Renderer))]
 public class Shuriken : UdonSharpBehaviour
 {
-
+    public HUD hud;
     public AudioSource audioSource;
 
     private const float ROTATION_SPEED = 360f * 3;
@@ -598,7 +598,7 @@ public class Shuriken : UdonSharpBehaviour
         ApplyPowerUpEffects();
         if (Networking.IsOwner(gameObject))
         {
-            HUD.Get().SetPowerUps(powerUpOne, powerUpTwo, powerUpThree);
+            hud.SetPowerUps(powerUpOne, powerUpTwo, powerUpThree);
             LocalPlayerLogic.Get().ShowEquippedUI(type, powerUpOne, powerUpTwo, powerUpThree);
         }
     }

@@ -13,14 +13,7 @@ public class HUD : UdonSharpBehaviour
     public TextMeshProUGUI statusText;
     public TextMeshProUGUI powerUpsText;
     public TextMeshProUGUI scoreText;
-
-    private string powerUps = "";
-    private string score = "";
-
-    public static HUD Get()
-    {
-        return GameObject.Find("HUD").GetComponent<HUD>();
-    }
+    public TextMeshProUGUI playerCountText;
 
     private void Log(string message)
     {
@@ -48,39 +41,46 @@ public class HUD : UdonSharpBehaviour
         {
             LogError("scoreText is not set");
         }
-    }
-
-    void Update()
-    {
-        statusText.text = "SHIELD UP";
-        powerUpsText.text = powerUps;
-        scoreText.text = "SCORE: " + score;
+        SetPowerUps(-1, -1, -1);
+        SetScore(0);
+        SetStatus("SHIELD UP");
     }
 
     /** Custom Methods **/
 
     public void SetPowerUps(int powerUpOne, int powerUpTwo, int powerUpThree)
     {
-        this.powerUps = "";
+        string powerUps = "";
         if (powerUpOne != -1)
         {
-            this.powerUps += GetFormattedPowerUp(powerUpOne);
+            powerUps += GetFormattedPowerUp(powerUpOne);
         }
         if (powerUpTwo != -1)
         {
-            this.powerUps += " " + GetFormattedPowerUp(powerUpTwo);
+            powerUps += " " + GetFormattedPowerUp(powerUpTwo);
         }
         if (powerUpThree != -1)
         {
-            this.powerUps += " " + GetFormattedPowerUp(powerUpThree);
+            powerUps += " " + GetFormattedPowerUp(powerUpThree);
         }
-        Log("Updating power ups: " + this.powerUps);
+        powerUpsText.text = powerUps;
+        Log("Updating power ups: " + powerUps);
     }
 
     public void SetScore(int score)
     {
-        this.score = score + "/" + GameLogic.Get().GetMaxScore();
-        Log("Updating score: " + score);
+        scoreText.text = "SCORE: " + score + "/" + GameLogic.Get().GetMaxScore();
+    }
+
+    public void SetPlayerCount(int playerCount, int maxPlayers)
+    {
+        playerCountText.text = "ALIVE: " + playerCount + "/" + maxPlayers;
+    }
+
+    public void SetStatus(string status)
+    {
+        statusText.text = status;
+        Log("Updating status: " + status);
     }
 
     private string GetFormattedPowerUp(int powerUp)
@@ -89,7 +89,7 @@ public class HUD : UdonSharpBehaviour
         {
             return "";
         }
-        string color = Shared.ColorStrings()[powerUp];
+        string color = Shared.DarkenedColorStrings()[powerUp];
         return "<color=" + color + ">" + PowerUp.GetPowerUpName(powerUp).ToUpper() + "</color>";
     }
 }

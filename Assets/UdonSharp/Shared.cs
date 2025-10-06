@@ -74,6 +74,18 @@ public static class Shared
         return colors;
     }
 
+    public static string[] DarkenedColorStrings()
+    {
+        Color[] darkenedColors = DarkenedColors();
+        string[] hexStrings = new string[darkenedColors.Length];
+        for (int i = 0; i < darkenedColors.Length; i++)
+        {
+            Color32 c = darkenedColors[i];
+            hexStrings[i] = $"#{c.r:X2}{c.g:X2}{c.b:X2}";
+        }
+        return hexStrings;
+    }
+
     public static void Log(string prefix, string message, VRCPlayerApi player = null)
     {
         string logPrefix = GetLogStart(prefix, player);

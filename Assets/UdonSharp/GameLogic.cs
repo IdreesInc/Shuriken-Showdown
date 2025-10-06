@@ -21,6 +21,7 @@ public enum GameState
 [UdonBehaviourSyncMode(BehaviourSyncMode.Manual)]
 public class GameLogic : UdonSharpBehaviour
 {
+    public HUD hud;
     public GameObject playerObjectsParent;
 
     public VRCObjectPool powerUpPool;
@@ -197,9 +198,10 @@ public class GameLogic : UdonSharpBehaviour
         // Update the local scoreboard UI
         LocalUIManager.Get().TriggerScoreboardUpdate();
         // Update the local HUD UI
-        if (IsPlayerAlive(Networking.LocalPlayer.playerId))
+        if (HasPlayerJoined(Networking.LocalPlayer.playerId))
         {
-            HUD.Get().SetScore(playerScores[GetPlayerSlot(Networking.LocalPlayer.playerId)]);
+            hud.SetScore(playerScores[GetPlayerSlot(Networking.LocalPlayer.playerId)]);
+            hud.SetPlayerCount(GetAlivePlayerCount(), GetPlayerCount());
         }
     }
 
