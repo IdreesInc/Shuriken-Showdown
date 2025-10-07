@@ -114,7 +114,7 @@ public class PlayerCollider : UdonSharpBehaviour
         LevelManager.Get().TransitionToLevel((Level)level);
         GoToLevelSpawn((Level)level);
         // Update HUD
-        hud.ResetHUD();
+        hud.ResetForNewRound();
         // If player is a guest, make them a ghost
         if (!GameLogic.Get().HasPlayerJoined(PlayerId))
         {
@@ -144,6 +144,7 @@ public class PlayerCollider : UdonSharpBehaviour
         Log("Game over, resetting player collider");
         LocalPlayerLogic.Get().ShowGameOverUI(winnerNumber, winnerName);
         GoToLevelSpawn(Level.LOBBY);
+        hud.ResetHud();
     }
 
     /// <summary>

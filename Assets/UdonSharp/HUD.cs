@@ -45,15 +45,20 @@ public class HUD : UdonSharpBehaviour
         {
             LogError("playerCountText is not set");
         }
-        ResetHUD();
+        ResetHud();
     }
 
     /** Custom Methods **/
 
-    public void ResetHUD()
+    public void ResetHud()
     {
         SetPowerUps(-1, -1, -1);
         SetScore(0);
+        SetLives(GameLogic.STARTING_LIVES);
+    }
+
+    public void ResetForNewRound()
+    {
         SetLives(GameLogic.STARTING_LIVES);
     }
 
