@@ -20,6 +20,7 @@ public class Shuriken : UdonSharpBehaviour
     private const float MAX_DISTANCE = 75;
     private const float MAX_GROUND_DISTANCE = 5;
     private const float THROW_FORCE = 5;
+    // These values are enforced on the VRWorld object as well, ensure they are in sync
     private const float DEFAULT_WALK_SPEED = 4.5f;
     private const float DEFAULT_RUN_SPEED = 6.5f;
     private const float DEFAULT_STRAFE_SPEED = 4f;

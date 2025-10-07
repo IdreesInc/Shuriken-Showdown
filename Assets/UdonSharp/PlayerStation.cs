@@ -5,8 +5,8 @@ using VRC.SDKBase;
 [RequireComponent(typeof(VRCStation))]
 public class PlayerStation : UdonSharpBehaviour
 {
+    private const float Y_POSITION = 10f;
     private VRCStation station;
-    private Vector3 initialPosition;
     private Ghost ghost;
 
     private const float GHOST_GRAVITY = 0.3f;
@@ -26,11 +26,13 @@ public class PlayerStation : UdonSharpBehaviour
     void Start()
     {
         station = GetComponent<VRCStation>();
+        if (station == null)
+        {
+            LogError("No VRCStation component found");
+            return;
+        }
 
-        int playerId = Networking.GetOwner(gameObject).playerId;
-        initialPosition = station.transform.position;
-        initialPosition.x += 10f * playerId;
-        station.transform.position = initialPosition;
+        PutAway();
 
         if (!Networking.IsOwner(gameObject))
         {
@@ -51,6 +53,14 @@ public class PlayerStation : UdonSharpBehaviour
             LogError("No Ghost found for player");
             return;
         }
+    }
+
+    void Update()
+    {
+        // Update location for all players
+        Vector3 playerPosition = Networking.GetOwner(gameObject).GetPosition();
+        playerPosition.y = Y_POSITION;
+        station.transform.position = playerPosition;
     }
 
     public override void Interact()
@@ -120,8 +130,12 @@ public class PlayerStation : UdonSharpBehaviour
             return;
         }
         Log("Resetting station position");
-        station.transform.position = initialPosition;
+        PutAway();
         ghost.StopFollowing();
     }
 
+    private void PutAway()
+    {
+        station.transform.position = new Vector3(10f * Networking.GetOwner(gameObject).playerId, Y_POSITION, 0);
+    }
 }
