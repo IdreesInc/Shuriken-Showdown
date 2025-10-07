@@ -8,6 +8,7 @@ public class KillsToWinCounter : Counter
 
     void Start()
     {
+        ownerOnly = true;
         UpdateCounterText();
     }
 

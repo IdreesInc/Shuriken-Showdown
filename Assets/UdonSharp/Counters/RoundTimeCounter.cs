@@ -8,6 +8,7 @@ public class RoundTimeCounter : Counter
 
     void Start()
     {
+        ownerOnly = true;
         UpdateCounterText();
     }
 
