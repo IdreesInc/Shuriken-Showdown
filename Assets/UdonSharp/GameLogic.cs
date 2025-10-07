@@ -22,6 +22,7 @@ public enum GameState
 public class GameLogic : UdonSharpBehaviour
 {
     public HUD hud;
+    public MainMenu mainMenu;
     public GameObject playerObjectsParent;
 
     public VRCObjectPool powerUpPool;
@@ -602,6 +603,9 @@ public class GameLogic : UdonSharpBehaviour
     private void TransitionToGameEnding(int winnerSlot, string winnerName)
     {
         SetGameState(GameState.GameEnding, END_GAME_DELAY);
+
+        // Reset main menu timer
+        mainMenu.ResetTimer();
 
         // Send game end events
         foreach (Shuriken child in Shurikens())

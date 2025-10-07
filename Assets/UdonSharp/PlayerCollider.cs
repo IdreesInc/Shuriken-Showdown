@@ -114,7 +114,7 @@ public class PlayerCollider : UdonSharpBehaviour
         LevelManager.Get().TransitionToLevel((Level)level);
         GoToLevelSpawn((Level)level);
         // Update HUD
-        hud.SetLives(GameLogic.STARTING_LIVES);
+        hud.ResetHUD();
         // If player is a guest, make them a ghost
         if (!GameLogic.Get().HasPlayerJoined(PlayerId))
         {
