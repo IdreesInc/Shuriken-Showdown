@@ -10,7 +10,7 @@ using VRC.Udon.Common.Interfaces;
 [UdonBehaviourSyncMode(BehaviourSyncMode.Continuous)]
 public class MainMenu : UdonSharpBehaviour
 {
-
+    public GameLogic gameLogic;
     public GameObject[] playerIcons;
     public GameObject[] gameMasterTexts;
     public GameObject settingsUI;
@@ -123,6 +123,11 @@ public class MainMenu : UdonSharpBehaviour
 
     private void UpdateTimer()
     {
+        if (gameLogic.GetCurrentGameState() != GameState.Lobby)
+        {
+            timerText.text = "Game is currently in progress";
+            return;
+        }
         float startTime = GetStartTime();
         if (startTime == 0f)
         {
@@ -141,6 +146,11 @@ public class MainMenu : UdonSharpBehaviour
 
     private void UpdateStartButton()
     {
+        if (gameLogic.GetCurrentGameState() != GameState.Lobby)
+        {
+            startButton.interactable = false;
+            return;
+        }
         bool canStart = false;
         float startTime = GetStartTime();
         if (startTime != 0f && Time.time >= startTime)

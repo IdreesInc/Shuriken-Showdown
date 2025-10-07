@@ -689,7 +689,7 @@ public class Shuriken : UdonSharpBehaviour
     private Vector3 GetOffset()
     {
         int numOfEmbiggens = GetPowerUpLevel(0);
-        return new Vector3(0, 0.8f, 1f + 0.5f * numOfEmbiggens);
+        return new Vector3(0, 0.7f, 1f + 0.5f * numOfEmbiggens);
     }
 
     private int GetPowerUpLevel(int type)

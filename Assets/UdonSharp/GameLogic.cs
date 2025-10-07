@@ -151,12 +151,10 @@ public class GameLogic : UdonSharpBehaviour
             return;
         }
 
-
         int slot = AddPlayer(player);
         if (slot == -1)
         {
             LogError("Max players reached, not adding player " + player.playerId);
-            return;
         }
     }
 
@@ -361,6 +359,11 @@ public class GameLogic : UdonSharpBehaviour
         return (Level)_currentLevel;
     }
 
+    public GameState GetCurrentGameState()
+    {
+        return (GameState)_currentGameState;
+    }
+
     private int GetCurrentLevelInt()
     {
         // Udon networking is so stupid
@@ -371,11 +374,6 @@ public class GameLogic : UdonSharpBehaviour
     {
         Log("Setting current level to " + level);
         _currentLevel = (int)level;
-    }
-
-    private GameState GetCurrentGameState()
-    {
-        return (GameState)_currentGameState;
     }
 
     private void SetGameState(GameState gameState, float duration = 0)
