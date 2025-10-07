@@ -63372,7 +63372,7 @@ MonoBehaviour:
   spawnOrder: 2
   spawnOrientation: 0
   ReferenceCamera: {fileID: 1069902874}
-  RespawnHeightY: -100
+  RespawnHeightY: -25
   ObjectBehaviourAtRespawnHeight: 0
   ForbidUserPortals: 0
   interactThruLayers: 0
