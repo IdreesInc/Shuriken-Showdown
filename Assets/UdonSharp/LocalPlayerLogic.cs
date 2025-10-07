@@ -12,7 +12,6 @@ public class LocalPlayerLogic : UdonSharpBehaviour
 {
 
     public GameObject vrcWorld;
-    public GameObject playerCollidersParent;
 
     private const int JUMP_HELD_TICKS = 90;
     private int jumpHeldTicks = 0;

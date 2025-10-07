@@ -688,10 +688,10 @@ public class Shuriken : UdonSharpBehaviour
         }
     }
 
-    private Vector3 GetSpawnOffset()
+    private Vector3 GetOffset()
     {
         int numOfEmbiggens = GetPowerUpLevel(0);
-        return new Vector3(0, 0.5f, 1f + 0.5f * numOfEmbiggens);
+        return new Vector3(0, 0.8f, 1f + 0.5f * numOfEmbiggens);
     }
 
     private int GetPowerUpLevel(int type)
@@ -715,6 +715,6 @@ public class Shuriken : UdonSharpBehaviour
     private void PutInFrontOfPlayer()
     {
         // Place the shuriken in front of the player
-        transform.position = Player.GetPosition() + Player.GetRotation() * GetSpawnOffset();
+        transform.position = Player.GetPosition() + Player.GetRotation() * GetOffset();
     }
 }
