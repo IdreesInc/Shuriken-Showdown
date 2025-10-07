@@ -268,6 +268,11 @@ public class Shuriken : UdonSharpBehaviour
             Log("Not the owner, skipping collision");
             return;
         }
+        if (collision.gameObject.GetComponent<Shuriken>() != null)
+        {
+            // Collided with another shuriken, ignore
+            return;
+        }
 
         int explosionLevel = GetPowerUpLevel((int)PowerUpType.Badaboom);
 
@@ -285,17 +290,7 @@ public class Shuriken : UdonSharpBehaviour
 
         hasFirstContact = true;
 
-        if (collision.gameObject.GetComponent<Shuriken>() != null)
-        {
-            // Collided with another shuriken
-            Log("Shuriken has collided with another shuriken");
-            // Return the shuriken to the owner
-            ReturnToPlayer();
-        }
-        else
-        {
-            Log("Shuriken has collided with " + collision.gameObject.name);
-        }
+        Log("Shuriken has collided with " + collision.gameObject.name);
     }
 
     private void OnTriggerEnter(Collider collider)
@@ -435,7 +430,10 @@ public class Shuriken : UdonSharpBehaviour
             Log("Player is a guest, not activating shuriken");
             return;
         }
-        Log("Setting active: " + active);
+        if (isActive != active)
+        {
+            Log("Setting active: " + active);
+        }
         isActive = active;
         GetComponent<Rigidbody>().detectCollisions = isActive;
         GetComponent<Renderer>().enabled = isActive;
