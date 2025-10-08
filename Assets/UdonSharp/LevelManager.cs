@@ -28,6 +28,7 @@ public class LevelManager : UdonSharpBehaviour
 
     private Level loadedLevel = Level.NONE;
     private readonly Level[] levels = { Level.LOBBY, Level.RUINS, Level.FOUNDATIONS, Level.FROZEN_BAY };
+    private bool musicEnabled = true;
 
     private void Log(string message)
     {
@@ -83,12 +84,18 @@ public class LevelManager : UdonSharpBehaviour
         if (loadedLevel == Level.LOBBY && level != Level.LOBBY)
         {
             lobbyMusic.Stop();
-            battleMusic.Play();
+            if (musicEnabled)
+            {
+                battleMusic.Play();
+            }
         }
         else if (loadedLevel != Level.LOBBY && level == Level.LOBBY)
         {
             battleMusic.Stop();
-            lobbyMusic.Play();
+            if (musicEnabled)
+            {
+                lobbyMusic.Play();
+            }
         }
 
         loadedLevel = level;
@@ -144,5 +151,31 @@ public class LevelManager : UdonSharpBehaviour
             powerUpSpawnPoints[i] = powerUpMarkerParent.GetChild(i).position;
         }
         return powerUpSpawnPoints;
+    }
+
+    public bool IsMusicEnabled()
+    {
+        return musicEnabled;
+    }
+
+    public void SetMusicEnabled(bool enabled)
+    {
+        musicEnabled = enabled;
+        if (musicEnabled)
+        {
+            if (loadedLevel == Level.LOBBY)
+            {
+                lobbyMusic.Play();
+            }
+            else
+            {
+                battleMusic.Play();
+            }
+        }
+        else
+        {
+            lobbyMusic.Stop();
+            battleMusic.Stop();
+        }
     }
 }

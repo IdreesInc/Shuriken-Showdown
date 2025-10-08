@@ -18,9 +18,10 @@ public class MainMenu : UdonSharpBehaviour
     public TextMeshProUGUI timerText;
     public Button startButton;
     public Button joinButton;
+    public Button musicToggle;
 
     /// <summary>
-    /// Delay in seconds before non-owners see the game can be started
+    /// Delay in seconds before non-owners can start the game
     /// </summary>
     private const int NON_OWNER_DELAY = 20;
     /// <summary>
@@ -80,6 +81,24 @@ public class MainMenu : UdonSharpBehaviour
         else
         {
             gameLogic.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(GameLogic.RequestJoin));
+        }
+    }
+
+    public void OnToggleMusicPressed()
+    {
+        Log("Toggle Music Pressed");
+        LevelManager levelManager = LevelManager.Get();
+        if (levelManager.IsMusicEnabled())
+        {
+            levelManager.SetMusicEnabled(false);
+            musicToggle.transform.Find("Music Toggle Text").GetComponent<TextMeshProUGUI>().text = "MUSIC OFF";
+            musicToggle.GetComponent<Image>().color = Shared.HexToColor("#F52222");
+        }
+        else
+        {
+            levelManager.SetMusicEnabled(true);
+            musicToggle.transform.Find("Music Toggle Text").GetComponent<TextMeshProUGUI>().text = "MUSIC ON";
+            musicToggle.GetComponent<Image>().color = Shared.HexToColor("#2FD93C");
         }
     }
 

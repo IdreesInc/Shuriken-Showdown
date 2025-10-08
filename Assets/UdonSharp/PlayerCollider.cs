@@ -10,6 +10,7 @@ public class PlayerCollider : UdonSharpBehaviour
 
     private ParticleSystem shieldPopEffect;
 
+    private const float WATER_LEVEL = -2.8f;
     private readonly Vector3 OFFSET = new Vector3(0, 1, 0);
     private PlayerStation playerStation;
 
@@ -80,6 +81,19 @@ public class PlayerCollider : UdonSharpBehaviour
         if (Player != null)
         {
             transform.position = Player.GetPosition() + OFFSET;
+        }
+        if (!Networking.IsOwner(gameObject))
+        {
+            return;
+        }
+        if (GameLogic.Get().IsPlayerAlive(PlayerId))
+        {
+            if (Player.GetPosition().y < WATER_LEVEL)
+            {
+                Log("Player touched water, respawning");
+                Player.Respawn();
+                Log("Player respawned at y level " + Player.GetPosition().y);
+            }
         }
     }
 
