@@ -225,6 +225,39 @@ public class GameLogic : UdonSharpBehaviour
         TransitionToRoundStarting();
     }
 
+    [NetworkCallable]
+    public void RequestJoin()
+    {
+        if (!Networking.IsOwner(gameObject))
+        {
+            return;
+        }
+        Log("Player " + NetworkCalling.CallingPlayer.displayName + " is requesting to join the game");
+        if (GetPlayerCount() >= MAX_PLAYERS)
+        {
+            Log("Player " + NetworkCalling.CallingPlayer.displayName + " tried to join but the game is full");
+            return;
+        }
+        if (HasPlayerJoined(NetworkCalling.CallingPlayer.playerId))
+        {
+            Log("Player " + NetworkCalling.CallingPlayer.displayName + " is already in the game");
+            return;
+        }
+        AddPlayer(NetworkCalling.CallingPlayer);
+    }
+
+    [NetworkCallable]
+    public void RequestLeave()
+    {
+        if (!Networking.IsOwner(gameObject))
+        {
+            return;
+        }
+        Log("Player " + NetworkCalling.CallingPlayer.displayName + " is requesting to leave the game");
+        RemovePlayer(NetworkCalling.CallingPlayer);
+        CheckForGameEnd();
+    }
+
     /// <summary>
     /// Triggered locally by the instance owner when a power up is collected
     /// </summary>
@@ -433,6 +466,19 @@ public class GameLogic : UdonSharpBehaviour
         for (int i = 0; i < playerLives.Length; i++)
         {
             if (playerSlots[i] != 0 && playerLives[i] > 0)
+            {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public int GetJoinedPlayerSlotCount()
+    {
+        int count = 0;
+        for (int i = 0; i < playerSlots.Length; i++)
+        {
+            if (playerSlots[i] != 0)
             {
                 count++;
             }

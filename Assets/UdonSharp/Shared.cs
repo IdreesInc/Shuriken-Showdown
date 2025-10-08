@@ -4,7 +4,7 @@ using VRC.SDKBase;
 public static class Shared
 {
 
-    private static Color HexToColor(string hex)
+    public static Color HexToColor(string hex)
     {
         if (hex.StartsWith("#"))
         {

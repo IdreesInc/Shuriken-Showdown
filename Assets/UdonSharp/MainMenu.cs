@@ -6,6 +6,7 @@ using VRC.Udon;
 using TMPro;
 using UnityEngine.UI;
 using VRC.Udon.Common.Interfaces;
+using System;
 
 [UdonBehaviourSyncMode(BehaviourSyncMode.Continuous)]
 public class MainMenu : UdonSharpBehaviour
@@ -16,6 +17,7 @@ public class MainMenu : UdonSharpBehaviour
     public GameObject settingsUI;
     public TextMeshProUGUI timerText;
     public Button startButton;
+    public Button joinButton;
 
     /// <summary>
     /// Delay in seconds before non-owners see the game can be started
@@ -25,6 +27,8 @@ public class MainMenu : UdonSharpBehaviour
     /// Delay in seconds before owners can restart the game
     /// </summary>
     private const int OWNER_DELAY = 5;
+    private readonly Color JOIN_COLOR = Shared.HexToColor("#2FD93C");
+    private readonly Color SPECTATE_COLOR = Shared.HexToColor("#FB9E38");
 
     [UdonSynced] private float nonOwnerStartTime = 0f;
     [UdonSynced] private float ownerStartTime = 0f;
@@ -57,12 +61,26 @@ public class MainMenu : UdonSharpBehaviour
         UpdatePlayerIcons();
         UpdateTimer();
         UpdateStartButton();
+        UpdateJoinButton();
     }
 
     public void OnStartGamePressed()
     {
         Log("Start Game Pressed");
-        GameLogic.Get().SendCustomNetworkEvent(NetworkEventTarget.All, nameof(GameLogic.StartGame));
+        gameLogic.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(GameLogic.StartGame));
+    }
+
+    public void OnJoinPressed()
+    {
+        Log("Join Pressed");
+        if (gameLogic.HasPlayerJoined(Networking.LocalPlayer.playerId))
+        {
+            gameLogic.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(GameLogic.RequestLeave));
+        }
+        else
+        {
+            gameLogic.SendCustomNetworkEvent(NetworkEventTarget.All, nameof(GameLogic.RequestJoin));
+        }
     }
 
     public void OnShowSettingsPressed()
@@ -127,6 +145,10 @@ public class MainMenu : UdonSharpBehaviour
         {
             timerText.text = "Game is currently in progress";
             return;
+        } else if (gameLogic.GetJoinedPlayerSlotCount() == 0)
+        {
+            timerText.text = "Join the game to begin";
+            return;
         }
         float startTime = GetStartTime();
         if (startTime == 0f)
@@ -157,7 +179,27 @@ public class MainMenu : UdonSharpBehaviour
         {
             canStart = true;
         }
+        if (gameLogic.GetJoinedPlayerSlotCount() == 0)
+        {
+            // Can't start the game if nobody has joined
+            canStart = false;
+        }
         startButton.interactable = canStart;
+    }
+
+    private void UpdateJoinButton()
+    {
+        bool joined = gameLogic.HasPlayerJoined(Networking.LocalPlayer.playerId);
+        if (joined)
+        {
+            joinButton.transform.Find("Join Button Text").GetComponent<TextMeshProUGUI>().text = "SPECTATE";
+            joinButton.GetComponent<Image>().color = SPECTATE_COLOR;
+        }
+        else
+        {
+            joinButton.transform.Find("Join Button Text").GetComponent<TextMeshProUGUI>().text = "JOIN GAME";
+            joinButton.GetComponent<Image>().color = JOIN_COLOR;
+        }
     }
 
     private float GetStartTime()

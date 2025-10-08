@@ -23314,6 +23314,7 @@ MonoBehaviour:
   settingsUI: {fileID: 1086510575}
   timerText: {fileID: 980855667}
   startButton: {fileID: 831777332}
+  joinButton: {fileID: 1596835714}
 --- !u!1 &796493005 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 121772, guid: d929051a4a407e94a8a5edac029f9b90,
@@ -46498,7 +46499,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: OnShowSettingsPressed
+          m_StringArgument: OnJoinPressed
           m_BoolArgument: 0
         m_CallState: 1
 --- !u!114 &1596835715
@@ -46514,7 +46515,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 2100000, guid: 35630e38b4e5ffb40b44ec5348b4333f, type: 2}
-  m_Color: {r: 0.32664987, g: 0.8553459, b: 0.32008222, a: 1}
+  m_Color: {r: 0.9843137, g: 0.6201807, b: 0.21960784, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -48519,7 +48520,7 @@ GameObject:
   - component: {fileID: 1709024285}
   - component: {fileID: 1709024284}
   m_Layer: 17
-  m_Name: Button Text
+  m_Name: Join Button Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -48564,7 +48565,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: JOIN GAME
+  m_text: SPECTATE
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7d57e09c622adf64fb6c39a343198ebb, type: 2}
   m_sharedMaterial: {fileID: -5598554437734593870, guid: 7d57e09c622adf64fb6c39a343198ebb,
@@ -65155,10 +65156,10 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 70b905d6110476240b67484a4e938a5a, type: 2}
   - {fileID: 2100000, guid: cf9ec934df152744899de28caa244f18, type: 2}
   - {fileID: 2100000, guid: 34ccd2d694bd8724d985a0f409ebea6c, type: 2}
-  - {fileID: 2100000, guid: 3ee1b7b636b521b4494794f33c347d11, type: 2}
   - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
   - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   - {fileID: 2100000, guid: 3c88d4c4e5ad5ad45a3733155943ddd3, type: 2}
+  - {fileID: 2100000, guid: 3ee1b7b636b521b4494794f33c347d11, type: 2}
   LightMapsNear: []
   LightMapsFar: []
   LightMode: 0
