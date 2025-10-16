@@ -76,7 +76,7 @@ public class ScoreBoard : UdonSharpBehaviour
         GameObject dotsContainer = scoreLine.transform.Find("Dots Container").gameObject;
         // Get the Text component of the scoreName
         scoreName.GetComponent<TextMeshProUGUI>().text = name;
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 15; i++)
         {
             // Get child of scoreLine with name "Score Dot " + i
             GameObject scoreDot = dotsContainer.transform.Find("Score Dot " + i).gameObject;

@@ -32,6 +32,7 @@ public class GameLogic : UdonSharpBehaviour
     /// </summary>
     public const int MAX_PLAYERS = 8;
     public const int STARTING_LIVES = 2;
+    private const int MAX_MAX_SCORE = 15;
     /// <summary>
     /// The delay between a power up being collected and the next one spawning
     /// </summary>
@@ -362,7 +363,7 @@ public class GameLogic : UdonSharpBehaviour
             return;
         }
 
-        maxScore = Mathf.Clamp(maxScore + mod, 1, 10);
+        maxScore = Mathf.Clamp(maxScore + mod, 1, MAX_MAX_SCORE);
 
         // Commit the changes
         CommitChanges();
