@@ -7,7 +7,7 @@ public enum Level
     NONE,
     LOBBY,
     RUINS,
-    FOUNDATIONS,
+    LABYRINTH,
     FROZEN_BAY,
     BADLANDS
 }
@@ -24,12 +24,12 @@ public class LevelManager : UdonSharpBehaviour
     public GameObject sharedTerrain;
     public GameObject lobby;
     public GameObject ruins;
-    public GameObject foundations;
+    public GameObject labyrinth;
     public GameObject frozenBay;
     public GameObject badlands;
 
     private Level loadedLevel = Level.NONE;
-    private readonly Level[] levels = { Level.LOBBY, Level.RUINS, Level.FOUNDATIONS, Level.FROZEN_BAY, Level.BADLANDS };
+    private readonly Level[] levels = { Level.LOBBY, Level.RUINS, Level.LABYRINTH, Level.FROZEN_BAY, Level.BADLANDS };
     private bool musicEnabled = true;
 
     private void Log(string message)
@@ -55,8 +55,8 @@ public class LevelManager : UdonSharpBehaviour
                 return lobby;
             case Level.RUINS:
                 return ruins;
-            case Level.FOUNDATIONS:
-                return foundations;
+            case Level.LABYRINTH:
+                return labyrinth;
             case Level.FROZEN_BAY:
                 return frozenBay;
             case Level.BADLANDS:
