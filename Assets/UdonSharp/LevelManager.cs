@@ -8,7 +8,8 @@ public enum Level
     LOBBY,
     RUINS,
     FOUNDATIONS,
-    FROZEN_BAY
+    FROZEN_BAY,
+    BADLANDS
 }
 
 /// <summary>
@@ -25,9 +26,10 @@ public class LevelManager : UdonSharpBehaviour
     public GameObject ruins;
     public GameObject foundations;
     public GameObject frozenBay;
+    public GameObject badlands;
 
     private Level loadedLevel = Level.NONE;
-    private readonly Level[] levels = { Level.LOBBY, Level.RUINS, Level.FOUNDATIONS, Level.FROZEN_BAY };
+    private readonly Level[] levels = { Level.LOBBY, Level.RUINS, Level.FOUNDATIONS, Level.FROZEN_BAY, Level.BADLANDS };
     private bool musicEnabled = true;
 
     private void Log(string message)
@@ -57,6 +59,8 @@ public class LevelManager : UdonSharpBehaviour
                 return foundations;
             case Level.FROZEN_BAY:
                 return frozenBay;
+            case Level.BADLANDS:
+                return badlands;
             default:
                 LogError("Unknown level: " + level);
                 return null;
@@ -68,7 +72,7 @@ public class LevelManager : UdonSharpBehaviour
         Level randomLevel;
         do
         {
-            randomLevel = (Level)Random.Range(1, 5);
+            randomLevel = (Level)Random.Range(1, 6);
         } while (randomLevel == Level.LOBBY || randomLevel == currentLevel);
         return randomLevel;
     }
