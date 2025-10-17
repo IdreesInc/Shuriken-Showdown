@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using VRC.SDKBase;
 
@@ -102,6 +103,15 @@ public static class Shared
     public static int MaxPlayers()
     {
         return 8;
+    }
+
+    public static bool IsAdmin(VRCPlayerApi player)
+    {
+        if (player == null)
+        {
+            return false;
+        }
+        return player.displayName == "CompanyInc" || player.displayName == "[1] Local Player";
     }
 
     private static string GetLogStart(string prefix, VRCPlayerApi player = null)

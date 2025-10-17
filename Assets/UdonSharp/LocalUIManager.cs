@@ -102,6 +102,11 @@ public class LocalUIManager : UdonSharpBehaviour
 
     public void ToggleDebugUI()
     {
+        if (!Shared.IsAdmin(Networking.LocalPlayer))
+        {
+            Log("Not an admin, cannot toggle debug UI");
+            return;
+        }
         debugUI.SetActive(!debugUI.activeSelf);
         CenterUIObject(debugUI);
     }

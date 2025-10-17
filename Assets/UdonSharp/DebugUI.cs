@@ -39,6 +39,11 @@ public class DebugUI : UdonSharpBehaviour
 
     public void PickLevel()
     {
+        if (!Shared.IsAdmin(Networking.LocalPlayer))
+        {
+            Log("Not an admin, cannot pick level");
+            return;
+        }
         int level = levelSelector.value;
         Log($"Picking level {level}");
         LevelManager.Get().TransitionToLevel((Level)level);
@@ -47,6 +52,11 @@ public class DebugUI : UdonSharpBehaviour
 
     public void GivePowerUp()
     {
+        if (!Shared.IsAdmin(Networking.LocalPlayer))
+        {
+            Log("Not an admin, cannot give power up");
+            return;
+        }
         if (powerUpSelector.value == 0)
         {
             return;
