@@ -7,7 +7,7 @@
 
 ![Shuriken Showdown Thumbnail](images/thumbnail.png)
 
-*A party battler VR game inspired by Boomerang Fu*
+*A VR party battler game inspired by [Boomerang Fu](https://www.boomerangfu.com/)*
 
 ## Open Source License
 
