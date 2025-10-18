@@ -108,7 +108,7 @@ public class LevelManager : UdonSharpBehaviour
         levelObject.SetActive(true);
         foreach (Level otherLevel in levels)
         {
-            if (otherLevel != level && otherLevel != Level.LOBBY)
+            if (otherLevel != level)
             {
                 GetLevelObject(otherLevel).SetActive(false);
             }
