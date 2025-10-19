@@ -9,6 +9,9 @@
 
 *A VR party battler game inspired by [Boomerang Fu](https://www.boomerangfu.com/)*
 
+## [`Play it here!`](https://vrchat.com/home/world/wrld_b4e39cd7-9a79-4b8e-9669-689c8bb3535d/i)
+<br/>
+
 ## Open Source License
 
 While Shuriken Showdown is licensed under MPL-2.0, certain assets that I have imported from the Unity Asset Store and itch.io are not included under this license. Those assets have been excluded from this repository and their names can be found under the .gitignore file. This means that if you were to download this project and try to run it on your local machine, you'd likely encounter errors due to the missing assets unless you were to obtain them yourself.
