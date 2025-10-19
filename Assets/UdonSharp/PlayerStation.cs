@@ -5,7 +5,7 @@ using VRC.SDKBase;
 [RequireComponent(typeof(VRCStation))]
 public class PlayerStation : UdonSharpBehaviour
 {
-    private const float Y_POSITION = 10f;
+    private const float Y_POSITION = -10f;
     private VRCStation station;
     private Ghost ghost;
 
@@ -77,7 +77,7 @@ public class PlayerStation : UdonSharpBehaviour
             station.PlayerMobility = VRCStation.Mobility.Immobilize;
             Log("Set to immobile");
             var pos = station.transform.position;
-            pos.y -= 20f;
+            pos.y = Y_POSITION;
             station.transform.position = pos;
         }
         if (Networking.IsOwner(gameObject))

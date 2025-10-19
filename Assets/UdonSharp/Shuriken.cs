@@ -424,7 +424,7 @@ public class Shuriken : UdonSharpBehaviour
     /// Set the shuriken to be active/inactive
     /// If the player is a guest, the shuriken will refuse to activate
     /// </summary>
-    private void SetActive(bool active)
+    public void SetActive(bool active)
     {
         if (active && !GameLogic.Get().HasPlayerJoined(Player.playerId))
         {

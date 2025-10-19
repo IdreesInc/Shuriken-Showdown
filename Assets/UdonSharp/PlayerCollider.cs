@@ -13,6 +13,7 @@ public class PlayerCollider : UdonSharpBehaviour
     private const float WATER_LEVEL = -2.8f;
     private readonly Vector3 OFFSET = new Vector3(0, 1, 0);
     private PlayerStation playerStation;
+    private Shuriken shuriken;
 
     private VRCPlayerApi Player
     {
@@ -63,12 +64,21 @@ public class PlayerCollider : UdonSharpBehaviour
                 if (station != null)
                 {
                     playerStation = station;
-                    break;
+                }
+                Shuriken shuriken = obj.GetComponent<Shuriken>();
+                if (shuriken != null)
+                {
+                    this.shuriken = shuriken;
                 }
             }
             if (playerStation == null)
             {
                 LogError("No PlayerStation found for player");
+                return;
+            }
+            if (shuriken == null)
+            {
+                LogError("No Shuriken found for player");
                 return;
             }
             // Start at the lobby
@@ -239,5 +249,6 @@ public class PlayerCollider : UdonSharpBehaviour
         Log("Going ghost!");
         playerStation.MoveToPosition(Player.GetPosition());
         playerStation.SeatPlayer();
+        shuriken.SetActive(false);
     }
 }
