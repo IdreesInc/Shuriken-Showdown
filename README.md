@@ -9,7 +9,8 @@
 
 *A VR party battler game inspired by [Boomerang Fu](https://www.boomerangfu.com/)*
 
-### Play it [here](https://vrchat.com/home/world/wrld_b4e39cd7-9a79-4b8e-9669-689c8bb3535d/i)
+## [`Play it here!`](https://vrchat.com/home/world/wrld_b4e39cd7-9a79-4b8e-9669-689c8bb3535d/i)
+<br/>
 
 ## Open Source License
 
