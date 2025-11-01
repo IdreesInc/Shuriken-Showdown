@@ -492,7 +492,8 @@ public class Shuriken : UdonSharpBehaviour
         }
         Vector3 currentVelocity = GetComponent<Rigidbody>().velocity;
         Vector3 currentDirection = currentVelocity.normalized;
-        PlayerCollider[] playerColliders = GameLogic.Get().playerObjectsParent.GetComponentsInChildren<PlayerCollider>();
+        GameLogic gameLogic = GameLogic.Get();
+        PlayerCollider[] playerColliders = gameLogic.playerObjectsParent.GetComponentsInChildren<PlayerCollider>();
 
         float minAngle = 360f;
         PlayerCollider bestCandidate = null;
@@ -502,7 +503,7 @@ public class Shuriken : UdonSharpBehaviour
             if (playerCollider == null) continue;
 
             VRCPlayerApi otherPlayer = Networking.GetOwner(playerCollider.gameObject);
-            if (otherPlayer == null || otherPlayer.playerId == Player.playerId) continue;
+            if (otherPlayer == null || otherPlayer.playerId == Player.playerId || !gameLogic.IsPlayerAlive(otherPlayer.playerId)) continue;
 
             Vector3 directionToTarget = (playerCollider.transform.position - transform.position).normalized;
             float angle = Vector3.Angle(currentDirection, directionToTarget);
