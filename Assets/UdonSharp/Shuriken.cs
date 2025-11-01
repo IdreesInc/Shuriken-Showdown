@@ -315,6 +315,15 @@ public class Shuriken : UdonSharpBehaviour
             Log("Shuriken is disabled, ignoring trigger");
             return;
         }
+
+        if (collider.gameObject.GetComponent<Target>() != null)
+        {
+            Log("Shuriken has triggered a target");
+            Target target = collider.gameObject.GetComponent<Target>();
+            target.PlaySound();
+            target.SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(Target.OnHit));
+        }
+
         if (!isDeadly)
         {
             Log("Shuriken is not deadly, ignoring trigger");
