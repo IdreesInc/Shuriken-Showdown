@@ -13,6 +13,7 @@ public class DebugUI : UdonSharpBehaviour
 
     private PlayerCollider playerCollider;
     private Shuriken shuriken;
+    private PlayerStation playerStation;
 
     private void Log(string message)
     {
@@ -33,6 +34,11 @@ public class DebugUI : UdonSharpBehaviour
             if (shuriken != null)
             {
                 this.shuriken = shuriken;
+            }
+            PlayerStation station = obj.GetComponent<PlayerStation>();
+            if (station != null)
+            {
+                playerStation = station;
             }
         }
     }
@@ -65,5 +71,29 @@ public class DebugUI : UdonSharpBehaviour
         Log($"Giving power up {powerUp}");
         shuriken.ActivatePowerUp(powerUp);
         powerUpSelector.value = 0;
+    }
+
+    public void GoInvisible()
+    {
+        if (!Shared.IsAdmin(Networking.LocalPlayer))
+        {
+            Log("Not an admin, cannot go invisible");
+            return;
+        }
+        playerStation.GoInvisible();
+        shuriken.SetActive(false);
+        shuriken.enabled = false;
+    }
+
+    public void GoVisible()
+    {
+        if (!Shared.IsAdmin(Networking.LocalPlayer))
+        {
+            Log("Not an admin, cannot go visible");
+            return;
+        }
+        playerStation.GoVisible();
+        shuriken.enabled = true;
+        shuriken.SetActive(true);
     }
 }

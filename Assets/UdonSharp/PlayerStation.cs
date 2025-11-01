@@ -1,6 +1,7 @@
 ﻿using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
+using VRC.Udon.Common.Interfaces;
 
 [RequireComponent(typeof(VRCStation))]
 public class PlayerStation : UdonSharpBehaviour
@@ -10,6 +11,11 @@ public class PlayerStation : UdonSharpBehaviour
     private Ghost ghost;
 
     private const float GHOST_GRAVITY = 0.3f;
+    /// <summary>
+    /// If true, the player is fully invisible within the station and no ghost is shown
+    /// Should the player be forced to exit the station, they will be put back into the station
+    /// </summary>
+    private bool invisibleMode = false;
 
     private void Log(string message)
     {
@@ -83,7 +89,10 @@ public class PlayerStation : UdonSharpBehaviour
         if (Networking.IsOwner(gameObject))
         {
             Networking.GetOwner(gameObject).SetGravityStrength(GHOST_GRAVITY);
-            ghost.FollowPlayer();
+            if (!invisibleMode)
+            {
+                ghost.FollowPlayer();
+            }
         }
     }
 
@@ -92,6 +101,12 @@ public class PlayerStation : UdonSharpBehaviour
         Log("OnStationExited: " + player.displayName);
         if (Networking.IsOwner(gameObject))
         {
+            if (invisibleMode)
+            {
+                Log("Player exited station while in invisible mode, putting back into station");
+                SeatPlayer();
+                return;
+            }
             Networking.GetOwner(gameObject).SetGravityStrength(1f);
             ghost.StopFollowing();
         }
@@ -129,9 +144,45 @@ public class PlayerStation : UdonSharpBehaviour
             LogError("Non-owner tried to reset station");
             return;
         }
+        if (invisibleMode)
+        {
+            Log("Player is in invisible mode, will not reset station");
+            return;
+        }
         Log("Resetting station position");
         PutAway();
         ghost.StopFollowing();
+    }
+
+    public void GoInvisible()
+    {
+        if (!Networking.IsOwner(gameObject))
+        {
+            LogError("Non-owner tried to set invisible mode");
+            return;
+        }
+        if (!Shared.IsAdmin(Networking.GetOwner(gameObject)))
+        {
+            LogError("Only admins can go completely invisible");
+            return;
+        }
+        Log("Going invisible");
+        this.invisibleMode = true;
+        SeatPlayer();
+        ghost.StopFollowing();
+        GameLogic.Get().SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(GameLogic.RequestLeave));
+    }
+
+    public void GoVisible()
+    {
+        if (!Networking.IsOwner(gameObject))
+        {
+            LogError("Non-owner tried to unset invisible mode");
+            return;
+        }
+        Log("Going visible");
+        this.invisibleMode = false;
+        PutAway();
     }
 
     private void PutAway()
