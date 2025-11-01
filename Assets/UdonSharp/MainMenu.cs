@@ -167,7 +167,7 @@ public class MainMenu : UdonSharpBehaviour
             return;
         } else if (gameLogic.GetJoinedPlayerSlotCount() < MIN_PLAYER_COUNT)
         {
-            timerText.text = "Waiting on more players to join (" + gameLogic.GetJoinedPlayerSlotCount() + "/" + MIN_PLAYER_COUNT + ")";
+            timerText.text = "Waiting for more players to join (" + gameLogic.GetJoinedPlayerSlotCount() + "/" + MIN_PLAYER_COUNT + ")";
             return;
         }
         float startTime = GetStartTime();

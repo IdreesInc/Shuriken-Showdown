@@ -7,6 +7,7 @@ using VRC.SDKBase;
 public class PlayerCollider : UdonSharpBehaviour
 {
     public HUD hud;
+    private AudioSource audioSource;
 
     private ParticleSystem shieldPopEffect;
 
@@ -53,6 +54,11 @@ public class PlayerCollider : UdonSharpBehaviour
         if (shieldPopEffect == null)
         {
             LogError("Shield Pop particle system not found");
+        }
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            LogError("AudioSource component not found");
         }
 
         if (Networking.IsOwner(gameObject))
@@ -169,6 +175,12 @@ public class PlayerCollider : UdonSharpBehaviour
         LocalPlayerLogic.Get().ShowGameOverUI(winnerNumber, winnerName);
         GoToLevelSpawn(Level.LOBBY);
         hud.ResetHud();
+        // Increment stats
+        Shared.IncrementStat(PlayerStats.GAMES_PLAYED);
+        if (GameLogic.Get().GetPlayerSlot(PlayerId) == winnerNumber)
+        {
+            Shared.IncrementStat(PlayerStats.GAMES_WON);
+        }
     }
 
     /// <summary>
@@ -217,6 +229,16 @@ public class PlayerCollider : UdonSharpBehaviour
         Log("Successfully " + verb + " " + playerName);
         LocalPlayerLogic playerLogic = LocalPlayerLogic.Get();
         playerLogic.ShowKillUI(playerSlot, playerName, verb);
+        // Increment stats
+        Shared.IncrementStat(PlayerStats.PLAYERS_KILLED);
+    }
+
+    public void PlaySound()
+    {
+        if (audioSource != null)
+        {
+            audioSource.Play();
+        }
     }
 
     /** Custom Methods **/

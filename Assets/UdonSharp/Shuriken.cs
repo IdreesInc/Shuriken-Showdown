@@ -13,7 +13,6 @@ using VRC.Udon.Common;
 public class Shuriken : UdonSharpBehaviour
 {
     public HUD hud;
-    public AudioSource audioSource;
 
     private const float ROTATION_SPEED = 360f * 3;
     private const float IDLE_ROTATION_SPEED = 90f;
@@ -337,7 +336,7 @@ public class Shuriken : UdonSharpBehaviour
             VRCPlayerApi opponentPlayer = Networking.GetOwner(collider.gameObject);
             if (!Networking.IsOwner(collider.gameObject))
             {
-                HitOpponent(opponentPlayer);
+                HitOpponent(opponentPlayer, playerCollider);
             }
         }
         else
@@ -380,6 +379,8 @@ public class Shuriken : UdonSharpBehaviour
             return;
         }
         AddPowerUp(type);
+        // Increment stats
+        Shared.IncrementStat(PlayerStats.POWER_UPS_COLLECTED);
     }
 
     [NetworkCallable]
@@ -576,7 +577,7 @@ public class Shuriken : UdonSharpBehaviour
         throwTime = 0f;
     }
 
-    private void HitOpponent(VRCPlayerApi opponent, string verb = "sliced")
+    private void HitOpponent(VRCPlayerApi opponent, PlayerCollider collider, string verb = "sliced")
     {
         if (!isDeadly) {
             LogError("Attempted to hit opponent with non-deadly shuriken");
@@ -590,10 +591,10 @@ public class Shuriken : UdonSharpBehaviour
             GameLogic.Get().SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(GameLogic.OnPlayerHit), hitPlayerId, verb);
 
             // Play hit sound
-            if (audioSource != null)
-            {
-                audioSource.Play();
-            }
+            collider.PlaySound();
+
+            // Increment stats
+            Shared.IncrementStat(PlayerStats.PLAYERS_HIT);
         }
         else
         {
@@ -615,7 +616,7 @@ public class Shuriken : UdonSharpBehaviour
                 VRCPlayerApi opponentPlayer = Networking.GetOwner(collider.gameObject);
                 if (opponentPlayer != null && !Networking.IsOwner(collider.gameObject))
                 {
-                    HitOpponent(opponentPlayer, "exploded");
+                    HitOpponent(opponentPlayer, collider, "exploded");
                 }
             }
         }
