@@ -28,6 +28,7 @@ public class MainMenu : UdonSharpBehaviour
     /// Delay in seconds before owners can restart the game
     /// </summary>
     private const int OWNER_DELAY = 5;
+    private const int MIN_PLAYER_COUNT = 2;
     private readonly Color JOIN_COLOR = Shared.HexToColor("#2FD93C");
     private readonly Color SPECTATE_COLOR = Shared.HexToColor("#FB9E38");
 
@@ -164,9 +165,9 @@ public class MainMenu : UdonSharpBehaviour
         {
             timerText.text = "Game is currently in progress";
             return;
-        } else if (gameLogic.GetJoinedPlayerSlotCount() == 0)
+        } else if (gameLogic.GetJoinedPlayerSlotCount() < MIN_PLAYER_COUNT)
         {
-            timerText.text = "Join the game to begin";
+            timerText.text = "Waiting on more players to join (" + gameLogic.GetJoinedPlayerSlotCount() + "/" + MIN_PLAYER_COUNT + ")";
             return;
         }
         float startTime = GetStartTime();
@@ -198,9 +199,9 @@ public class MainMenu : UdonSharpBehaviour
         {
             canStart = true;
         }
-        if (gameLogic.GetJoinedPlayerSlotCount() == 0)
+        if (gameLogic.GetJoinedPlayerSlotCount() < MIN_PLAYER_COUNT)
         {
-            // Can't start the game if nobody has joined
+            // Can't start the game if not enough players have joined
             canStart = false;
         }
         startButton.interactable = canStart;
