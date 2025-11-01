@@ -1,9 +1,46 @@
 using System;
 using UnityEngine;
 using VRC.SDKBase;
+using VRC.SDK3.Persistence;
+
+public enum PlayerStats
+{
+    PLAYERS_HIT,
+    PLAYERS_KILLED,
+    POWER_UPS_COLLECTED,
+    TARGETS_HIT,
+    GAMES_PLAYED,
+    GAMES_WON
+}
 
 public static class Shared
 {
+
+    /// <summary>
+    /// Get the key used for player data storage for the given stat
+    /// </summary>
+    public static string GetStatKey(PlayerStats key)
+    {
+        switch (key)
+        {
+            case PlayerStats.PLAYERS_HIT:
+                return "playersHit";
+            case PlayerStats.PLAYERS_KILLED:
+                return "playersKilled";
+            case PlayerStats.POWER_UPS_COLLECTED:
+                return "powerUpsCollected";
+            case PlayerStats.TARGETS_HIT:
+                return "targetsHit";
+            case PlayerStats.GAMES_PLAYED:
+                return "gamesPlayed";
+            case PlayerStats.GAMES_WON:
+                return "gamesWon";
+            default:
+                LogError("Shared", "Unknown stat key: " + key);
+                return null;
+        }
+    }
+
 
     public static Color HexToColor(string hex)
     {
@@ -100,11 +137,6 @@ public static class Shared
         Debug.LogError($"{logPrefix} <color=white>{message}</color>");
     }
 
-    public static int MaxPlayers()
-    {
-        return 8;
-    }
-
     public static bool IsAdmin(VRCPlayerApi player)
     {
         if (player == null)
@@ -112,6 +144,30 @@ public static class Shared
             return false;
         }
         return player.displayName == "CompanyInc" || player.displayName == "[1] Local Player";
+    }
+
+    public static int GetStat(PlayerStats key)
+    {
+        VRCPlayerApi player = Networking.LocalPlayer;
+        if (player == null)
+        {
+            LogError("Shared", "Cannot get stat, local player is null");
+            return 0;
+        }
+        string statKey = GetStatKey(key);
+        return PlayerData.GetInt(player, statKey);
+    }
+
+    public static void IncrementStat(PlayerStats key)
+    {
+        VRCPlayerApi player = Networking.LocalPlayer;
+        if (player == null)
+        {
+            LogError("Shared", "Cannot increment stat, local player is null");
+            return;
+        }
+        int currentValue = PlayerData.GetInt(player, GetStatKey(key));
+        PlayerData.SetInt(GetStatKey(key), currentValue + 1);
     }
 
     private static string GetLogStart(string prefix, VRCPlayerApi player = null)

@@ -322,6 +322,7 @@ public class Shuriken : UdonSharpBehaviour
             Target target = collider.gameObject.GetComponent<Target>();
             target.PlaySound();
             target.SendCustomNetworkEvent(NetworkEventTarget.Owner, nameof(Target.OnHit));
+            Shared.IncrementStat(PlayerStats.TARGETS_HIT);
         }
 
         if (!isDeadly)

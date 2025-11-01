@@ -1,1 +1,10 @@
-{}
+{
+  "targetsHit": {
+    "LastUpdated": "2025-11-01T17:56:00.8473281-04:00",
+    "Key": "targetsHit",
+    "Value": {
+      "type": "Int",
+      "value": 1
+    }
+  }
+}
