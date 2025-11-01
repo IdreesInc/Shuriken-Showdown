@@ -40,7 +40,11 @@ public class Shuriken : UdonSharpBehaviour
     /// <summary>
     /// Whether the shuriken can be picked up and used
     /// </summary>
-    [UdonSynced] private bool isActive = false;
+    [UdonSynced] private bool isActive = true;
+    /// <summary>
+    /// Whether the shuriken should trigger any effects on collision
+    /// </summary>
+    [UdonSynced] private bool isDeadly = false;
     [UdonSynced] private bool isHeld = false;
     [UdonSynced] private bool hasBeenThrown = false;
     [UdonSynced] private bool hasFirstContact = false;
@@ -274,6 +278,11 @@ public class Shuriken : UdonSharpBehaviour
             // Collided with another shuriken, ignore
             return;
         }
+        if (!isDeadly)
+        {
+            Log("Shuriken is not deadly, ignoring collision");
+            return;
+        }
 
         int explosionLevel = GetPowerUpLevel((int)PowerUpType.Badaboom);
 
@@ -304,6 +313,11 @@ public class Shuriken : UdonSharpBehaviour
         if (!isActive)
         {
             Log("Shuriken is disabled, ignoring trigger");
+            return;
+        }
+        if (!isDeadly)
+        {
+            Log("Shuriken is not deadly, ignoring trigger");
             return;
         }
 
@@ -372,6 +386,7 @@ public class Shuriken : UdonSharpBehaviour
             return;
         }
         Log("Fighting has started");
+        SetDeadly(true);
         SetActive(true);
     }
 
@@ -397,7 +412,9 @@ public class Shuriken : UdonSharpBehaviour
         powerUpOne = -1;
         powerUpTwo = -1;
         powerUpThree = -1;
-        SetActive(false);
+        // Re-enable shuriken for lobby practice
+        SetDeadly(false);
+        SetActive(true);
         ResetPowerUpEffects();
     }
 
@@ -440,6 +457,17 @@ public class Shuriken : UdonSharpBehaviour
         GetComponent<Renderer>().enabled = isActive;
     }
 
+    public bool IsDeadly()
+    {
+        return isDeadly;
+    }
+
+    public bool SetDeadly(bool deadly)
+    {
+        isDeadly = deadly;
+        return isDeadly;
+    }
+
 
     /// <summary>
     /// Finds the nearest opponent player collider in the direction of the shuriken's travel
@@ -447,6 +475,11 @@ public class Shuriken : UdonSharpBehaviour
     /// <returns>The nearest opponent player collider, or null if none found</returns>
     private PlayerCollider FindNearestOpponent()
     {
+        if (!isDeadly)
+        {
+            // No homing if not deadly
+            return null;
+        }
         Vector3 currentVelocity = GetComponent<Rigidbody>().velocity;
         Vector3 currentDirection = currentVelocity.normalized;
         PlayerCollider[] playerColliders = GameLogic.Get().playerObjectsParent.GetComponentsInChildren<PlayerCollider>();
@@ -533,6 +566,10 @@ public class Shuriken : UdonSharpBehaviour
 
     private void HitOpponent(VRCPlayerApi opponent, string verb = "sliced")
     {
+        if (!isDeadly) {
+            LogError("Attempted to hit opponent with non-deadly shuriken");
+            return;
+        }
         Log("I have " + verb + " " + opponent.displayName);
         if (GameLogic.Get().IsPlayerAlive(opponent.playerId))
         {
