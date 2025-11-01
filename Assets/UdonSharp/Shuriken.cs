@@ -376,6 +376,7 @@ public class Shuriken : UdonSharpBehaviour
     public void OnRoundStart()
     {
         ApplyPowerUpEffects();
+        SetActive(false);
     }
 
     [NetworkCallable]
