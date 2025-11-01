@@ -31384,7 +31384,7 @@ MonoBehaviour:
   renderSettingsRTPVHDR: 0
   renderSettingsRTPVWidth: 640
   renderSettingsRTPVHeight: 360
-  lastBakeTime: 334
+  lastBakeTime: 326
   enlightenWarningShown: 0
   enlightenWarningShown2: 0
   uniqueLights:
@@ -33293,7 +33293,26 @@ MonoBehaviour:
     - Fir_Tree_m_Snow_05_LOD2
     padding: 0b0000000c0000000c000000
     unwrapper: 000000000000000000000000
-  maps: []
+  maps:
+  - {fileID: 2800000, guid: d986a0d4a1938e146967dd180b631b21, type: 3}
+  - {fileID: 2800000, guid: fe2be3bf83752944bbd2d725f54dfb09, type: 3}
+  - {fileID: 2800000, guid: cbd743705b5c6844caaaeb9ab08f84bf, type: 3}
+  - {fileID: 2800000, guid: 4bca71e4173d7c74197c577115a733c7, type: 3}
+  - {fileID: 2800000, guid: eb35b8c7aa6d8e2478b53f9e078b7d98, type: 3}
+  - {fileID: 2800000, guid: 9d4cb77395510994289a803d828747fb, type: 3}
+  - {fileID: 2800000, guid: e53312de383d8cd4f91f32186c5a9e92, type: 3}
+  - {fileID: 2800000, guid: 730e123a4b3b99448b8fd8925557e791, type: 3}
+  - {fileID: 2800000, guid: f89e89c02c4b0004188e52a328f5719a, type: 3}
+  - {fileID: 2800000, guid: 96106112964aa124c81688119494becc, type: 3}
+  - {fileID: 2800000, guid: d7b4d5727f6d99340a0997c56560f673, type: 3}
+  - {fileID: 2800000, guid: dd0a462d963294d4aabe40c2feb4f2b9, type: 3}
+  - {fileID: 2800000, guid: 8752b368d5668074fa8fc3fadd2c41b7, type: 3}
+  - {fileID: 2800000, guid: a2f5484a2602c8145aaab366caa56829, type: 3}
+  - {fileID: 2800000, guid: 50235173802dac145b1687d16d972551, type: 3}
+  - {fileID: 2800000, guid: a4e0c48417c9ba04489cae4a6be5ccfa, type: 3}
+  - {fileID: 2800000, guid: 5081f74b34a0a3a4e80e94fd7e8786b7, type: 3}
+  - {fileID: 2800000, guid: 6907695dce9b28c4bb523c61dd9a71d3, type: 3}
+  - {fileID: 2800000, guid: e0d83380d7927d144be54fbff03d0c54, type: 3}
   masks: []
   dirMaps: []
   rnmMaps0: []
@@ -57185,6 +57204,7 @@ GameObject:
   - component: {fileID: 1205426129}
   - component: {fileID: 1205426131}
   - component: {fileID: 1205426130}
+  - component: {fileID: 1205426132}
   m_Layer: 17
   m_Name: Byline Text
   m_TagString: Untagged
@@ -57209,7 +57229,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 1.46, y: -2.991}
-  m_SizeDelta: {x: 1.33, y: 0.1}
+  m_SizeDelta: {x: 1.33, y: 0.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1205426130
 MonoBehaviour:
@@ -57231,7 +57251,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Made by CompanyInc
+  m_text: Made with <color="red"><3</color> by CompanyInc
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7d57e09c622adf64fb6c39a343198ebb, type: 2}
   m_sharedMaterial: {fileID: -5598554437734593870, guid: 7d57e09c622adf64fb6c39a343198ebb,
@@ -57241,8 +57261,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 1174405120
-  m_fontColor: {r: 0, g: 0, b: 0, a: 0.27450982}
+    rgba: 2013265920
+  m_fontColor: {r: 0, g: 0, b: 0, a: 0.47058824}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -57309,6 +57329,62 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1205426128}
   m_CullTransparentMesh: 1
+--- !u!114 &1205426132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1205426128}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 1205426130}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 620753243}
+        m_TargetAssemblyTypeName: VRC.Udon.UdonBehaviour, VRC.Udon
+        m_MethodName: SendCustomEvent
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: ToggleDebugUI
+          m_BoolArgument: 0
+        m_CallState: 1
 --- !u!1 &1206636136
 GameObject:
   m_ObjectHideFlags: 0
