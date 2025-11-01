@@ -506,7 +506,7 @@ PlayerSettings:
   - m_BuildTarget: PS4Player
     m_GraphicsJobs: 1
   - m_BuildTarget: iOSSupport
-    m_GraphicsJobs: 0
+    m_GraphicsJobs: 1
   - m_BuildTarget: WindowsStandaloneSupport
     m_GraphicsJobs: 1
   - m_BuildTarget: XboxOnePlayer
@@ -834,7 +834,7 @@ PlayerSettings:
     VisionOS: UNITY_POST_PROCESSING_STACK_V2
     WebGL: UNITY_POST_PROCESSING_STACK_V2
     XboxOne: UNITY_POST_PROCESSING_STACK_V2
-    iPhone: BAKERY_INCLUDED;BAKERY_NOREIMPORT
+    iPhone: BAKERY_INCLUDED;BAKERY_NOREIMPORT;UDONSHARP;UDON;VRC_SDK_VRCSDK3;VRC_ENABLE_PLAYER_PERSISTENCE
     tvOS: UNITY_POST_PROCESSING_STACK_V2
   additionalCompilerArguments: {}
   platformArchitecture: {}
