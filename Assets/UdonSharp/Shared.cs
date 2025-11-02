@@ -76,7 +76,7 @@ public static class Shared
             "#ffcf3f",
             "#d580ff",
             "#ff9966",
-            "#66ffff",
+            "#62ddf3",
             "#ff80bf",
         };
     }

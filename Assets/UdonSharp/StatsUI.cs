@@ -15,6 +15,7 @@ public class StatsUI : UdonSharpBehaviour
     public TextMeshProUGUI targetsHit;
     public TextMeshProUGUI gamesPlayed;
     public TextMeshProUGUI gamesWon;
+    public TextMeshProUGUI totalPoints;
 
     private const int TEXT_LENGTH = 19;
 
@@ -35,17 +36,33 @@ public class StatsUI : UdonSharpBehaviour
 
     private void UpdateStats()
     {
-        SetTextWithPadding(playersHit, "PLAYERS HIT", Shared.GetStat(PlayerStats.PLAYERS_HIT));
-        SetTextWithPadding(playersKilled, "PLAYERS KILLED", Shared.GetStat(PlayerStats.PLAYERS_KILLED));
-        SetTextWithPadding(powerUps, "POWER-UPS", Shared.GetStat(PlayerStats.POWER_UPS_COLLECTED));
-        SetTextWithPadding(targetsHit, "TARGETS HIT", Shared.GetStat(PlayerStats.TARGETS_HIT));
-        SetTextWithPadding(gamesPlayed, "GAMES PLAYED", Shared.GetStat(PlayerStats.GAMES_PLAYED));
-        SetTextWithPadding(gamesWon, "GAMES WON", Shared.GetStat(PlayerStats.GAMES_WON));
+        string[] colors = Shared.ColorStrings();
+        SetTextWithPadding(totalPoints, "TOTAL POINTS", CalculateTotalPoints(), colors[0]);
+        SetTextWithPadding(playersHit, "PLAYERS HIT", Shared.GetStat(PlayerStats.PLAYERS_HIT), colors[1]);
+        SetTextWithPadding(playersKilled, "PLAYERS KILLED", Shared.GetStat(PlayerStats.PLAYERS_KILLED), colors[2]);
+        SetTextWithPadding(powerUps, "POWER-UPS", Shared.GetStat(PlayerStats.POWER_UPS_COLLECTED), colors[3]);
+        SetTextWithPadding(targetsHit, "TARGETS HIT", Shared.GetStat(PlayerStats.TARGETS_HIT), colors[4]);
+        SetTextWithPadding(gamesPlayed, "GAMES PLAYED", Shared.GetStat(PlayerStats.GAMES_PLAYED), colors[5]);
+        SetTextWithPadding(gamesWon, "GAMES WON", Shared.GetStat(PlayerStats.GAMES_WON), colors[6]);
     }
 
-    private void SetTextWithPadding(TMP_Text textComponent, string label, int value)
+    private void SetTextWithPadding(TMP_Text textComponent, string label, int value, string color = "#000000")
     {
-        int padding = TEXT_LENGTH - label.Length - value.ToString().Length - 1; // -1 for ":"
-        textComponent.text = $"{label}: {value.ToString().PadLeft(padding, ' ')}";
+        string start = label + ": ";
+        string end = value.ToString();
+        int remainingLength = TEXT_LENGTH - start.Length;
+        textComponent.text = $"{start}<color={color}>{end.PadLeft(remainingLength, ' ')}</color>";
+    }
+
+    private int CalculateTotalPoints()
+    {
+        int total = 0;
+        total += Shared.GetStat(PlayerStats.PLAYERS_HIT) * 1;
+        total += Shared.GetStat(PlayerStats.PLAYERS_KILLED) * 2;
+        total += Shared.GetStat(PlayerStats.POWER_UPS_COLLECTED) * 1;
+        total += Shared.GetStat(PlayerStats.TARGETS_HIT) * 1;
+        total += Shared.GetStat(PlayerStats.GAMES_PLAYED) * 5;
+        total += Shared.GetStat(PlayerStats.GAMES_WON) * 25;
+        return total * 5;
     }
 }
